@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build
+dist
+.next
+out
+build
+.turbo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Strapi
+strapi/.tmp
+strapi/.cache
+strapi/.strapi
+strapi/.strapi-updater.json
+strapi/build
+strapi/dist
+strapi/public/uploads/*
+!strapi/public/uploads/.gitkeep
+
+# TypeScript
+*.tsbuildinfo
+
+# Dev artifacts
+.screenshots/
+
+# IDE
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docker
+pgdata

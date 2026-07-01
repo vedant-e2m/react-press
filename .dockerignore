@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+.git
+.turbo
+strapi/.tmp
+strapi/.cache
+strapi/build
+strapi/public/uploads/*
+!strapi/public/uploads/.gitkeep
+*.log
+.env
+.env.local

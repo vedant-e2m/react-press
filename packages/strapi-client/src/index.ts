@@ -1,0 +1,116 @@
+export interface StrapiResponse<T> {
+  data: T;
+  meta?: {
+    pagination?: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
+export interface StrapiErrorResponse {
+  error: {
+    status: number;
+    name: string;
+    message: string;
+  };
+}
+
+export type StrapiClientError = Error & { status: number; name: "StrapiClientError" };
+
+let strapiUrl = "http://localhost:1337";
+
+export function configureStrapiClient(options: { url: string }) {
+  strapiUrl = options.url;
+}
+
+export function getStrapiUrl() {
+  return strapiUrl;
+}
+
+function createStrapiError(message: string, status: number): StrapiClientError {
+  const error = new Error(message) as StrapiClientError;
+  error.name = "StrapiClientError";
+  error.status = status;
+  return error;
+}
+
+export async function strapiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+  token?: string,
+): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers as Record<string, string>),
+  };
+
+  const res = await fetch(`${strapiUrl}/api${path}`, {
+    ...options,
+    headers,
+  });
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as StrapiErrorResponse | null;
+    throw createStrapiError(
+      body?.error?.message ?? `Strapi error: ${res.status}`,
+      res.status,
+    );
+  }
+
+  const json = (await res.json()) as StrapiResponse<T>;
+  return json.data;
+}
+
+export const strapi = {
+  find: <T>(collection: string, params?: Record<string, string>, token?: string) =>
+    strapiFetch<T[]>(`/${collection}?${new URLSearchParams(params ?? {})}`, {}, token),
+
+  findOne: <T>(
+    collection: string,
+    id: string,
+    params?: Record<string, string>,
+    token?: string,
+  ) =>
+    strapiFetch<T>(`/${collection}/${id}?${new URLSearchParams(params ?? {})}`, {}, token),
+
+  create: <T>(collection: string, data: unknown, token: string) =>
+    strapiFetch<T>(`/${collection}`, {
+      method: "POST",
+      body: JSON.stringify({ data }),
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  update: <T>(collection: string, id: string, data: unknown, token: string) =>
+    strapiFetch<T>(`/${collection}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ data }),
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  delete: (collection: string, id: string, token: string) =>
+    strapiFetch<unknown>(`/${collection}/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+};
+
+export async function strapiLogin(identifier: string, password: string) {
+  const res = await fetch(`${strapiUrl}/api/auth/local`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifier, password }),
+  });
+
+  if (!res.ok) {
+    throw createStrapiError("Invalid credentials", res.status);
+  }
+
+  return res.json() as Promise<{
+    jwt: string;
+    user: { id: number; username: string; email: string };
+  }>;
+}

@@ -1,0 +1,93 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: nextpress
+      POSTGRES_USER: nextpress
+      POSTGRES_PASSWORD: nextpress
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nextpress -d nextpress"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  strapi:
+    build:
+      context: .
+      dockerfile: strapi/Dockerfile
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: nextpress
+      DATABASE_USERNAME: nextpress
+      DATABASE_PASSWORD: nextpress
+      JWT_SECRET: ${JWT_SECRET}
+      APP_KEYS: ${APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+      NEXTPRESS_DEFAULT_USER_EMAIL: ${NEXTPRESS_DEFAULT_USER_EMAIL:-admin@nextpress.local}
+      NEXTPRESS_DEFAULT_USER_PASSWORD: ${NEXTPRESS_DEFAULT_USER_PASSWORD:-NextPressDev123}
+      NEXTPRESS_DEFAULT_USER_USERNAME: ${NEXTPRESS_DEFAULT_USER_USERNAME:-nextpress}
+    ports:
+      - "1337:1337"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./strapi:/app
+      - strapi_node_modules:/app/node_modules
+      - strapi_uploads:/app/public/uploads
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      STRAPI_URL: http://strapi:1337
+      NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+      STRAPI_API_TOKEN: ${STRAPI_API_TOKEN:-}
+      NEXTPRESS_DEFAULT_USER_EMAIL: ${NEXTPRESS_DEFAULT_USER_EMAIL:-admin@nextpress.local}
+      NEXTPRESS_DEFAULT_USER_PASSWORD: ${NEXTPRESS_DEFAULT_USER_PASSWORD:-NextPressDev123}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - strapi
+    working_dir: /app/apps/web
+    volumes:
+      - .:/app
+      - web_root_node_modules:/app/node_modules
+      - web_app_node_modules:/app/apps/web/node_modules
+      - web_next:/app/apps/web/.next
+
+  react:
+    profiles: ["react"]
+    build:
+      context: .
+      dockerfile: apps/react/Dockerfile
+    environment:
+      VITE_STRAPI_URL: http://localhost:1337
+    ports:
+      - "5173:5173"
+    depends_on:
+      - strapi
+    working_dir: /app/apps/react
+    volumes:
+      - .:/app
+      - react_root_node_modules:/app/node_modules
+      - react_app_node_modules:/app/apps/react/node_modules
+
+volumes:
+  pgdata:
+  strapi_uploads:
+  strapi_node_modules:
+  web_root_node_modules:
+  web_app_node_modules:
+  web_next:
+  react_root_node_modules:
+  react_app_node_modules:
