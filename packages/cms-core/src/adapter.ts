@@ -2,7 +2,7 @@ import type { ContentProvider } from "./provider";
 import type { AdapterConfig } from "./types";
 
 export interface CmsAdapterMeta {
-  /** Stable adapter id, e.g. "strapi", "payload". Defined by the adapter package — not by core. */
+  /** Stable adapter id, e.g. "strapi". Defined by the adapter package — not by core. */
   id: string;
   displayName: string;
   version?: string;

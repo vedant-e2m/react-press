@@ -4,11 +4,14 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 WORKDIR /app
 
-COPY strapi/package.json strapi/pnpm-lock.yaml ./
-RUN pnpm install --ignore-workspace --frozen-lockfile
+# Monorepo workspace — Strapi depends on @nextpress/shared
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
+COPY packages ./packages
+COPY strapi/package.json ./strapi/package.json
 
-COPY strapi/ .
+RUN pnpm install --filter strapi...
+RUN pnpm --filter @nextpress/shared build
 
-EXPOSE 1337
+COPY strapi ./strapi
 
-CMD ["pnpm", "develop"]
+ENTRYPOINT ["sh", "/app/strapi/docker-entrypoint.sh"]

@@ -23,9 +23,12 @@
     },
     "page_status": {
       "type": "enumeration",
-      "enum": ["draft", "published", "scheduled"],
+      "enum": ["draft", "published", "scheduled", "trash"],
       "default": "draft",
       "required": true
+    },
+    "scheduled_at": {
+      "type": "datetime"
     },
     "puck_data": {
       "type": "json"

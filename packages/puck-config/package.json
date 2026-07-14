@@ -5,10 +5,15 @@
   "main": "./src/index.tsx",
   "types": "./src/index.tsx",
   "exports": {
-    ".": "./src/index.tsx"
+    ".": "./src/index.tsx",
+    "./focused-fields": "./src/focused-fields.tsx",
+    "./block-patterns": "./src/block-patterns/index.ts",
+    "./custom-blocks": "./src/custom-blocks/index.ts"
   },
   "dependencies": {
     "@nextpress/blocks": "workspace:*",
+    "@nextpress/core": "workspace:*",
+    "@nextpress/shared": "workspace:*",
     "@puckeditor/core": "^0.22.0"
   },
   "peerDependencies": {
@@ -17,6 +22,10 @@
   "devDependencies": {
     "@types/react": "^19",
     "react": "^19.1.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.7"
+  },
+  "scripts": {
+    "test": "vitest run"
   }
 }

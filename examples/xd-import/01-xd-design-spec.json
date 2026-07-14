@@ -1,0 +1,120 @@
+{
+  "document": "acme-saas-landing.xd",
+  "artboard": {
+    "name": "Homepage - Desktop",
+    "width": 1440,
+    "height": 3200,
+    "backgroundColor": "#FFFFFF"
+  },
+  "fonts": [
+    { "family": "Inter", "weights": [400, 600, 700] },
+    { "family": "DM Sans", "weights": [500] }
+  ],
+  "colors": {
+    "primary": "#2563EB",
+    "text": "#0F172A",
+    "muted": "#64748B",
+    "surface": "#F8FAFC"
+  },
+  "layers": [
+    {
+      "id": "nav",
+      "type": "group",
+      "name": "Navigation",
+      "children": [
+        { "id": "nav-logo", "type": "text", "content": "Acme", "font": "Inter Bold 24px", "color": "#0F172A" },
+        {
+          "id": "nav-links",
+          "type": "group",
+          "children": [
+            { "type": "text", "content": "Features" },
+            { "type": "text", "content": "Pricing" },
+            { "type": "text", "content": "About" }
+          ]
+        },
+        { "id": "nav-cta", "type": "button", "label": "Get Started", "fill": "#2563EB", "textColor": "#FFFFFF" }
+      ]
+    },
+    {
+      "id": "hero",
+      "type": "group",
+      "name": "Hero",
+      "background": { "type": "image", "asset": "hero-bg.jpg" },
+      "children": [
+        {
+          "id": "hero-title",
+          "type": "text",
+          "content": "Ship faster with Acme",
+          "font": "Inter Bold 56px",
+          "color": "#FFFFFF"
+        },
+        {
+          "id": "hero-subtitle",
+          "type": "text",
+          "content": "The all-in-one platform for modern teams to plan, build, and launch.",
+          "font": "Inter Regular 20px",
+          "color": "#E2E8F0"
+        },
+        {
+          "id": "hero-primary-cta",
+          "type": "button",
+          "label": "Start free trial",
+          "fill": "#FFFFFF",
+          "textColor": "#0F172A"
+        },
+        {
+          "id": "hero-secondary-cta",
+          "type": "button",
+          "label": "Book a demo",
+          "variant": "outline",
+          "stroke": "#FFFFFF",
+          "textColor": "#FFFFFF"
+        }
+      ]
+    },
+    {
+      "id": "features-heading",
+      "type": "text",
+      "content": "Everything you need to grow",
+      "font": "Inter Bold 40px",
+      "alignment": "center"
+    },
+    {
+      "id": "features",
+      "type": "group",
+      "layout": "horizontal-3-col",
+      "children": [
+        {
+          "type": "card",
+          "title": "Analytics",
+          "body": "Real-time dashboards for every team."
+        },
+        {
+          "type": "card",
+          "title": "Automation",
+          "body": "Workflows that save hours every week."
+        },
+        {
+          "type": "card",
+          "title": "Integrations",
+          "body": "Connect Slack, GitHub, and 50+ tools."
+        }
+      ]
+    },
+    {
+      "id": "contact-cta",
+      "type": "group",
+      "name": "Contact CTA",
+      "backgroundColor": "#F8FAFC",
+      "children": [
+        { "type": "text", "content": "Ready to get started?", "font": "Inter Bold 32px" },
+        { "type": "text", "content": "Talk to our team", "font": "DM Sans Medium 18px", "color": "#64748B" },
+        { "type": "button", "label": "Contact sales", "fill": "#2563EB" }
+      ]
+    }
+  ],
+  "assets": [
+    { "name": "hero-bg.jpg", "exportPath": "./assets/hero-bg.jpg" },
+    { "name": "logo.svg", "exportPath": "./assets/logo.svg" }
+  ]
+}

@@ -1,7 +1,24 @@
 // @ts-nocheck
-import { DEMO_PAGES } from "../seed/demo-pages";
+import { DEMO_PAGES, REMOVED_DEMO_SLUGS } from "../seed/demo-pages";
+
+async function removeOldDemoPages(strapi: import("@strapi/strapi").Core.Strapi) {
+  for (const slug of REMOVED_DEMO_SLUGS) {
+    const existing = await strapi.db.query("api::page.page").findOne({
+      where: { slug },
+    });
+
+    if (existing) {
+      await strapi.documents("api::page.page").delete({
+        documentId: existing.documentId,
+      });
+      strapi.log.info(`Removed old demo page: /${slug}`);
+    }
+  }
+}
 
 async function seedDemoPages(strapi: import("@strapi/strapi").Core.Strapi) {
+  await removeOldDemoPages(strapi);
+
   for (const page of DEMO_PAGES) {
     const existing = await strapi.db.query("api::page.page").findOne({
       where: { slug: page.slug },
@@ -21,7 +38,12 @@ async function seedDemoPages(strapi: import("@strapi/strapi").Core.Strapi) {
     if (existing) {
       await strapi.documents("api::page.page").update({
         documentId: existing.documentId,
-        data: { puck_data: page.puck_data },
+        data: {
+          title: page.title,
+          puck_data: page.puck_data,
+          seo_title: "seo_title" in page ? page.seo_title : undefined,
+          seo_description: "seo_description" in page ? page.seo_description : undefined,
+        },
       });
       strapi.log.info(`Demo page updated: /${page.slug}`);
       continue;

@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: nextpress
       POSTGRES_PASSWORD: nextpress
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -34,30 +34,48 @@ services:
       NEXTPRESS_DEFAULT_USER_EMAIL: ${NEXTPRESS_DEFAULT_USER_EMAIL:-admin@nextpress.local}
       NEXTPRESS_DEFAULT_USER_PASSWORD: ${NEXTPRESS_DEFAULT_USER_PASSWORD:-NextPressDev123}
       NEXTPRESS_DEFAULT_USER_USERNAME: ${NEXTPRESS_DEFAULT_USER_USERNAME:-nextpress}
+      PORT: ${STRAPI_PORT:-1338}
     ports:
-      - "1337:1337"
+      - "${STRAPI_PORT:-1338}:${STRAPI_PORT:-1338}"
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:${STRAPI_PORT:-1338}/api/pages?pagination[pageSize]=1').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+    working_dir: /app/strapi
     volumes:
-      - ./strapi:/app
-      - strapi_node_modules:/app/node_modules
-      - strapi_uploads:/app/public/uploads
+      - .:/app
+      - strapi_root_node_modules:/app/node_modules
+      - strapi_node_modules:/app/strapi/node_modules
+      - strapi_uploads:/app/strapi/public/uploads
 
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
     environment:
-      STRAPI_URL: http://strapi:1337
-      NEXT_PUBLIC_STRAPI_URL: http://localhost:1337
+      RUNNING_IN_DOCKER: "true"
+      # Server-side URL on the Docker network — must not be localhost
+      CMS_URL: http://strapi:${STRAPI_PORT:-1338}
+      NEXT_PUBLIC_STRAPI_URL: http://localhost:${STRAPI_PORT:-1338}
+      STRAPI_URL: http://strapi:${STRAPI_PORT:-1338}
       STRAPI_API_TOKEN: ${STRAPI_API_TOKEN:-}
       NEXTPRESS_DEFAULT_USER_EMAIL: ${NEXTPRESS_DEFAULT_USER_EMAIL:-admin@nextpress.local}
       NEXTPRESS_DEFAULT_USER_PASSWORD: ${NEXTPRESS_DEFAULT_USER_PASSWORD:-NextPressDev123}
+      PORT: ${WEB_PORT:-3001}
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3001}:${WEB_PORT:-3001}"
     depends_on:
-      - strapi
+      strapi:
+        condition: service_healthy
     working_dir: /app/apps/web
     volumes:
       - .:/app
@@ -71,9 +89,10 @@ services:
       context: .
       dockerfile: apps/react/Dockerfile
     environment:
-      VITE_STRAPI_URL: http://localhost:1337
+      VITE_STRAPI_URL: http://localhost:${STRAPI_PORT:-1338}
+      VITE_CMS_URL: http://localhost:${STRAPI_PORT:-1338}
     ports:
-      - "5173:5173"
+      - "${REACT_PORT:-5174}:5173"
     depends_on:
       - strapi
     working_dir: /app/apps/react
@@ -85,6 +104,7 @@ services:
 volumes:
   pgdata:
   strapi_uploads:
+  strapi_root_node_modules:
   strapi_node_modules:
   web_root_node_modules:
   web_app_node_modules:

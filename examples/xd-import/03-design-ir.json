@@ -1,0 +1,110 @@
+{
+  "source": {
+    "artboard": "Homepage - Desktop",
+    "width": 1440,
+    "exportFile": "02-xd-react-export.tsx"
+  },
+  "tokens": {
+    "fonts": [
+      { "family": "Inter", "weights": [400, 600, 700] },
+      { "family": "DM Sans", "weights": [500] }
+    ],
+    "colors": {
+      "primary": "#2563EB",
+      "text": "#0F172A",
+      "muted": "#64748B",
+      "surface": "#F8FAFC"
+    }
+  },
+  "assets": [
+    { "id": "hero-bg", "src": "./assets/hero-bg.jpg", "usage": ["Hero.backgroundImage"] }
+  ],
+  "nodes": [
+    {
+      "id": "nav",
+      "kind": "NavBar",
+      "props": {
+        "brandLabel": "Acme",
+        "links": [
+          { "label": "Features", "href": "#" },
+          { "label": "Pricing", "href": "#" },
+          { "label": "About", "href": "#" }
+        ],
+        "ctaLabel": "Get Started",
+        "ctaHref": "#",
+        "sticky": true,
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#0F172A",
+        "accentColor": "#2563EB"
+      },
+      "confidence": 0.92,
+      "source": "header[data-xd-name='Navigation']"
+    },
+    {
+      "id": "hero",
+      "kind": "Hero",
+      "props": {
+        "title": "Ship faster with Acme",
+        "subtitle": "The all-in-one platform for modern teams to plan, build, and launch.",
+        "backgroundImage": "./assets/hero-bg.jpg",
+        "ctaText": "Start free trial",
+        "ctaUrl": "#",
+        "alignment": "left",
+        "overlayColor": "rgba(15,23,42,0.55)"
+      },
+      "children": [
+        {
+          "id": "hero-secondary-cta",
+          "kind": "Button",
+          "props": { "label": "Book a demo", "href": "#", "variant": "outline" }
+        }
+      ],
+      "confidence": 0.78,
+      "notes": "Secondary CTA does not map cleanly to Hero block — may need HeroBanner or SplitPanel instead",
+      "source": "section[data-xd-name='Hero']"
+    },
+    {
+      "id": "features-heading",
+      "kind": "SectionHeading",
+      "props": {
+        "title": "Everything you need to grow",
+        "alignment": "center"
+      },
+      "confidence": 0.95,
+      "source": "h2[data-xd-type='text']"
+    },
+    {
+      "id": "features",
+      "kind": "FeatureGrid",
+      "props": {
+        "items": [
+          { "title": "Analytics", "description": "Real-time dashboards for every team." },
+          { "title": "Automation", "description": "Workflows that save hours every week." },
+          { "title": "Integrations", "description": "Connect Slack, GitHub, and 50+ tools." }
+        ],
+        "columns": "3"
+      },
+      "confidence": 0.88,
+      "source": "div[data-xd-layout='horizontal-3-col']"
+    },
+    {
+      "id": "contact-cta",
+      "kind": "ContactCta",
+      "props": {
+        "title": "Ready to get started?",
+        "subtitle": "Talk to our team",
+        "buttonLabel": "Contact sales",
+        "buttonHref": "#",
+        "accentColor": "#2563EB"
+      },
+      "confidence": 0.85,
+      "source": "section[data-xd-name='Contact CTA']"
+    }
+  ],
+  "unmapped": [
+    {
+      "id": "hero-secondary-cta",
+      "reason": "Hero block only supports one CTA; secondary button kept as child for manual merge"
+    }
+  ]
+}

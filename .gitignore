@@ -29,10 +29,21 @@ strapi/public/uploads/*
 
 # Dev artifacts
 .screenshots/
+.design-redesign/
+tmp/
+
+# Cursor IDE (local agent skills)
+.cursor/
+
+# XD import scratch outputs (re-generated via admin or CLI)
+apps/web/public/imported/xd/auction-test*/
 
 # IDE
 .idea
 .vscode
+
+# Form submissions (local dev)
+apps/web/.data
 *.swp
 .DS_Store
 

@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "block_patterns",
+  "info": {
+    "singularName": "block-pattern",
+    "pluralName": "block-patterns",
+    "displayName": "Block Pattern",
+    "description": "Reusable Puck block layouts"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "category": {
+      "type": "string",
+      "default": "general"
+    },
+    "kind": {
+      "type": "enumeration",
+      "enum": ["section", "page"],
+      "default": "section"
+    },
+    "puck_data": {
+      "type": "json",
+      "required": true
+    },
+    "preview_image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

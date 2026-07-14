@@ -114,3 +114,105 @@ export async function strapiLogin(identifier: string, password: string) {
     user: { id: number; username: string; email: string };
   }>;
 }
+
+export interface StrapiUploadFile {
+  id: number;
+  documentId: string;
+  name: string;
+  url: string;
+  mime: string;
+  width?: number | null;
+  height?: number | null;
+  size?: number | null;
+  alternativeText?: string | null;
+  caption?: string | null;
+  formats?: Record<
+    string,
+    { url: string; width?: number; height?: number; size?: number }
+  > | null;
+  createdAt: string;
+}
+
+/** Upload a file to Strapi media library. */
+export async function strapiUpload(
+  file: Blob,
+  filename: string,
+  token: string,
+): Promise<StrapiUploadFile[]> {
+  const formData = new FormData();
+  formData.append("files", file, filename);
+
+  const res = await fetch(`${strapiUrl}/api/upload`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as StrapiErrorResponse | null;
+    throw createStrapiError(
+      body?.error?.message ?? `Upload failed: ${res.status}`,
+      res.status,
+    );
+  }
+
+  return res.json() as Promise<StrapiUploadFile[]>;
+}
+
+/** List files from Strapi media library. */
+export async function strapiListMedia(
+  params: Record<string, string> = {},
+  token?: string,
+): Promise<StrapiUploadFile[]> {
+  const query = new URLSearchParams({
+    sort: "createdAt:desc",
+    "pagination[pageSize]": "100",
+    ...params,
+  });
+
+  const res = await fetch(`${strapiUrl}/api/upload/files?${query}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!res.ok) {
+    throw createStrapiError(`Failed to list media: ${res.status}`, res.status);
+  }
+
+  const json = (await res.json()) as StrapiUploadFile[] | StrapiResponse<StrapiUploadFile[]>;
+  return Array.isArray(json) ? json : json.data;
+}
+
+/** Update media metadata in Strapi. */
+export async function strapiUpdateMedia(
+  id: string,
+  data: { alternativeText?: string; caption?: string },
+  token: string,
+): Promise<StrapiUploadFile> {
+  const res = await fetch(`${strapiUrl}/api/upload?id=${id}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ fileInfo: data }),
+  });
+
+  if (!res.ok) {
+    throw createStrapiError(`Failed to update media: ${res.status}`, res.status);
+  }
+
+  const json = (await res.json()) as StrapiUploadFile[] | StrapiUploadFile;
+  return Array.isArray(json) ? json[0] : json;
+}
+
+/** Delete a file from Strapi media library. */
+export async function strapiDeleteMedia(id: string, token: string): Promise<void> {
+  const res = await fetch(`${strapiUrl}/api/upload/files/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    throw createStrapiError(`Failed to delete media: ${res.status}`, res.status);
+  }
+}

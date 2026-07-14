@@ -49,10 +49,4 @@ export interface Post {
   updatedAt: string;
 }
 
-export interface Category {
-  id: number;
-  documentId: string;
-  name: string;
-  slug: string;
-  description?: string | null;
-}
+export * from "./plugins";

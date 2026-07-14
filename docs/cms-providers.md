@@ -11,8 +11,7 @@ This document lists known options and how NextPress relates to them.
 | CMS | License | API | Notes |
 |-----|---------|-----|-------|
 | **Strapi** | MIT (Community Edition) | REST, GraphQL | **Default NextPress backend.** Separate Node service. Works well with both Next.js and React SPA. |
-| **Payload CMS** | MIT | REST, Local API | Next.js-native. Schema in TypeScript. Strong if Next.js is the only frontend target. |
-| **KeystoneJS** | MIT | GraphQL | Schema-in-code. Smaller ecosystem than Strapi or Payload. |
+| **KeystoneJS** | MIT | GraphQL | Schema-in-code. Smaller ecosystem than Strapi. |
 
 ---
 

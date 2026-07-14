@@ -1,0 +1,69 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_settings",
+  "info": {
+    "singularName": "site-setting",
+    "pluralName": "site-settings",
+    "displayName": "Site Setting",
+    "description": "Global site identity and appearance"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "site_name": {
+      "type": "string",
+      "default": "NextPress",
+      "required": true
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "favicon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "header_background": {
+      "type": "string"
+    },
+    "custom_css": {
+      "type": "text"
+    },
+    "social_links": {
+      "type": "json"
+    },
+    "widget_areas": {
+      "type": "json"
+    },
+    "header_scripts": {
+      "type": "text"
+    },
+    "footer_scripts": {
+      "type": "text"
+    },
+    "cdn_url": {
+      "type": "string"
+    },
+    "homepage_slug": {
+      "type": "string",
+      "default": "home"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "favicon_url": {
+      "type": "string"
+    },
+    "active_theme": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::theme.theme"
+    }
+  }
+}

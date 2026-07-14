@@ -1,0 +1,71 @@
+{
+  "root": { "props": { "title": "Acme Landing" } },
+  "content": [
+    {
+      "type": "NavBar",
+      "props": {
+        "id": "import-nav",
+        "brandLabel": "Acme",
+        "brandHref": "#",
+        "links": [
+          { "label": "Features", "href": "#" },
+          { "label": "Pricing", "href": "#" },
+          { "label": "About", "href": "#" }
+        ],
+        "ctaLabel": "Get Started",
+        "ctaHref": "#",
+        "sticky": true,
+        "backgroundColor": "#FFFFFF",
+        "textColor": "#0F172A",
+        "accentColor": "#2563EB"
+      }
+    },
+    {
+      "type": "HeroBanner",
+      "props": {
+        "id": "import-hero",
+        "title": "Ship faster with Acme",
+        "subtitle": "The all-in-one platform for modern teams to plan, build, and launch.",
+        "primaryCtaLabel": "Start free trial",
+        "primaryCtaHref": "#",
+        "secondaryCtaLabel": "Book a demo",
+        "secondaryCtaHref": "#",
+        "highlightColor": "#2563EB",
+        "overlayOpacity": 55
+      }
+    },
+    {
+      "type": "SectionHeading",
+      "props": {
+        "id": "import-features-heading",
+        "title": "Everything you need to grow",
+        "alignment": "center"
+      }
+    },
+    {
+      "type": "FeatureGrid",
+      "props": {
+        "id": "import-features",
+        "items": [
+          { "title": "Analytics", "description": "Real-time dashboards for every team." },
+          { "title": "Automation", "description": "Workflows that save hours every week." },
+          { "title": "Integrations", "description": "Connect Slack, GitHub, and 50+ tools." }
+        ],
+        "columns": "3",
+        "accentColor": "#2563EB"
+      }
+    },
+    {
+      "type": "ContactCta",
+      "props": {
+        "id": "import-contact",
+        "title": "Ready to get started?",
+        "subtitle": "Talk to our team",
+        "description": "",
+        "buttonLabel": "Contact sales",
+        "buttonHref": "#",
+        "accentColor": "#2563EB"
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "singleType",
+  "collectionName": "ai_settings",
+  "info": {
+    "singularName": "ai-setting",
+    "pluralName": "ai-settings",
+    "displayName": "AI Setting",
+    "description": "AI provider configuration (provider, model, API key) for the AI assistant and chat"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "provider": {
+      "type": "string",
+      "default": "openrouter"
+    },
+    "model": {
+      "type": "string"
+    },
+    "base_url": {
+      "type": "string"
+    },
+    "api_key": {
+      "type": "string"
+    }
+  }
+}

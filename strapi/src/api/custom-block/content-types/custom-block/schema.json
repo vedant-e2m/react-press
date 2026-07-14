@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "custom_blocks",
+  "info": {
+    "singularName": "custom-block",
+    "pluralName": "custom-blocks",
+    "displayName": "Custom Block",
+    "description": "Editor-defined Puck blocks with custom fields and an HTML template"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "puck_type": {
+      "type": "uid",
+      "targetField": "label",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "type": "string",
+      "default": "custom"
+    },
+    "fields": {
+      "type": "json",
+      "required": true
+    },
+    "template": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

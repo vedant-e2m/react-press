@@ -19,13 +19,12 @@ NextPress core is **CMS-agnostic**. No CMS names, URLs, or switch statements liv
 │  • initCms / getCms (runtime — no CMS names)                  │
 └───────────────────────────┬─────────────────────────────────┘
                             │ implements
-        ┌───────────────────┼───────────────────┐
-        ▼                   ▼                   ▼
- @nextpress/cms-strapi  @org/cms-payload   @org/cms-keystone
- (npm package)          (community)         (community)
-        │                   │                   │
-        ▼                   ▼                   ▼
-     Strapi API          Payload API         Keystone API
+                            ▼
+                   @nextpress/cms-strapi
+                   (npm package)
+                            │
+                            ▼
+                       Strapi API
 ```
 
 ---
@@ -36,7 +35,6 @@ NextPress core is **CMS-agnostic**. No CMS names, URLs, or switch statements liv
 |---------|----------------|---------------------|
 | `cms-core` | Interfaces + runtime only | **No** |
 | `cms-strapi` | Strapi → `ContentProvider` mapping | Yes |
-| `cms-payload` | Payload → `ContentProvider` mapping | Yes |
 | `apps/web` | Calls `getCms()` | **No** (only wires adapter at bootstrap) |
 
 ---
@@ -124,7 +122,7 @@ Core never lists `"strapi"` anywhere. The adapter defines its own `id`.
 
 - No `switch (provider)` on CMS names
 - No `CmsProviderId` union type that grows with every CMS
-- No `strapiUrl` / `payloadUrl` fields in shared config
+- No `strapiUrl` fields in shared config
 - No built-in registry of CMS products
 - No requirement to ship multiple adapters in the monorepo
 
@@ -136,9 +134,8 @@ Core never lists `"strapi"` anywhere. The adapter defines its own `id`.
 |---------|-----------|
 | `cms-core` | Yes — contract + runtime |
 | `cms-strapi` (or rename `strapi-client`) | One reference adapter |
-| `cms-payload`, etc. | Only when needed — can live outside the repo |
 
-OSS users install the adapter they want. Core + Puck + admin stay the same.
+OSS users can add other adapters outside the repo. Core + Puck + admin stay the same.
 
 ---
 

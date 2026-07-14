@@ -1,4 +1,6 @@
 import { seedDemoPages } from "./seed";
+import { seedAppearance } from "./seed/appearance";
+import { seedCustomBlocks } from "./seed/custom-blocks";
 
 const AUTHENTICATED_PERMISSIONS = [
   "api::page.page.find",
@@ -13,10 +15,45 @@ const AUTHENTICATED_PERMISSIONS = [
   "api::post.post.delete",
   "api::category.category.find",
   "api::category.category.findOne",
+  "api::category.category.create",
+  "api::category.category.update",
+  "api::category.category.delete",
   "api::tag.tag.find",
   "api::tag.tag.findOne",
+  "api::tag.tag.create",
+  "api::tag.tag.update",
+  "api::tag.tag.delete",
+  "api::content-revision.content-revision.find",
+  "api::content-revision.content-revision.findOne",
+  "api::content-revision.content-revision.create",
+  "api::menu.menu.find",
+  "api::menu.menu.findOne",
+  "api::menu.menu.create",
+  "api::menu.menu.update",
+  "api::menu.menu.delete",
+  "api::theme.theme.find",
+  "api::theme.theme.findOne",
+  "api::theme.theme.create",
+  "api::theme.theme.update",
+  "api::theme.theme.delete",
+  "api::block-pattern.block-pattern.find",
+  "api::block-pattern.block-pattern.findOne",
+  "api::block-pattern.block-pattern.create",
+  "api::block-pattern.block-pattern.update",
+  "api::block-pattern.block-pattern.delete",
+  "api::custom-block.custom-block.find",
+  "api::custom-block.custom-block.findOne",
+  "api::custom-block.custom-block.create",
+  "api::custom-block.custom-block.update",
+  "api::custom-block.custom-block.delete",
+  "api::site-setting.site-setting.find",
+  "api::site-setting.site-setting.update",
+  "api::ai-setting.ai-setting.find",
+  "api::ai-setting.ai-setting.update",
   "plugin::upload.read",
   "plugin::upload.assets.create",
+  "plugin::upload.assets.update",
+  "plugin::upload.assets.destroy",
 ];
 
 const EDITOR_PERMISSIONS = [
@@ -32,10 +69,45 @@ const EDITOR_PERMISSIONS = [
   "api::post.post.delete",
   "api::category.category.find",
   "api::category.category.findOne",
+  "api::category.category.create",
+  "api::category.category.update",
+  "api::category.category.delete",
   "api::tag.tag.find",
   "api::tag.tag.findOne",
+  "api::tag.tag.create",
+  "api::tag.tag.update",
+  "api::tag.tag.delete",
+  "api::content-revision.content-revision.find",
+  "api::content-revision.content-revision.findOne",
+  "api::content-revision.content-revision.create",
+  "api::menu.menu.find",
+  "api::menu.menu.findOne",
+  "api::menu.menu.create",
+  "api::menu.menu.update",
+  "api::menu.menu.delete",
+  "api::theme.theme.find",
+  "api::theme.theme.findOne",
+  "api::theme.theme.create",
+  "api::theme.theme.update",
+  "api::theme.theme.delete",
+  "api::block-pattern.block-pattern.find",
+  "api::block-pattern.block-pattern.findOne",
+  "api::block-pattern.block-pattern.create",
+  "api::block-pattern.block-pattern.update",
+  "api::block-pattern.block-pattern.delete",
+  "api::custom-block.custom-block.find",
+  "api::custom-block.custom-block.findOne",
+  "api::custom-block.custom-block.create",
+  "api::custom-block.custom-block.update",
+  "api::custom-block.custom-block.delete",
+  "api::site-setting.site-setting.find",
+  "api::site-setting.site-setting.update",
+  "api::ai-setting.ai-setting.find",
+  "api::ai-setting.ai-setting.update",
   "plugin::upload.read",
   "plugin::upload.assets.create",
+  "plugin::upload.assets.update",
+  "plugin::upload.assets.destroy",
 ];
 
 const AUTHOR_PERMISSIONS = [
@@ -48,8 +120,17 @@ const AUTHOR_PERMISSIONS = [
   "api::post.post.delete",
   "api::category.category.find",
   "api::category.category.findOne",
+  "api::category.category.create",
+  "api::category.category.update",
+  "api::category.category.delete",
   "api::tag.tag.find",
   "api::tag.tag.findOne",
+  "api::tag.tag.create",
+  "api::tag.tag.update",
+  "api::tag.tag.delete",
+  "api::content-revision.content-revision.find",
+  "api::content-revision.content-revision.findOne",
+  "api::content-revision.content-revision.create",
   "plugin::upload.read",
   "plugin::upload.assets.create",
 ];
@@ -61,6 +142,15 @@ const PUBLIC_PERMISSIONS = [
   "api::post.post.findOne",
   "api::category.category.find",
   "api::category.category.findOne",
+  "api::menu.menu.find",
+  "api::menu.menu.findOne",
+  "api::theme.theme.find",
+  "api::theme.theme.findOne",
+  "api::site-setting.site-setting.find",
+  "api::block-pattern.block-pattern.find",
+  "api::block-pattern.block-pattern.findOne",
+  "api::custom-block.custom-block.find",
+  "api::custom-block.custom-block.findOne",
 ];
 
 async function grantPermissions(
@@ -125,8 +215,44 @@ export default {
 
     await ensureDefaultAppUser(strapi);
     await seedDemoPages(strapi);
+    await seedAppearance(strapi);
+    await seedCustomBlocks(strapi);
+    registerScheduledPublishJob(strapi);
   },
 };
+
+async function registerScheduledPublishJob(strapi: import("@strapi/strapi").Core.Strapi) {
+  const publishDuePages = async () => {
+    const now = new Date().toISOString();
+    const due = await strapi.db.query("api::page.page").findMany({
+      where: {
+        page_status: "scheduled",
+        scheduled_at: { $lte: now },
+      },
+      limit: 50,
+    });
+
+    for (const page of due) {
+      await strapi.documents("api::page.page").update({
+        documentId: page.documentId,
+        data: {
+          page_status: "published",
+          publishedAt: new Date(),
+          scheduled_at: undefined,
+        },
+      });
+      strapi.log.info(`Published scheduled page: /${page.slug}`);
+    }
+  };
+
+  setInterval(() => {
+    void publishDuePages().catch((error: unknown) => {
+      strapi.log.error("Scheduled publish job failed", error);
+    });
+  }, 60_000);
+
+  void publishDuePages();
+}
 
 async function ensureDefaultAppUser(strapi: import("@strapi/strapi").Core.Strapi) {
   const email = process.env.NEXTPRESS_DEFAULT_USER_EMAIL ?? "admin@nextpress.local";

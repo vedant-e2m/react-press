@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "menus",
+  "info": {
+    "singularName": "menu",
+    "pluralName": "menus",
+    "displayName": "Menu",
+    "description": "Navigation menus with nested items"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "location": {
+      "type": "enumeration",
+      "enum": ["header", "footer", "sidebar", "custom"],
+      "default": "header",
+      "required": true
+    },
+    "items": {
+      "type": "json",
+      "default": []
+    }
+  }
+}
