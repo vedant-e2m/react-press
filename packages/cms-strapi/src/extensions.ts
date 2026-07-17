@@ -462,16 +462,26 @@ export async function searchContent(
   ]);
 
   return {
-    pages: pageDocs.map((doc) => ({
-      id: doc.documentId,
-      title: doc.title,
-      slug: doc.slug,
-      status: doc.page_status,
-      puckData: doc.puck_data ?? null,
-      publishedAt: doc.publishedAt,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    })),
+    pages: pageDocs.map((doc) => {
+      const raw = doc.puck_data ?? null;
+      const isGutenberg =
+        !!raw &&
+        typeof raw === "object" &&
+        (raw as { editor?: unknown }).editor === "gutenberg";
+      return {
+        id: doc.documentId,
+        title: doc.title,
+        slug: doc.slug,
+        status: doc.page_status,
+        gutenbergData: isGutenberg
+          ? (raw as unknown as import("@nextpress/cms-core").GutenbergData)
+          : null,
+        puckData: isGutenberg ? null : (raw as import("@nextpress/shared").PuckData | null),
+        publishedAt: doc.publishedAt,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+      };
+    }),
     posts: postDocs.map(mapPost),
   };
 }

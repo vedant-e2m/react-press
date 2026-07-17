@@ -4,6 +4,7 @@ import type {
   AuthSession,
   ContentPage,
   CreatePageInput,
+  GutenbergData,
   ListPagesOptions,
   LoginInput,
   UpdatePageInput,
@@ -28,7 +29,8 @@ interface StrapiPage {
   title: string;
   slug: string;
   page_status: ContentPage["status"];
-  puck_data: PuckData | null;
+  /** JSON column — GutenbergData or legacy PuckData. */
+  puck_data: GutenbergData | PuckData | null;
   seo_title?: string | null;
   seo_description?: string | null;
   og_image?: StrapiMediaRef | null;
@@ -38,13 +40,33 @@ interface StrapiPage {
   updatedAt: string;
 }
 
+function isGutenbergDoc(value: unknown): value is GutenbergData {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    (value as { editor?: unknown }).editor === "gutenberg" &&
+    Array.isArray((value as { blocks?: unknown }).blocks)
+  );
+}
+
+function isPuckDoc(value: unknown): value is PuckData {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    Array.isArray((value as { content?: unknown }).content) &&
+    !isGutenbergDoc(value)
+  );
+}
+
 function mapPage(doc: StrapiPage): ContentPage {
+  const raw = doc.puck_data;
   return {
     id: doc.documentId,
     title: doc.title,
     slug: doc.slug,
     status: doc.page_status,
-    puckData: doc.puck_data,
+    gutenbergData: isGutenbergDoc(raw) ? raw : null,
+    puckData: isPuckDoc(raw) ? raw : null,
     seoTitle: doc.seo_title ?? null,
     seoDescription: doc.seo_description ?? null,
     ogImageUrl: doc.og_image?.url ? resolveMediaUrl(doc.og_image.url) : null,
@@ -140,7 +162,7 @@ export class StrapiContentProvider implements ContentProvider {
         title: input.title,
         slug: input.slug,
         page_status: input.status ?? "draft",
-        puck_data: input.puckData ?? null,
+        puck_data: input.puckData ?? input.gutenbergData ?? null,
         seo_title: input.seoTitle,
         seo_description: input.seoDescription,
       },
@@ -155,7 +177,9 @@ export class StrapiContentProvider implements ContentProvider {
     if (input.title !== undefined) data.title = input.title;
     if (input.slug !== undefined) data.slug = input.slug;
     if (input.status !== undefined) data.page_status = input.status;
+    // Prefer Puck JSON when both are sent — editor round-trips more reliably.
     if (input.puckData !== undefined) data.puck_data = input.puckData;
+    else if (input.gutenbergData !== undefined) data.puck_data = input.gutenbergData;
     if (input.seoTitle !== undefined) data.seo_title = input.seoTitle;
     if (input.seoDescription !== undefined) data.seo_description = input.seoDescription;
     if (input.publishedAt !== undefined) data.publishedAt = input.publishedAt;

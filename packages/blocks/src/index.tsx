@@ -1133,6 +1133,7 @@ export * from "./sections";
 export * from "./content-blocks";
 export * from "./layout";
 export * from "./wp-blocks";
+export * from "./marketing";
 export { InfoCard, type InfoCardProps } from "./info-card";
 export { ScrollReveal, type ScrollRevealProps } from "./motion/scroll-reveal";
 export { WithScrollReveal } from "./motion/with-scroll-reveal";

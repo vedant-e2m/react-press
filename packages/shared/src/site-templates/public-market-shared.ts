@@ -252,6 +252,19 @@ const LEASING_UNIT_BLURBS =
   "Access shared utilities, seating areas, cleaning services, security, and maintenance. Operate alongside other chefs and entrepreneurs for a vibrant customer experience. Plug-and-play or partially built-out spaces reduce upfront investment.";
 
 /** Shared announcement + drawer NavBar used across PME pages. */
+export function pmeAnnouncementBar(id = "announce"): SeedBlock {
+  return pmeBlock("AnnouncementBar", id, {
+    messages: [
+      { text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
+      { text: "Welcome to The Public Market Emeryville — food, fitness, and community." },
+    ],
+    backgroundColor: "#000000",
+    textColor: PME_ACCENT,
+    showArrows: true,
+  });
+}
+
+/** Shared announcement + drawer NavBar used across PME pages. */
 export function pmeNavBar(opts: { id?: string; transparent?: boolean } = {}): SeedBlock {
   const transparent = opts.transparent ?? false;
   return pmeBlock("NavBar", opts.id ?? "nav", {
@@ -264,9 +277,6 @@ export function pmeNavBar(opts: { id?: string; transparent?: boolean } = {}): Se
     accentColor: PME_ACCENT,
     menuStyle: "drawer",
     ctaVariant: "text",
-    announcementText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    announcementBackgroundColor: "#000000",
-    announcementTextColor: PME_ACCENT,
     backgroundColor: transparent ? undefined : "#ffffff",
     links: PME_NAV_LINKS,
     ctaLabel: "Order Food",
@@ -395,7 +405,12 @@ export function withPmeChrome(
   body: SeedBlock[],
   opts: { transparentNav?: boolean } = {},
 ): SeedBlock[] {
-  return [pmeNavBar({ transparent: opts.transparentNav }), ...body, pmeFooterColumns()];
+  return [
+    pmeAnnouncementBar(),
+    pmeNavBar({ transparent: opts.transparentNav }),
+    ...body,
+    pmeFooterColumns(),
+  ];
 }
 
 /** Standard puck_data envelope. */

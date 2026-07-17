@@ -5,7 +5,7 @@
     "singularName": "page",
     "pluralName": "pages",
     "displayName": "Page",
-    "description": "Visual pages built with Puck"
+    "description": "Visual pages built with the WordPress block editor (Gutenberg)"
   },
   "options": {
     "draftAndPublish": false

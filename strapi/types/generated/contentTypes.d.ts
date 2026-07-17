@@ -653,7 +653,7 @@ export interface ApiMenuMenu extends Struct.CollectionTypeSchema {
 export interface ApiPagePage extends Struct.CollectionTypeSchema {
   collectionName: 'pages';
   info: {
-    description: 'Visual pages built with Puck';
+    description: 'Visual pages built with the WordPress block editor (Gutenberg)';
     displayName: 'Page';
     pluralName: 'pages';
     singularName: 'page';

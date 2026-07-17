@@ -24,7 +24,6 @@ import {
   buildLeasingHeroBodyHtml,
   buildLeasingUnitsHtml,
   buildPurveyorHoursHtml,
-  buildVendorNameListHtml,
   PME_DIRECTORY_HERO,
 } from "./pme-html";
 
@@ -50,7 +49,7 @@ export function buildPublicMarketHomeBlocks(): SeedBlock[] {
           showScrollIndicator: true,
           contentAlign: "center",
         }),
-        pmeBlock("CustomBlock-pme-about-row", "about", {
+        pmeBlock("InfoBand", "about", {
           hoursLabel: "Hours of Operation",
           hoursLines: "Mon – Sat\n10am – 9pm\nSunday\n10am – 8pm",
           logoUrl: PME_ASSETS.aboutLogo,
@@ -98,22 +97,29 @@ export function buildPublicMarketHomeBlocks(): SeedBlock[] {
           showViewToggle: false,
           items: pmeVendorItems(),
         }),
-        pmeBlock("CustomBlock-leasing-tiles", "leasing", {
+        pmeBlock("ImageLinkGrid", "leasing", {
           title: "Looking To",
           highlight: "Lease?",
-          watermark: "Looking To Lease?",
           ctaLabel: "Contact Us",
           ctaUrl: "/contact",
           highlightColor: PME_ACCENT,
-          tile1Title: "Food Hall",
-          tile1Image: PME_ASSETS.lease.foodHall,
-          tile1Url: "/leasing-food-hall",
-          tile2Title: "Office & Life Science",
-          tile2Image: PME_ASSETS.lease.office,
-          tile2Url: "/leasing-office",
-          tile3Title: "Adjacent Retail",
-          tile3Image: PME_ASSETS.lease.retail,
-          tile3Url: "/leasing-adjacent-retail",
+          tiles: [
+            {
+              title: "Food Hall",
+              imageUrl: PME_ASSETS.lease.foodHall,
+              href: "/leasing-food-hall",
+            },
+            {
+              title: "Office & Life Science",
+              imageUrl: PME_ASSETS.lease.office,
+              href: "/leasing-office",
+            },
+            {
+              title: "Adjacent Retail",
+              imageUrl: PME_ASSETS.lease.retail,
+              href: "/leasing-adjacent-retail",
+            },
+          ],
         }),
         pmeBlock("ArticleGrid", "events", {
           blockId: "events",
@@ -135,7 +141,7 @@ export function buildPublicMarketHomeBlocks(): SeedBlock[] {
             tags: e.tags,
           })),
         }),
-        pmeBlock("CustomBlock-pme-follow-intro", "follow-intro", {
+        pmeBlock("HighlightCta", "follow-intro", {
           title: "Don't Miss",
           highlight: "What's Next",
           buttonLabel: "Follow @publicmarketemeryville",
@@ -168,15 +174,20 @@ export function buildPublicMarketHomePuckData() {
 /** Vendors — toolbar + large hover name list (not card grid). */
 function buildVendorsPage(): SeedBlock[] {
   return withPmeChrome([
-    pmeBlock("CustomBlock-pme-vendor-toolbar", "vendors-toolbar", {
+    pmeBlock("FilterToolbar", "vendors-toolbar", {
       categoryLabel: "Category: All",
       galleryLabel: "Gallery",
       listLabel: "List",
+      activeView: "list",
       directoryLabel: "View Directory",
       directoryUrl: "/directory",
     }),
-    pmeBlock("CustomBlock-pme-vendor-name-list", "vendors-list", {
-      listHtml: buildVendorNameListHtml(),
+    pmeBlock("HoverNameList", "vendors-list", {
+      items: PME_VENDORS.map((v) => ({
+        title: v.title,
+        href: `/${v.slug}`,
+        imageUrl: PME_ASSETS.vendorThumb,
+      })),
       backgroundColor: "#ffffff",
     }),
   ]);
@@ -186,19 +197,17 @@ function buildVendorsPage(): SeedBlock[] {
 function buildDirectoryPage(): SeedBlock[] {
   return withPmeChrome(
     [
-      pmeBlock("CustomBlock-pme-page-hero", "directory-hero", {
+      pmeBlock("PageHero", "directory-hero", {
         title: "Directory",
         imageUrl: PME_DIRECTORY_HERO,
         minHeight: "72vh",
-        overlayOpacity: "40",
+        overlayOpacity: 40,
       }),
-      pmeBlock("CustomBlock-pme-directory-map", "directory-map", {
-        mapHtml: buildDirectoryMapHtml(),
-        backgroundColor: "#f3f3f3",
+      pmeBlock("HtmlCode", "directory-map", {
+        html: buildDirectoryMapHtml(),
       }),
-      pmeBlock("CustomBlock-pme-directory-lists", "directory-lists", {
-        listsHtml: buildDirectoryListsHtml(),
-        backgroundColor: "#ffffff",
+      pmeBlock("HtmlCode", "directory-lists", {
+        html: buildDirectoryListsHtml(),
       }),
     ],
     { transparentNav: true },
@@ -209,18 +218,14 @@ function buildDirectoryPage(): SeedBlock[] {
 function buildEventsPage(): SeedBlock[] {
   return withPmeChrome(
     [
-      pmeBlock("CustomBlock-pme-page-hero", "events-hero", {
+      pmeBlock("PageHero", "events-hero", {
         title: "Events",
         imageUrl: PME_ASSETS.interiorHero,
         minHeight: "72vh",
-        overlayOpacity: "40",
+        overlayOpacity: 40,
       }),
-      pmeBlock("CustomBlock-pme-events-text-grid", "events-grid", {
-        gridHtml: buildEventsTextGridHtml(PME_EVENTS),
-        loadMoreLabel: "Load More",
-        loadMoreUrl: "#",
-        accentColor: PME_ACCENT,
-        backgroundColor: "#ffffff",
+      pmeBlock("HtmlCode", "events-grid", {
+        html: buildEventsTextGridHtml(PME_EVENTS),
       }),
     ],
     { transparentNav: true },
@@ -230,29 +235,29 @@ function buildEventsPage(): SeedBlock[] {
 /** Contact — inquiries + split form section. */
 function buildContactPage(): SeedBlock[] {
   return withPmeChrome([
-    pmeBlock("CustomBlock-pme-contact-hero", "contact-hero", {
-      title: "Contact us",
+    pmeBlock("InquiryList", "contact-inquiries", {
+      heading: "Contact us",
+      headingColor: PME_ACCENT,
       accentColor: PME_ACCENT,
-    }),
-    pmeBlock("CustomBlock-pme-contact-inquiries", "contact-inquiries", {
-      generalTitle: "General Inquiries",
-      generalEmail: "xxx@publicmarketemeryville.com",
-      leasingTitle: "Leasing Inquiries",
-      leasingEmail: "xxx@publicmarketemeryville.com",
-      getInTouchLabel: "Get in touch",
-      getInTouchText: "Fill out the contact form ↓",
-      accentColor: PME_ACCENT,
-      textColor: PME_TEXT,
-    }),
-    pmeBlock("CustomBlock-pme-contact-form-split", "contact-form-heading", {
-      title: "Send us a message",
-      backgroundColor: "#f5f5f5",
-      textColor: "#111111",
+      items: [
+        {
+          title: "General Inquiries",
+          email: "xxx@publicmarketemeryville.com",
+          actionText: "Fill out the contact form ↓",
+          actionHref: "#contact",
+        },
+        {
+          title: "Leasing Inquiries",
+          email: "xxx@publicmarketemeryville.com",
+          actionText: "Fill out the contact form ↓",
+          actionHref: "#contact",
+        },
+      ],
     }),
     pmeBlock("ContactForm", "contact-form", {
       formId: "contact",
       blockId: "contact",
-      title: "",
+      title: "Send us a message",
       description: "",
       submitLabel: "Submit",
       successMessage: "Thanks — we'll be in touch soon.",
@@ -280,16 +285,16 @@ function buildContactPage(): SeedBlock[] {
 /** Order food — single bordered panel with hours inside. */
 function buildOrderFoodPage(): SeedBlock[] {
   return withPmeChrome([
-    pmeBlock("CustomBlock-pme-order-panel", "order-panel", {
+    pmeBlock("BorderedSplit", "order-panel", {
+      borderColor: PME_ACCENT,
+      mediaBackgroundColor: PME_ACCENT,
+      mediaHtml:
+        '<div style="font-size:64px;line-height:1.2;color:#111">🍴 ❤️<br/><span style="font-size:96px;font-weight:700">PM</span></div>',
       title: "ORDER FOOD + PURVEYOR HOURS",
-      body: "Now your tastebuds don't have to settle for just one cuisine. Order online from multiple food hall purveyors at once, then get a text alert when your order is ready for pickup.",
-      ctaLabel: "ORDER FOOD NOW >",
-      ctaUrl: "#",
-      hoursHtml: buildPurveyorHoursHtml(),
-      backLabel: "← Back To All News",
-      backUrl: "/events",
-      accentColor: PME_ACCENT,
-      textColor: PME_TEXT,
+      bodyHtml: `<p>Now your tastebuds don't have to settle for just one cuisine. Order online from multiple food hall purveyors at once, then get a text alert when your order is ready for pickup.</p>
+<p><a href="#">ORDER FOOD NOW &gt;</a></p>
+${buildPurveyorHoursHtml()}
+<p><a href="/events">← Back To All News</a></p>`,
     }),
   ]);
 }
@@ -297,22 +302,29 @@ function buildOrderFoodPage(): SeedBlock[] {
 /** Leasing hub — tiles only. */
 function buildLeasingHubPage(): SeedBlock[] {
   return withPmeChrome([
-    pmeBlock("CustomBlock-leasing-tiles", "leasing-hub", {
+    pmeBlock("ImageLinkGrid", "leasing-hub", {
       title: "Looking To",
       highlight: "Lease?",
-      watermark: "Looking To Lease?",
       ctaLabel: "Contact Us",
       ctaUrl: "/contact",
       highlightColor: PME_ACCENT,
-      tile1Title: "Food Hall",
-      tile1Image: PME_ASSETS.lease.foodHall,
-      tile1Url: "/leasing-food-hall",
-      tile2Title: "Office & Life Science",
-      tile2Image: PME_ASSETS.lease.office,
-      tile2Url: "/leasing-office",
-      tile3Title: "Adjacent Retail",
-      tile3Image: PME_ASSETS.lease.retail,
-      tile3Url: "/leasing-adjacent-retail",
+      tiles: [
+        {
+          title: "Food Hall",
+          imageUrl: PME_ASSETS.lease.foodHall,
+          href: "/leasing-food-hall",
+        },
+        {
+          title: "Office & Life Science",
+          imageUrl: PME_ASSETS.lease.office,
+          href: "/leasing-office",
+        },
+        {
+          title: "Adjacent Retail",
+          imageUrl: PME_ASSETS.lease.retail,
+          href: "/leasing-adjacent-retail",
+        },
+      ],
     }),
   ]);
 }
@@ -328,25 +340,33 @@ function buildLeasingTypePage(opts: {
     ];
 
   return withPmeChrome([
-    pmeBlock("CustomBlock-pme-leasing-hero", "leasing-hero", {
+    pmeBlock("MarketingHero", "leasing-hero", {
       breadcrumb: opts.breadcrumb.toUpperCase(),
-      bodyHtml: buildLeasingHeroBodyHtml(),
+      html: buildLeasingHeroBodyHtml(),
       backgroundColor: "#1a1a1a",
       accentColor: PME_ACCENT,
     }),
-    pmeBlock("CustomBlock-pme-html", "leasing-units", {
+    pmeBlock("HtmlCode", "leasing-units", {
       html: buildLeasingUnitsHtml(units.map((u) => ({ title: u.title, size: u.size }))),
-      backgroundColor: "#ffffff",
     }),
-    pmeBlock("CustomBlock-pme-leasing-inquire", "leasing-inquire", {
-      title: "INQUIRE NOW",
-      contactTitle: "CONTACT",
-      contactLines: "Name (TBD)\nEmail (TBD)\nPhone (TBD)",
-      backgroundColor: "#f5f5f5",
+    pmeBlock("InquiryList", "leasing-inquire", {
+      heading: "Inquire now",
+      headingColor: PME_ACCENT,
       accentColor: PME_ACCENT,
+      backgroundColor: "#f5f5f5",
+      items: [
+        {
+          title: "Contact",
+          emailLabel: "Team",
+          email: "leasing@publicmarketemeryville.com",
+          actionText: "Fill out the form below ↓",
+          actionHref: "#leasing-form",
+        },
+      ],
     }),
     pmeBlock("ContactForm", "leasing-form", {
       formId: "leasing-inquire",
+      blockId: "leasing-form",
       title: "",
       submitLabel: "Submit",
       successMessage: "Thanks — our leasing team will follow up.",
@@ -358,23 +378,29 @@ function buildLeasingTypePage(opts: {
         { name: "lastName", label: "Last Name", type: "text", required: true },
         { name: "phone", label: "Phone", type: "tel", required: false },
         { name: "email", label: "Email", type: "email", required: true },
-        { name: "comments", label: "Tell us about your business", type: "textarea", required: false },
+        {
+          name: "comments",
+          label: "Tell us about your business",
+          type: "textarea",
+          required: false,
+        },
       ],
     }),
   ]);
 }
 
-/** Event detail — green-bordered image + copy panel. */
+/** Event detail — image + copy panel. */
 function buildEventDetailPage(event: (typeof PME_EVENTS)[number]): SeedBlock[] {
   return withPmeChrome([
-    pmeBlock("CustomBlock-pme-article-panel", "event-panel", {
+    pmeBlock("ContentMedia", "event-panel", {
       title: event.title,
-      meta: event.meta,
-      body: event.body,
-      imageUrl: event.imageUrl,
-      backLabel: "← Back To All News",
-      backUrl: "/events",
-      accentColor: PME_ACCENT,
+      content: `${event.meta}\n\n${event.body}`,
+      mediaPosition: "left",
+      mediaType: "image",
+      desktopImageUrl: event.imageUrl,
+      ctaLabel: "← Back To All News",
+      ctaUrl: "/events",
+      paddingY: "lg",
     }),
   ]);
 }
@@ -382,9 +408,11 @@ function buildEventDetailPage(event: (typeof PME_EVENTS)[number]): SeedBlock[] {
 /** Vendor detail — title + full-bleed image only. */
 function buildVendorDetailPage(vendor: (typeof PME_VENDORS)[number]): SeedBlock[] {
   return withPmeChrome([
-    pmeBlock("CustomBlock-pme-vendor-title", "vendor-title", {
-      title: vendor.title,
-      textColor: "#111111",
+    pmeBlock("Text", "vendor-title", {
+      content: vendor.title,
+      alignment: "center",
+      fontSize: "xl",
+      padding: "lg",
     }),
     pmeBlock("Image", "vendor-image", {
       src: PME_ASSETS.vendorThumb,

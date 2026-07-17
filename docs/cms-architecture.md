@@ -143,10 +143,10 @@ OSS users can add other adapters outside the repo. Core + Puck + admin stay the 
 
 All adapters map their native shapes to these types in `cms-core`:
 
-- `ContentPage` — includes `puckData` (Puck JSON)
+- `ContentPage` — includes `gutenbergData` (primary) and optional legacy `puckData`
 - `ContentPost`, `ContentCategory`, `ContentMedia` — Phase 2
 - `AuthSession` — login result
 
-Puck remains separate. Every adapter stores `puckData` as a JSON field in whatever CMS it uses.
+The visual editor is Gutenberg (Isolated Block Editor). Adapters store page layout JSON in the CMS (`puck_data` column today; documents use `{ editor: "gutenberg", … }`). Legacy Puck trees are converted on read via `@nextpress/gutenberg`.
 
 See [cms-providers.md](./cms-providers.md) for a list of known MIT-licensed CMS products.

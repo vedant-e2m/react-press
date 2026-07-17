@@ -1,5 +1,4 @@
 import type { CreateCustomBlockInput } from "../types/plugins";
-import { E2M_CUSTOM_BLOCK_SEEDS } from "./e2m-blocks";
 import { PME_CUSTOM_BLOCK_SEEDS } from "./pme-blocks";
 import { PME_PAGE_CUSTOM_BLOCK_SEEDS } from "./pme-page-blocks";
 
@@ -286,7 +285,6 @@ export const BUILTIN_CUSTOM_BLOCK_SEEDS: CreateCustomBlockInput[] = [
   },
   ...PME_CUSTOM_BLOCK_SEEDS,
   ...PME_PAGE_CUSTOM_BLOCK_SEEDS,
-  ...E2M_CUSTOM_BLOCK_SEEDS,
 ];
 
 /** Puck component types replaced by CMS custom blocks (hidden from insert panel). */

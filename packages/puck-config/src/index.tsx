@@ -37,6 +37,16 @@ import {
   CarouselBlock,
   FilterGrid,
   MapEmbed,
+  AnnouncementBar,
+  PageHero,
+  InfoBand,
+  ImageLinkGrid,
+  HighlightCta,
+  InquiryList,
+  FilterToolbar,
+  HoverNameList,
+  MarketingHero,
+  BorderedSplit,
   type ContentMediaProps,
   type ContactFormBlockProps,
   type CarouselBlockProps,
@@ -122,6 +132,16 @@ type PuckComponents = {
   Carousel: CarouselBlockProps;
   FilterGrid: FilterGridProps;
   MapEmbed: MapEmbedProps;
+  AnnouncementBar: Record<string, unknown>;
+  PageHero: Record<string, unknown>;
+  InfoBand: Record<string, unknown>;
+  ImageLinkGrid: Record<string, unknown>;
+  HighlightCta: Record<string, unknown>;
+  InquiryList: Record<string, unknown>;
+  FilterToolbar: Record<string, unknown>;
+  HoverNameList: Record<string, unknown>;
+  MarketingHero: Record<string, unknown>;
+  BorderedSplit: Record<string, unknown>;
   SiteFooter: SiteFooterProps;
   InfoCard: InfoCardProps;
   XdImportedScreen: XdImportedScreenProps;
@@ -1343,6 +1363,138 @@ export const corePuckConfig: Config<PuckComponents, PuckRootProps> = {
       },
       render: MapEmbed,
     },
+    AnnouncementBar: {
+      label: "Announcement Bar",
+      fields: {
+        text: { type: "text", label: "Message" },
+        backgroundColor: colorField("Background"),
+        textColor: colorField("Text color"),
+      },
+      defaultProps: {
+        text: "Announcement",
+        backgroundColor: "#000000",
+        textColor: "#6FA84C",
+        showArrows: true,
+      },
+      render: AnnouncementBar,
+    },
+    PageHero: {
+      label: "Page Hero",
+      fields: {
+        title: { type: "text", label: "Title", contentEditable: true },
+        imageUrl: { type: "text", label: "Image URL" },
+        minHeight: { type: "text", label: "Min height" },
+        overlayOpacity: { type: "number", label: "Overlay %" },
+      },
+      defaultProps: { title: "Page", minHeight: "72vh", overlayOpacity: 40 },
+      render: PageHero,
+    },
+    InfoBand: {
+      label: "Info Band",
+      fields: {
+        title: { type: "text", label: "Title" },
+        highlight: { type: "text", label: "Highlight" },
+        body: { type: "textarea", label: "Body" },
+        hoursLines: { type: "textarea", label: "Hours" },
+        addressLines: { type: "textarea", label: "Address" },
+        logoUrl: { type: "text", label: "Logo URL" },
+        accentColor: colorField("Accent"),
+      },
+      defaultProps: {
+        title: "More than just",
+        highlight: "a destination",
+        accentColor: "#6FA84C",
+      },
+      render: InfoBand,
+    },
+    ImageLinkGrid: {
+      label: "Image Link Grid",
+      fields: {
+        title: { type: "text", label: "Title" },
+        highlight: { type: "text", label: "Highlight" },
+        ctaLabel: { type: "text", label: "CTA label" },
+        ctaUrl: { type: "text", label: "CTA URL" },
+        highlightColor: colorField("Accent"),
+      },
+      defaultProps: { title: "Looking To", highlight: "Lease?", tiles: [] },
+      render: ImageLinkGrid,
+    },
+    HighlightCta: {
+      label: "Highlight CTA",
+      fields: {
+        title: { type: "text", label: "Title" },
+        highlight: { type: "text", label: "Highlight" },
+        buttonLabel: { type: "text", label: "Button" },
+        buttonUrl: { type: "text", label: "Button URL" },
+        accentColor: colorField("Accent"),
+      },
+      defaultProps: { title: "Don't Miss", highlight: "What's Next" },
+      render: HighlightCta,
+    },
+    InquiryList: {
+      label: "Inquiry List",
+      fields: {
+        heading: { type: "text", label: "Heading" },
+        headingColor: colorField("Heading color"),
+        accentColor: colorField("Accent"),
+      },
+      defaultProps: { heading: "Contact us", items: [] },
+      render: InquiryList,
+    },
+    FilterToolbar: {
+      label: "Filter Toolbar",
+      fields: {
+        categoryLabel: { type: "text", label: "Category label" },
+        directoryLabel: { type: "text", label: "Directory CTA" },
+        directoryUrl: { type: "text", label: "Directory URL" },
+      },
+      defaultProps: {
+        categoryLabel: "Category: All",
+        directoryLabel: "View Directory",
+        directoryUrl: "/directory",
+      },
+      render: FilterToolbar,
+    },
+    HoverNameList: {
+      label: "Hover Name List",
+      fields: {
+        backgroundColor: colorField("Background"),
+      },
+      defaultProps: { items: [] },
+      render: HoverNameList,
+    },
+    MarketingHero: {
+      label: "Marketing Hero",
+      fields: {
+        breadcrumb: { type: "text", label: "Breadcrumb" },
+        html: { type: "textarea", label: "HTML copy" },
+        backgroundColor: colorField("Background"),
+        accentColor: colorField("Accent"),
+      },
+      defaultProps: {
+        breadcrumb: "LEASING > FOOD HALL",
+        html: "<p>Grow your business <strong>here</strong>.</p>",
+        backgroundColor: "#1a1a1a",
+        accentColor: "#6FA84C",
+      },
+      render: MarketingHero,
+    },
+    BorderedSplit: {
+      label: "Bordered Split",
+      fields: {
+        title: { type: "text", label: "Title" },
+        bodyHtml: { type: "textarea", label: "Body HTML" },
+        borderColor: colorField("Border color"),
+        mediaBackgroundColor: colorField("Media background"),
+      },
+      defaultProps: {
+        title: "ORDER FOOD",
+        borderColor: "#6FA84C",
+        mediaBackgroundColor: "#6FA84C",
+        bodyHtml: "<p>Order online from multiple vendors.</p>",
+      },
+      render: BorderedSplit,
+    },
     SiteFooter: {
       fields: {
         logoUrl: { type: "text", label: "Logo URL" },
@@ -1434,19 +1586,52 @@ export const corePuckConfig: Config<PuckComponents, PuckRootProps> = {
   categories: {
     navigation: {
       title: "Navigation",
-      components: ["NavBar", "SiteFooter"],
+      components: ["NavBar", "SiteFooter", "AnnouncementBar"],
     },
     layout: {
       title: "Layout",
-      components: ["HeroBanner", "Hero", "Section", "Columns", "Spacer", "Divider"],
+      components: [
+        "HeroBanner",
+        "Hero",
+        "PageHero",
+        "MarketingHero",
+        "Section",
+        "Columns",
+        "Spacer",
+        "Divider",
+        "BorderedSplit",
+      ],
     },
     content: {
       title: "Content",
-      components: ["Text", "RichText", "Image", "Video", "OEmbed", "Shortcode", "HtmlCode", "Card", "ContentMedia", "MapEmbed"],
+      components: [
+        "Text",
+        "RichText",
+        "Image",
+        "Video",
+        "OEmbed",
+        "Shortcode",
+        "HtmlCode",
+        "Card",
+        "ContentMedia",
+        "MapEmbed",
+        "InfoBand",
+        "HighlightCta",
+        "InquiryList",
+      ],
     },
     interactive: {
       title: "Interactive",
-      components: ["Button", "Gallery", "ContactForm", "Carousel", "FilterGrid"],
+      components: [
+        "Button",
+        "Gallery",
+        "ContactForm",
+        "Carousel",
+        "FilterGrid",
+        "ImageLinkGrid",
+        "FilterToolbar",
+        "HoverNameList",
+      ],
     },
     /** Registered but hidden — existing pages still render; use CMS custom blocks instead. */
     _legacy: {

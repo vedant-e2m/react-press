@@ -43,4 +43,5 @@ export type {
   UpdatePostInput,
   UpdateThemeInput,
   Widget,
+  GutenbergData,
 } from "./types";

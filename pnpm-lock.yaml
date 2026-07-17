@@ -96,6 +96,9 @@ importers:
       '@nextpress/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@nextpress/gutenberg':
+        specifier: workspace:*
+        version: link:../../packages/gutenberg
       '@nextpress/plugin-mantine':
         specifier: workspace:*
         version: link:../../packages/plugin-mantine
@@ -245,6 +248,34 @@ importers:
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
+
+  packages/gutenberg:
+    dependencies:
+      '@nextpress/blocks':
+        specifier: workspace:*
+        version: link:../blocks
+      '@nextpress/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.17)
+      react:
+        specifier: ^19.1.0
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.2.7(react@19.2.7)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.7
+        version: 3.2.7(@types/debug@4.1.13)(@types/node@24.13.2)(happy-dom@20.10.6)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
 
   packages/plugin-mantine:
     dependencies:

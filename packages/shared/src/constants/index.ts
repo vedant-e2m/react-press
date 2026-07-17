@@ -7,3 +7,11 @@ export const DEFAULT_PUCK_DATA = {
   content: [],
   root: { props: { title: "" } },
 };
+
+/** Empty Gutenberg document used when creating a new page. */
+export const DEFAULT_GUTENBERG_DATA = {
+  editor: "gutenberg" as const,
+  version: 1 as const,
+  html: "",
+  blocks: [] as [],
+};

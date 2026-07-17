@@ -1,5 +1,19 @@
 import type { CustomBlockField, PuckData } from "@nextpress/shared";
 
+/** Gutenberg page document (WordPress block tree + serialized HTML). */
+export type GutenbergData = {
+  editor: "gutenberg";
+  version: 1;
+  html: string;
+  blocks: Array<{
+    name: string;
+    attributes: Record<string, unknown>;
+    innerBlocks: GutenbergData["blocks"];
+    innerHTML?: string;
+    clientId?: string;
+  }>;
+};
+
 /**
  * Opaque key-value config passed from env or nextpress.config into an adapter.
  * Core does not define CMS-specific keys (no strapiUrl, etc.).
@@ -18,6 +32,12 @@ export interface ContentPage {
   title: string;
   slug: string;
   status: PageStatus;
+  /**
+   * Primary page layout document (Gutenberg).
+   * Stored in CMS JSON; may have been converted from legacy Puck.
+   */
+  gutenbergData: GutenbergData | null;
+  /** @deprecated Legacy Puck JSON — kept for patterns / migration. Prefer `gutenbergData`. */
   puckData: PuckData | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
@@ -312,6 +332,8 @@ export interface CreatePageInput {
   title: string;
   slug: string;
   status?: PageStatus;
+  gutenbergData?: GutenbergData | null;
+  /** @deprecated Prefer `gutenbergData`. */
   puckData?: PuckData | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
@@ -323,6 +345,8 @@ export interface UpdatePageInput {
   title?: string;
   slug?: string;
   status?: PageStatus;
+  gutenbergData?: GutenbergData | null;
+  /** @deprecated Prefer `gutenbergData`. */
   puckData?: PuckData | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
