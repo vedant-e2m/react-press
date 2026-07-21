@@ -1,6 +1,6 @@
 # CMS providers reference
 
-NextPress uses a **headless CMS** for auth, content storage, and media. The visual page builder is the **WordPress block editor (Gutenberg)** via Automattic’s Isolated Block Editor — that layer is separate from the CMS.
+NextPress uses a **headless CMS** for auth, content storage, and media. Its native visual page builder is a separate, CMS-independent layer.
 
 This document lists known options and how NextPress relates to them.
 
@@ -37,10 +37,7 @@ This document lists known options and how NextPress relates to them.
 
 ## Page builder (not a CMS)
 
-| Tool | License | Role |
-|------|---------|------|
-| **Gutenberg (Isolated Block Editor)** | GPL-2.0-or-later (WordPress packages) | Visual block editor familiar to WordPress users. Stores layout as Gutenberg JSON (`editor: "gutenberg"`) in the page JSON field. |
-| **Puck** | MIT | Legacy editor — still supported for reading old `puck_data` trees; new edits save as Gutenberg. |
+`@nextpress/builder` provides the editor, responsive document model, widget registry, and public renderer. CMS adapters persist its versioned JSON without interpreting it.
 
 ---
 
@@ -49,4 +46,4 @@ This document lists known options and how NextPress relates to them.
 Core does not hardcode any CMS from this list. See **[cms-architecture.md](./cms-architecture.md)** for the plugin model.
 
 - **`@nextpress/cms-core`** — `ContentProvider` + `CmsAdapter` contracts only
-- **`@nextpress/gutenberg`** — block parse/serialize, public renderer, Isolated Block Editor iframe host
+- **`@nextpress/builder`** — native visual editor and renderer

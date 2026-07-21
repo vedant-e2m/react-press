@@ -21,7 +21,8 @@ import type {
   UpdatePostInput,
   UpdateThemeInput,
 } from "@nextpress/cms-core";
-import type { CustomBlockField, PuckData } from "@nextpress/shared";
+import type { BuilderDocument } from "@nextpress/builder/types";
+import type { CustomBlockField } from "@nextpress/shared";
 import { getStrapiUrl, strapi } from "@nextpress/strapi-client";
 import { resolveMediaUrl } from "./media-helpers";
 import { strapiPopulate } from "./strapi-query";
@@ -88,7 +89,7 @@ interface StrapiBlockPattern {
   description?: string | null;
   category: string;
   kind?: "section" | "page";
-  puck_data: PuckData;
+  builder_data: BuilderDocument;
   preview_image?: StrapiMediaRef | null;
   createdAt: string;
   updatedAt: string;
@@ -96,7 +97,7 @@ interface StrapiBlockPattern {
 
 interface StrapiCustomBlock {
   documentId: string;
-  puck_type: string;
+  builder_type: string;
   label: string;
   category?: string | null;
   fields: CustomBlockField[];
@@ -178,7 +179,7 @@ function mapPattern(doc: StrapiBlockPattern): ContentBlockPattern {
     description: doc.description ?? null,
     category: doc.category,
     kind: doc.kind ?? "section",
-    puckData: doc.puck_data,
+    builderData: doc.builder_data,
     previewImageUrl: mediaUrl(doc.preview_image),
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
@@ -188,7 +189,7 @@ function mapPattern(doc: StrapiBlockPattern): ContentBlockPattern {
 function mapCustomBlock(doc: StrapiCustomBlock): ContentCustomBlock {
   return {
     id: doc.documentId,
-    puckType: doc.puck_type,
+    builderType: doc.builder_type,
     label: doc.label,
     category: doc.category ?? "custom",
     fields: Array.isArray(doc.fields) ? doc.fields : [],
@@ -356,7 +357,7 @@ interface StrapiRevision {
   resource_type: "page" | "post";
   resource_id: string;
   slug?: string | null;
-  puck_data?: PuckData | null;
+  builder_data?: BuilderDocument | null;
   content?: string | null;
   createdAt: string;
 }
@@ -368,7 +369,7 @@ function mapRevision(doc: StrapiRevision): ContentRevision {
     resourceType: doc.resource_type,
     resourceId: doc.resource_id,
     slug: doc.slug ?? null,
-    puckData: doc.puck_data ?? null,
+    builderData: doc.builder_data ?? null,
     content: doc.content ?? null,
     createdAt: doc.createdAt,
   };
@@ -398,7 +399,7 @@ export async function createRevision(
     resourceType: "page" | "post";
     resourceId: string;
     slug?: string;
-    puckData?: PuckData | null;
+    builderData?: BuilderDocument | null;
     content?: string | null;
     snapshot?: Record<string, unknown>;
   },
@@ -411,7 +412,7 @@ export async function createRevision(
       resource_type: input.resourceType,
       resource_id: input.resourceId,
       slug: input.slug,
-      puck_data: input.puckData,
+      builder_data: input.builderData,
       content: input.content,
       snapshot: input.snapshot,
     },
@@ -432,7 +433,7 @@ export async function searchContent(
     title: string;
     slug: string;
     page_status: ContentPage["status"];
-    puck_data?: PuckData | null;
+    builder_data?: BuilderDocument | null;
     publishedAt: string | null;
     createdAt: string;
     updatedAt: string;
@@ -463,20 +464,12 @@ export async function searchContent(
 
   return {
     pages: pageDocs.map((doc) => {
-      const raw = doc.puck_data ?? null;
-      const isGutenberg =
-        !!raw &&
-        typeof raw === "object" &&
-        (raw as { editor?: unknown }).editor === "gutenberg";
       return {
         id: doc.documentId,
         title: doc.title,
         slug: doc.slug,
         status: doc.page_status,
-        gutenbergData: isGutenberg
-          ? (raw as unknown as import("@nextpress/cms-core").GutenbergData)
-          : null,
-        puckData: isGutenberg ? null : (raw as import("@nextpress/shared").PuckData | null),
+        builderData: doc.builder_data ?? null,
         publishedAt: doc.publishedAt,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
@@ -693,7 +686,7 @@ export async function createBlockPattern(
       description: input.description,
       category: input.category,
       kind: input.kind ?? "section",
-      puck_data: input.puckData,
+      builder_data: input.builderData,
     },
     token,
   );
@@ -714,7 +707,7 @@ export async function updateBlockPattern(
   if (input.description !== undefined) data.description = input.description;
   if (input.category !== undefined) data.category = input.category;
   if (input.kind !== undefined) data.kind = input.kind;
-  if (input.puckData !== undefined) data.puck_data = input.puckData;
+  if (input.builderData !== undefined) data.builder_data = input.builderData;
   const doc = await strapi.update<StrapiBlockPattern>("block-patterns", id, data, token);
   return mapPattern(doc);
 }
@@ -735,7 +728,7 @@ export async function createCustomBlock(
   const doc = await strapi.create<StrapiCustomBlock>(
     "custom-blocks",
     {
-      puck_type: input.puckType,
+      builder_type: input.builderType,
       label: input.label,
       category: input.category ?? "custom",
       fields: input.fields,
@@ -752,7 +745,7 @@ export async function updateCustomBlock(
   token: string,
 ): Promise<ContentCustomBlock> {
   const data: Record<string, unknown> = {};
-  if (input.puckType !== undefined) data.puck_type = input.puckType;
+  if (input.builderType !== undefined) data.builder_type = input.builderType;
   if (input.label !== undefined) data.label = input.label;
   if (input.category !== undefined) data.category = input.category;
   if (input.fields !== undefined) data.fields = input.fields;

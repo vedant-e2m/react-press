@@ -5,7 +5,7 @@
     "singularName": "block-pattern",
     "pluralName": "block-patterns",
     "displayName": "Block Pattern",
-    "description": "Reusable Puck block layouts"
+    "description": "Reusable native builder layouts"
   },
   "options": {
     "draftAndPublish": false
@@ -27,7 +27,7 @@
       "enum": ["section", "page"],
       "default": "section"
     },
-    "puck_data": {
+    "builder_data": {
       "type": "json",
       "required": true
     },

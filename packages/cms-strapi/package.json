@@ -11,6 +11,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@nextpress/builder": "workspace:*",
     "@nextpress/cms-core": "workspace:*",
     "@nextpress/shared": "workspace:*",
     "@nextpress/strapi-client": "workspace:*"

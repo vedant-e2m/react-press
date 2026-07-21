@@ -2,7 +2,7 @@
 
 Open-source, WordPress-like platform for building **React** and **Next.js** websites with drag-and-drop.
 
-**Stack:** Gutenberg / Isolated Block Editor + Next.js or React (frontend) + **Strapi 5** + PostgreSQL
+**Stack:** Native NextPress visual builder + Next.js or React (frontend) + **Strapi 5** + PostgreSQL
 
 ## Quick Start
 
@@ -53,9 +53,9 @@ nextpress/
 │   └── react/          # Vite + React — optional SPA frontend
 ├── packages/
 │   ├── shared/         # Shared TypeScript types
+│   ├── builder/        # Native visual editor, widget registry, and renderer
 │   ├── cms-core/       # CMS-agnostic ContentProvider contract
 │   ├── cms-strapi/     # Strapi adapter
-│   ├── gutenberg/      # WordPress block editor + renderer
 │   └── strapi-client/  # Strapi REST SDK
 ├── strapi/             # Strapi 5 backend
 └── docker-compose.yml
@@ -67,10 +67,9 @@ The web app calls `getCms()` — never Strapi APIs directly. See [docs/cms-archi
 
 ## Phase 1 Status
 
-- [x] Gutenberg (Isolated Block Editor) page builder with core WordPress blocks
+- [x] Native visual page builder with responsive widgets and controls
 - [x] Admin login, pages CRUD, drag-and-drop editor
 - [x] Publish/unpublish, auto-save, preview, public `/[slug]` renderer
-- [x] Legacy Puck JSON auto-converted when opening/rendering older pages
 
 ## Phase 0 Status
 

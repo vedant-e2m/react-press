@@ -29,7 +29,7 @@ async function seedDemoPages(strapi: import("@strapi/strapi").Core.Strapi) {
       title: page.title,
       slug: page.slug,
       page_status: page.page_status,
-      puck_data: page.puck_data,
+      builder_data: page.builder_data,
       seo_title: "seo_title" in page ? page.seo_title : undefined,
       seo_description: "seo_description" in page ? page.seo_description : undefined,
       publishedAt: isPublished ? new Date() : undefined,
@@ -40,7 +40,7 @@ async function seedDemoPages(strapi: import("@strapi/strapi").Core.Strapi) {
         documentId: existing.documentId,
         data: {
           title: page.title,
-          puck_data: page.puck_data,
+          builder_data: page.builder_data,
           seo_title: "seo_title" in page ? page.seo_title : undefined,
           seo_description: "seo_description" in page ? page.seo_description : undefined,
         },

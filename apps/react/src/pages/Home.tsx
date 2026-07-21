@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { strapi } from "@/lib/strapi";
-import type { Page } from "@nextpress/shared";
+
+interface Page {
+  documentId: string;
+  title: string;
+  slug: string;
+}
 
 export function Home() {
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
@@ -28,7 +33,7 @@ export function Home() {
         <h1>WordPress ease. React performance.</h1>
         <p className="lead">
           This is the optional React SPA frontend. It shares the same Strapi
-          backend and Puck blocks as the Next.js app.
+          backend and native page documents as the Next.js app.
         </p>
 
         <div className="card">
@@ -46,6 +51,10 @@ export function Home() {
         <p className="note">
           Admin lives in the Next.js app at{" "}
           <a href="http://localhost:3000/admin">localhost:3000/admin</a>
+          {" · "}
+          <a href="/showcase">View component showcase</a>
+          {" · "}
+          <a href="/public-market">View Public Market clone</a>
         </p>
       </main>
     </div>

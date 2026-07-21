@@ -1,0 +1,2718 @@
+{
+  "editor": "nextpress",
+  "version": 1,
+  "content": [
+    {
+      "id": "showcase-menu-anchor-122",
+      "type": "menu-anchor",
+      "props": {
+        "id": "top"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {}
+        }
+      }
+    },
+    {
+      "id": "showcase-container-007",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "full",
+        "width": 100,
+        "minHeight": 520,
+        "direction": "column",
+        "justify": "center",
+        "align": "center",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 96,
+            "paddingBottom": 96,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundImage": "linear-gradient(135deg, rgba(17,24,39,0.88), rgba(109,93,252,0.82)), url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80)",
+            "backgroundSize": "cover",
+            "backgroundPosition": "center"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-001",
+          "type": "heading",
+          "props": {
+            "text": "Welcome To\nThe Public Market",
+            "tag": "h1",
+            "link": "",
+            "size": "xxl",
+            "align": "center",
+            "color": "#ffffff",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "56px",
+                "fontWeight": 800,
+                "lineHeight": 1.1
+              }
+            }
+          },
+          "advanced": {
+            "entranceAnimation": "fadeInUp",
+            "animationDuration": "normal",
+            "animationDelay": 100
+          }
+        },
+        {
+          "id": "showcase-paragraph-002",
+          "type": "paragraph",
+          "props": {
+            "text": "More than just a food hall — a vibrant mixed-use destination where culture, commerce, and community intersect.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "#e5e7eb",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 20,
+                "maxWidth": 640
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-flexbox-005",
+          "type": "flexbox",
+          "props": {
+            "contentWidth": "boxed",
+            "tag": "div",
+            "link": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "display": "flex",
+                "flexDirection": "row",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "gap": 16,
+                "flexWrap": "wrap"
+              }
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-button-003",
+              "type": "button",
+              "props": {
+                "text": "Order Food",
+                "url": "#vendors",
+                "align": "center",
+                "size": "md",
+                "buttonType": "info",
+                "icon": "→",
+                "iconPosition": "after",
+                "buttonId": "",
+                "textColor": "#6d5dfc",
+                "backgroundColor": "#ffffff",
+                "borderRadius": 999,
+                "paddingX": 32,
+                "paddingY": 14,
+                "iconSpacing": 8
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-button-004",
+              "type": "button",
+              "props": {
+                "text": "View Vendors",
+                "url": "#gallery",
+                "align": "center",
+                "size": "md",
+                "buttonType": "info",
+                "icon": "",
+                "iconPosition": "before",
+                "buttonId": "",
+                "textColor": "#ffffff",
+                "backgroundColor": "transparent",
+                "borderRadius": 999,
+                "paddingX": 32,
+                "paddingY": 14,
+                "iconSpacing": 8
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-icon-list-006",
+          "type": "icon-list",
+          "props": {
+            "layout": "inline",
+            "applyLinkOn": "full",
+            "spaceBetween": 24,
+            "align": "center",
+            "items": [
+              {
+                "text": "Mon–Sat 10am–9pm",
+                "icon": "🕐",
+                "url": ""
+              },
+              {
+                "text": "5959 Shellmound St.",
+                "icon": "📍",
+                "url": ""
+              },
+              {
+                "text": "40+ Vendors",
+                "icon": "🍽",
+                "url": ""
+              }
+            ],
+            "divider": false,
+            "iconColor": "#c4b5fd",
+            "textColor": "#f9fafb",
+            "iconSize": 16,
+            "textSize": 14
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-022",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "boxed",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "stretch",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 64,
+            "paddingBottom": 64,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundColor": "#fafafa"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-019",
+          "type": "heading",
+          "props": {
+            "text": "Layout Components",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "36px",
+                "fontWeight": 700,
+                "color": "#111827",
+                "marginBottom": 8
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-020",
+          "type": "paragraph",
+          "props": {
+            "text": "Div block, flexbox, grid, and container — the structural backbone of every page.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 18,
+                "color": "#6b7280",
+                "maxWidth": 720,
+                "marginLeft": "auto",
+                "marginRight": "auto"
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-divider-021",
+          "type": "divider",
+          "props": {
+            "style": "solid",
+            "width": 80,
+            "weight": 3,
+            "gap": 24,
+            "color": "#6d5dfc",
+            "align": "center",
+            "addElement": "icon",
+            "text": "",
+            "icon": "★"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-014",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 24,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "display": "grid"
+              }
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-div-block-010",
+              "type": "div-block",
+              "props": {
+                "tag": "section",
+                "link": ""
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {
+                    "paddingTop": 24,
+                    "paddingBottom": 24,
+                    "paddingLeft": 24,
+                    "paddingRight": 24,
+                    "backgroundColor": "#f3f4f6",
+                    "borderRadius": 12
+                  }
+                }
+              },
+              "children": [
+                {
+                  "id": "showcase-heading-008",
+                  "type": "heading",
+                  "props": {
+                    "text": "Div Block",
+                    "tag": "h3",
+                    "link": "",
+                    "size": "default",
+                    "align": "left",
+                    "color": "",
+                    "fontFamily": "",
+                    "fontWeight": 0,
+                    "textShadow": ""
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-paragraph-009",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Semantic HTML wrapper with configurable tag and optional link.",
+                    "tag": "p",
+                    "link": "",
+                    "dropCap": false,
+                    "columns": 1,
+                    "columnGap": 16,
+                    "align": "left",
+                    "color": "",
+                    "linkColor": "",
+                    "fontSize": 0,
+                    "lineHeight": 0
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "showcase-flexbox-013",
+              "type": "flexbox",
+              "props": {
+                "contentWidth": "full",
+                "tag": "div",
+                "link": ""
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {
+                    "display": "flex",
+                    "flexDirection": "row",
+                    "gap": 12,
+                    "paddingTop": 24,
+                    "paddingBottom": 24,
+                    "paddingLeft": 24,
+                    "paddingRight": 24,
+                    "backgroundColor": "#ede9fe",
+                    "borderRadius": 12
+                  }
+                }
+              },
+              "children": [
+                {
+                  "id": "showcase-icon-011",
+                  "type": "icon",
+                  "props": {
+                    "icon": "▦",
+                    "view": "stacked",
+                    "shape": "circle",
+                    "link": "",
+                    "align": "center",
+                    "size": 36,
+                    "rotate": 0,
+                    "padding": 0,
+                    "fitToSize": false,
+                    "primaryColor": "#6d5dfc",
+                    "secondaryColor": "#fff"
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-icon-012",
+                  "type": "icon",
+                  "props": {
+                    "icon": "▭",
+                    "view": "framed",
+                    "shape": "square",
+                    "link": "",
+                    "align": "center",
+                    "size": 36,
+                    "rotate": 0,
+                    "padding": 0,
+                    "fitToSize": false,
+                    "primaryColor": "#7c3aed",
+                    "borderWidth": 2
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "showcase-spacer-015",
+          "type": "spacer",
+          "props": {
+            "height": 16
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-container-018",
+          "type": "container",
+          "props": {
+            "containerLayout": "flexbox",
+            "contentWidth": "boxed",
+            "width": 100,
+            "minHeight": 0,
+            "direction": "row",
+            "justify": "space-between",
+            "align": "center",
+            "gap": 20,
+            "wrap": "wrap"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "display": "flex",
+                "flexDirection": "row",
+                "paddingTop": 24,
+                "paddingBottom": 24,
+                "paddingLeft": 24,
+                "paddingRight": 24,
+                "backgroundColor": "#111827",
+                "borderRadius": 12
+              }
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-heading-016",
+              "type": "heading",
+              "props": {
+                "text": "Nested Container",
+                "tag": "h4",
+                "link": "",
+                "size": "default",
+                "align": "left",
+                "color": "#ffffff",
+                "fontFamily": "",
+                "fontWeight": 0,
+                "textShadow": ""
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-read-more-017",
+              "type": "read-more",
+              "props": {
+                "text": "Explore leasing options →",
+                "link": "#leasing"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-037",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "boxed",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "stretch",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 64,
+            "paddingBottom": 64,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundColor": "#ffffff"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-034",
+          "type": "heading",
+          "props": {
+            "text": "Typography & Basic",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "36px",
+                "fontWeight": 700,
+                "color": "#111827",
+                "marginBottom": 8
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-035",
+          "type": "paragraph",
+          "props": {
+            "text": "Headings, paragraphs, rich text, spacers, and dividers with full style control.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 18,
+                "color": "#6b7280",
+                "maxWidth": 720,
+                "marginLeft": "auto",
+                "marginRight": "auto"
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-divider-036",
+          "type": "divider",
+          "props": {
+            "style": "solid",
+            "width": 80,
+            "weight": 3,
+            "gap": 24,
+            "color": "#6d5dfc",
+            "align": "center",
+            "addElement": "icon",
+            "text": "",
+            "icon": "★"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-033",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 32,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-div-block-027",
+              "type": "div-block",
+              "props": {
+                "tag": "div",
+                "link": ""
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              },
+              "children": [
+                {
+                  "id": "showcase-heading-023",
+                  "type": "heading",
+                  "props": {
+                    "text": "Heading XL",
+                    "tag": "h2",
+                    "link": "",
+                    "size": "xl",
+                    "align": "left",
+                    "color": "",
+                    "fontFamily": "",
+                    "fontWeight": 0,
+                    "textShadow": ""
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-heading-024",
+                  "type": "heading",
+                  "props": {
+                    "text": "Heading Medium",
+                    "tag": "h3",
+                    "link": "",
+                    "size": "medium",
+                    "align": "left",
+                    "color": "",
+                    "fontFamily": "",
+                    "fontWeight": 0,
+                    "textShadow": ""
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-paragraph-025",
+                  "type": "paragraph",
+                  "props": {
+                    "text": "Drop cap paragraph with multi-column support. Emeryville Public Market energizes the environment from morning through evening.",
+                    "tag": "p",
+                    "link": "",
+                    "dropCap": true,
+                    "columns": 2,
+                    "columnGap": 24,
+                    "align": "justify",
+                    "color": "",
+                    "linkColor": "",
+                    "fontSize": 0,
+                    "lineHeight": 0
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-text-editor-026",
+                  "type": "text-editor",
+                  "props": {
+                    "text": "<p><strong>Rich text editor</strong> supports <em>HTML markup</em>, <a href='#'>links</a>, and styled content.</p>",
+                    "dropCap": false,
+                    "columns": 1,
+                    "columnGap": 16,
+                    "align": "left",
+                    "color": "#374151",
+                    "linkColor": "#6d5dfc",
+                    "fontSize": 16,
+                    "lineHeight": 1.6
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "showcase-div-block-032",
+              "type": "div-block",
+              "props": {
+                "tag": "div",
+                "link": ""
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              },
+              "children": [
+                {
+                  "id": "showcase-divider-028",
+                  "type": "divider",
+                  "props": {
+                    "style": "dashed",
+                    "width": 100,
+                    "weight": 2,
+                    "gap": 20,
+                    "color": "#d1d5db",
+                    "align": "center",
+                    "addElement": "text",
+                    "text": "Section Break",
+                    "icon": "★"
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-text-path-029",
+                  "type": "text-path",
+                  "props": {
+                    "text": "Curvy Text Path Widget",
+                    "pathType": "wave",
+                    "link": "",
+                    "align": "center",
+                    "direction": "default",
+                    "showPath": true
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-menu-anchor-030",
+                  "type": "menu-anchor",
+                  "props": {
+                    "id": "vendors"
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-html-031",
+                  "type": "html",
+                  "props": {
+                    "html": "<p style='padding:12px 16px;background:#fef3c7;border-radius:8px;color:#92400e'><strong>HTML widget:</strong> Custom markup block for advanced layouts.</p>"
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-050",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "boxed",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "stretch",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 64,
+            "paddingBottom": 64,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundColor": "#ffffff"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-047",
+          "type": "heading",
+          "props": {
+            "text": "Media & Embeds",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "36px",
+                "fontWeight": 700,
+                "color": "#111827",
+                "marginBottom": 8
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-048",
+          "type": "paragraph",
+          "props": {
+            "text": "Images, galleries, carousels, video, YouTube, and SVG assets.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 18,
+                "color": "#6b7280",
+                "maxWidth": 720,
+                "marginLeft": "auto",
+                "marginRight": "auto"
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-divider-049",
+          "type": "divider",
+          "props": {
+            "style": "solid",
+            "width": 80,
+            "weight": 3,
+            "gap": 24,
+            "color": "#6d5dfc",
+            "align": "center",
+            "addElement": "icon",
+            "text": "",
+            "icon": "★"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-040",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 24,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-image-038",
+              "type": "image",
+              "props": {
+                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+                "alt": "Food hall spread",
+                "caption": "The food hall at dusk",
+                "captionType": "custom",
+                "link": "",
+                "linkTo": "none",
+                "objectFit": "cover",
+                "align": "center",
+                "width": 100,
+                "height": 0,
+                "opacity": 1,
+                "borderRadius": 12
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-image-box-039",
+              "type": "image-box",
+              "props": {
+                "image": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
+                "title": "Image Box",
+                "description": "Image with title, description, and configurable position.",
+                "link": "",
+                "titleTag": "h3",
+                "imagePosition": "top",
+                "align": "left",
+                "verticalAlign": "top",
+                "imageSpacing": 15,
+                "contentSpacing": 0,
+                "imageWidth": 100,
+                "imageHeight": 0,
+                "objectFit": "cover",
+                "imageBorderRadius": 12,
+                "imageOpacity": 100,
+                "titleColor": "#111827",
+                "titleFontSize": 22,
+                "descriptionColor": "#6b7280"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-gallery-041",
+          "type": "gallery",
+          "props": {
+            "images": [
+              {
+                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+                "alt": "Food hall",
+                "title": "Curated vendors",
+                "description": "Global flavors under one roof"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
+                "alt": "Market interior",
+                "title": "Community hub",
+                "description": "Retail, office, and life science"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
+                "alt": "Vendor stall",
+                "title": "Local favorites",
+                "description": "From ramen to rooftop yoga"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+                "alt": "Coffee bar",
+                "title": "Morning rituals",
+                "description": "Artisan coffee and tea"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
+                "alt": "Wellness studio",
+                "title": "Move & connect",
+                "description": "Fitness and wellness vendors"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
+                "alt": "Dining room",
+                "title": "Evening energy",
+                "description": "A destination from dawn to dusk"
+              }
+            ],
+            "columns": "3",
+            "linkTo": "file",
+            "caption": "title",
+            "lightbox": "yes",
+            "orderBy": "default",
+            "spacing": 10,
+            "gap": "extended",
+            "borderRadius": 8,
+            "captionColor": "#374151",
+            "captionAlign": "center",
+            "captionSpacing": 8
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-carousel-042",
+          "type": "carousel",
+          "props": {
+            "images": [
+              {
+                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+                "alt": "Food hall"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
+                "alt": "Market interior"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
+                "alt": "Vendor stall"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+                "alt": "Coffee bar"
+              }
+            ],
+            "slidesToShow": "3",
+            "slidesToScroll": "1",
+            "navigation": "both",
+            "imageSpacing": 16,
+            "carouselName": "vendor-carousel",
+            "imageStretch": "yes",
+            "linkTo": "none",
+            "lightbox": "yes",
+            "autoplay": true,
+            "pauseOnHover": true,
+            "autoplaySpeed": 5000,
+            "infinite": true,
+            "effect": "slide",
+            "speed": 500,
+            "direction": "ltr",
+            "arrowSize": 20,
+            "arrowColor": "#6d5dfc",
+            "dotSize": 8,
+            "dotColor": "#d1d5db",
+            "activeDotColor": "#6d5dfc",
+            "borderRadius": 8
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-045",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 24,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-video-043",
+              "type": "video",
+              "props": {
+                "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+                "poster": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
+                "autoplay": false,
+                "controls": true,
+                "loop": true,
+                "muted": true,
+                "playsInline": true,
+                "preload": "metadata",
+                "aspectRatio": "16:9",
+                "download": true
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-youtube-044",
+              "type": "youtube",
+              "props": {
+                "videoUrl": "https://www.youtube.com/watch?v=ScMzIvxBSi4",
+                "title": "Public Market Tour"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-svg-046",
+          "type": "svg",
+          "props": {
+            "src": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Bitmap_Icon_Bookmark.svg",
+            "title": "SVG bookmark icon"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-068",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "boxed",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "stretch",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 64,
+            "paddingBottom": 64,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundColor": "#fafafa"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-065",
+          "type": "heading",
+          "props": {
+            "text": "Content Blocks",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "36px",
+                "fontWeight": 700,
+                "color": "#111827",
+                "marginBottom": 8
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-066",
+          "type": "paragraph",
+          "props": {
+            "text": "Icon boxes, testimonials, alerts, tabs, accordion, and toggle widgets.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 18,
+                "color": "#6b7280",
+                "maxWidth": 720,
+                "marginLeft": "auto",
+                "marginRight": "auto"
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-divider-067",
+          "type": "divider",
+          "props": {
+            "style": "solid",
+            "width": 80,
+            "weight": 3,
+            "gap": 24,
+            "color": "#6d5dfc",
+            "align": "center",
+            "addElement": "icon",
+            "text": "",
+            "icon": "★"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-054",
+          "type": "grid",
+          "props": {
+            "columns": 3,
+            "rows": 1,
+            "gap": 24,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-icon-box-051",
+              "type": "icon-box",
+              "props": {
+                "icon": "🍽",
+                "view": "stacked",
+                "title": "Food Hall",
+                "description": "Curated local culinary experiences from morning to evening.",
+                "link": "",
+                "titleTag": "h3",
+                "iconPosition": "top",
+                "align": "center",
+                "verticalAlign": "top",
+                "iconSpacing": 15,
+                "contentSpacing": 0,
+                "iconSize": 32,
+                "iconRotate": 0,
+                "iconPadding": 0,
+                "shape": "circle",
+                "primaryColor": "#6d5dfc",
+                "secondaryColor": "#ffffff",
+                "titleColor": "#111827",
+                "titleFontSize": 20
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-icon-box-052",
+              "type": "icon-box",
+              "props": {
+                "icon": "🏢",
+                "view": "framed",
+                "title": "Office & Life Science",
+                "description": "Innovation-driven spaces that activate the environment.",
+                "link": "",
+                "titleTag": "h3",
+                "iconPosition": "top",
+                "align": "center",
+                "verticalAlign": "top",
+                "iconSpacing": 15,
+                "contentSpacing": 0,
+                "iconSize": 40,
+                "iconRotate": 0,
+                "iconPadding": 0,
+                "shape": "square",
+                "primaryColor": "#7c3aed",
+                "iconBorderWidth": 2,
+                "titleFontSize": 20
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-icon-box-053",
+              "type": "icon-box",
+              "props": {
+                "icon": "🛍",
+                "view": "default",
+                "title": "Adjacent Retail",
+                "description": "Seamless blend of retail experiences alongside dining.",
+                "link": "",
+                "titleTag": "h3",
+                "iconPosition": "top",
+                "align": "center",
+                "verticalAlign": "top",
+                "iconSpacing": 15,
+                "contentSpacing": 0,
+                "iconSize": 36,
+                "iconRotate": 0,
+                "iconPadding": 0,
+                "shape": "circle",
+                "primaryColor": "#059669",
+                "titleFontSize": 20
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-testimonial-055",
+          "type": "testimonial",
+          "props": {
+            "content": "The Public Market isn't just where we eat — it's where our team connects, discovers, and feels part of a thriving community.",
+            "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80",
+            "name": "Sarah Chen",
+            "title": "Local Entrepreneur",
+            "link": "",
+            "imagePosition": "aside",
+            "align": "left",
+            "textColor": "#374151",
+            "nameColor": "#111827",
+            "jobColor": "#6b7280",
+            "imageSize": 72,
+            "imageBorderRadius": 50
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-060",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 16,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-alert-056",
+              "type": "alert",
+              "props": {
+                "alertType": "info",
+                "title": "Info Alert",
+                "description": "Market hours updated for the holiday season.",
+                "showDismiss": true,
+                "icon": "ℹ",
+                "backgroundColor": "#eff6ff",
+                "borderColor": "#3b82f6",
+                "titleColor": "#1e40af"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-alert-057",
+              "type": "alert",
+              "props": {
+                "alertType": "success",
+                "title": "Success Alert",
+                "description": "Your vendor application has been received!",
+                "showDismiss": true,
+                "icon": "✓",
+                "backgroundColor": "#ecfdf5",
+                "borderColor": "#10b981"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-alert-058",
+              "type": "alert",
+              "props": {
+                "alertType": "warning",
+                "title": "Warning Alert",
+                "description": "Limited parking available during peak hours.",
+                "showDismiss": true,
+                "icon": "⚠",
+                "backgroundColor": "#fffbeb",
+                "borderColor": "#f59e0b"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-alert-059",
+              "type": "alert",
+              "props": {
+                "alertType": "danger",
+                "title": "Danger Alert",
+                "description": "Market closed Thanksgiving, Christmas & New Year's Day.",
+                "showDismiss": true,
+                "icon": "✕",
+                "backgroundColor": "#fef2f2",
+                "borderColor": "#ef4444"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-tabs-061",
+          "type": "tabs",
+          "props": {
+            "items": [
+              {
+                "title": "Vendors",
+                "content": "Explore 40+ local vendors offering global flavors — from vegan Mexican to authentic ramen."
+              },
+              {
+                "title": "Events",
+                "content": "Live music Thursdays, wine Wednesdays, trivia nights, and community game nights."
+              },
+              {
+                "title": "Leasing",
+                "content": "Food hall, office & life science, and adjacent retail spaces available."
+              }
+            ],
+            "direction": "horizontal",
+            "align": "start",
+            "titleColor": "#6b7280",
+            "activeTitleColor": "#6d5dfc",
+            "contentColor": "#374151",
+            "titleSpacing": 16
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-064",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 24,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-accordion-062",
+              "type": "accordion",
+              "props": {
+                "items": [
+                  {
+                    "title": "What are the hours?",
+                    "content": "Mon–Sat 10am–9pm, Sunday 10am–8pm."
+                  },
+                  {
+                    "title": "Where do I park?",
+                    "content": "Free parking available in the adjacent garage on Shellmound St."
+                  },
+                  {
+                    "title": "Can I lease a space?",
+                    "content": "Yes! Contact our leasing team for food hall, office, and retail opportunities."
+                  }
+                ],
+                "itemPosition": "stretch",
+                "iconPosition": "end",
+                "expandIcon": "+",
+                "collapseIcon": "−",
+                "titleTag": "div",
+                "faqSchema": false,
+                "defaultState": "expanded_first",
+                "maxExpanded": "one",
+                "animationDuration": 400,
+                "spaceBetween": 8,
+                "distanceFromContent": 0,
+                "titleBackground": "#f9fafb",
+                "titleColor": "#111827",
+                "activeTitleColor": "#6d5dfc",
+                "contentBackground": "#ffffff",
+                "contentColor": "#4b5563"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-toggle-063",
+              "type": "toggle",
+              "props": {
+                "items": [
+                  {
+                    "title": "Order food online?",
+                    "content": "Many vendors offer online ordering — look for the Order Food button on vendor cards."
+                  },
+                  {
+                    "title": "Host a private event?",
+                    "content": "The Market offers event spaces for corporate gatherings and celebrations."
+                  }
+                ],
+                "titleTag": "h4",
+                "spaceBetween": 12,
+                "titleColor": "#6d5dfc"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-081",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "boxed",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "stretch",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 64,
+            "paddingBottom": 64,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundColor": "#ffffff"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-078",
+          "type": "heading",
+          "props": {
+            "text": "Stats & Indicators",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "36px",
+                "fontWeight": 700,
+                "color": "#111827",
+                "marginBottom": 8
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-079",
+          "type": "paragraph",
+          "props": {
+            "text": "Counters, progress bars, star ratings, and icon lists.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 18,
+                "color": "#6b7280",
+                "maxWidth": 720,
+                "marginLeft": "auto",
+                "marginRight": "auto"
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-divider-080",
+          "type": "divider",
+          "props": {
+            "style": "solid",
+            "width": 80,
+            "weight": 3,
+            "gap": 24,
+            "color": "#6d5dfc",
+            "align": "center",
+            "addElement": "icon",
+            "text": "",
+            "icon": "★"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-072",
+          "type": "grid",
+          "props": {
+            "columns": 3,
+            "rows": 1,
+            "gap": 32,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-counter-069",
+              "type": "counter",
+              "props": {
+                "start": 0,
+                "end": 40,
+                "prefix": "",
+                "suffix": "+",
+                "duration": 2000,
+                "separator": "default",
+                "title": "Vendors",
+                "titleTag": "div",
+                "titlePosition": "after",
+                "numberAlign": "center",
+                "numberColor": "#6d5dfc",
+                "numberFontSize": 56,
+                "titleColor": "#6b7280",
+                "titleFontSize": 18
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-counter-070",
+              "type": "counter",
+              "props": {
+                "start": 0,
+                "end": 1200,
+                "prefix": "",
+                "suffix": "K",
+                "duration": 2000,
+                "separator": "default",
+                "title": "Annual Visitors",
+                "titleTag": "div",
+                "titlePosition": "before",
+                "numberAlign": "center",
+                "numberColor": "#7c3aed",
+                "numberFontSize": 56,
+                "titleColor": "#6b7280"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-counter-071",
+              "type": "counter",
+              "props": {
+                "start": 0,
+                "end": 15,
+                "prefix": "",
+                "suffix": " yrs",
+                "duration": 2000,
+                "separator": "default",
+                "title": "Community Hub",
+                "titleTag": "div",
+                "titlePosition": "after",
+                "numberAlign": "center",
+                "numberColor": "#059669",
+                "numberFontSize": 56
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-grid-075",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 24,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-progress-073",
+              "type": "progress",
+              "props": {
+                "title": "Food Hall Occupancy",
+                "titleTag": "span",
+                "displayTitle": true,
+                "progressType": "success",
+                "value": 92,
+                "displayPercentage": true,
+                "innerText": "Nearly Full",
+                "barHeight": 14,
+                "borderRadius": 8,
+                "barColor": "#10b981",
+                "barBackground": "#e5e7eb",
+                "innerTextColor": "#ffffff"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-progress-074",
+              "type": "progress",
+              "props": {
+                "title": "Event Calendar",
+                "titleTag": "span",
+                "displayTitle": true,
+                "progressType": "info",
+                "value": 78,
+                "displayPercentage": true,
+                "innerText": "",
+                "barHeight": 14,
+                "borderRadius": 8,
+                "barColor": "#3b82f6"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-rating-076",
+          "type": "rating",
+          "props": {
+            "rating": 4.5,
+            "scale": 5,
+            "title": "Visitor Rating",
+            "align": "center",
+            "size": 28,
+            "starColor": "#f59e0b",
+            "unmarkedColor": "#e5e7eb"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-icon-list-077",
+          "type": "icon-list",
+          "props": {
+            "layout": "traditional",
+            "applyLinkOn": "full",
+            "spaceBetween": 12,
+            "align": "left",
+            "items": [
+              {
+                "text": "Free Wi-Fi throughout the market",
+                "icon": "📶",
+                "url": ""
+              },
+              {
+                "text": "Pet-friendly outdoor seating",
+                "icon": "🐾",
+                "url": ""
+              },
+              {
+                "text": "Accessible entrances and restrooms",
+                "icon": "♿",
+                "url": ""
+              },
+              {
+                "text": "Live music every Thursday",
+                "icon": "🎵",
+                "url": "#events"
+              }
+            ],
+            "divider": true,
+            "dividerStyle": "solid",
+            "dividerColor": "#e5e7eb",
+            "dividerWeight": 1,
+            "iconColor": "#6d5dfc",
+            "textColor": "#374151",
+            "iconSize": 18,
+            "iconGap": 10
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-093",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "boxed",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "stretch",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 64,
+            "paddingBottom": 64,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundColor": "#fafafa"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-090",
+          "type": "heading",
+          "props": {
+            "text": "Interactive & Social",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "36px",
+                "fontWeight": 700,
+                "color": "#111827",
+                "marginBottom": 8
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-091",
+          "type": "paragraph",
+          "props": {
+            "text": "Forms, maps, social icons, and audio embeds.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 18,
+                "color": "#6b7280",
+                "maxWidth": 720,
+                "marginLeft": "auto",
+                "marginRight": "auto"
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-divider-092",
+          "type": "divider",
+          "props": {
+            "style": "solid",
+            "width": 80,
+            "weight": 3,
+            "gap": 24,
+            "color": "#6d5dfc",
+            "align": "center",
+            "addElement": "icon",
+            "text": "",
+            "icon": "★"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-088",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 32,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-form-082",
+              "type": "form",
+              "props": {
+                "fields": [
+                  {
+                    "label": "Full Name",
+                    "type": "text",
+                    "required": true
+                  },
+                  {
+                    "label": "Email Address",
+                    "type": "email",
+                    "required": true
+                  },
+                  {
+                    "label": "I'm interested in",
+                    "type": "select",
+                    "required": false
+                  }
+                ],
+                "buttonText": "Subscribe to Market News"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-div-block-087",
+              "type": "div-block",
+              "props": {
+                "tag": "div",
+                "link": ""
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              },
+              "children": [
+                {
+                  "id": "showcase-heading-083",
+                  "type": "heading",
+                  "props": {
+                    "text": "Visit Us",
+                    "tag": "h3",
+                    "link": "",
+                    "size": "default",
+                    "align": "left",
+                    "color": "",
+                    "fontFamily": "",
+                    "fontWeight": 0,
+                    "textShadow": ""
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-google-maps-084",
+                  "type": "google-maps",
+                  "props": {
+                    "query": "5959 Shellmound St, Emeryville, CA 94608",
+                    "zoom": 15,
+                    "height": 280,
+                    "blur": 0,
+                    "brightness": 100,
+                    "contrast": 105,
+                    "saturate": 110,
+                    "hue": 0
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-spacer-085",
+                  "type": "spacer",
+                  "props": {
+                    "height": 20
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-social-icons-086",
+                  "type": "social-icons",
+                  "props": {
+                    "items": [
+                      {
+                        "network": "Instagram",
+                        "icon": "📷",
+                        "url": "https://instagram.com"
+                      },
+                      {
+                        "network": "Facebook",
+                        "icon": "f",
+                        "url": "https://facebook.com"
+                      },
+                      {
+                        "network": "YouTube",
+                        "icon": "▶",
+                        "url": "https://youtube.com"
+                      }
+                    ],
+                    "shape": "circle",
+                    "columns": "auto",
+                    "align": "left",
+                    "size": 20,
+                    "spacing": 10,
+                    "padding": 12,
+                    "color": "#ffffff",
+                    "secondaryColor": "#6d5dfc"
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "showcase-audio-089",
+          "type": "audio",
+          "props": {
+            "src": "https://soundcloud.com/forss/flickermood",
+            "visual": true,
+            "autoplay": false,
+            "buy": true,
+            "like": true,
+            "download": true,
+            "share": true,
+            "comments": true,
+            "playCount": true,
+            "username": true,
+            "artwork": true,
+            "height": 166
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-117",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "boxed",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "stretch",
+        "gap": 24,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 64,
+            "paddingBottom": 64,
+            "paddingLeft": 24,
+            "paddingRight": 24,
+            "backgroundColor": "#ffffff"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-114",
+          "type": "heading",
+          "props": {
+            "text": "WordPress & Legacy Widgets",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": "36px",
+                "fontWeight": 700,
+                "color": "#111827",
+                "marginBottom": 8
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-115",
+          "type": "paragraph",
+          "props": {
+            "text": "Shortcodes, WordPress blocks, and compatibility placeholders.",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "fontSize": 18,
+                "color": "#6b7280",
+                "maxWidth": 720,
+                "marginLeft": "auto",
+                "marginRight": "auto"
+              }
+            }
+          }
+        },
+        {
+          "id": "showcase-divider-116",
+          "type": "divider",
+          "props": {
+            "style": "solid",
+            "width": 80,
+            "weight": 3,
+            "gap": 24,
+            "color": "#6d5dfc",
+            "align": "center",
+            "addElement": "icon",
+            "text": "",
+            "icon": "★"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-100",
+          "type": "grid",
+          "props": {
+            "columns": 3,
+            "rows": 1,
+            "gap": 16,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-shortcode-094",
+              "type": "shortcode",
+              "props": {
+                "code": "[public_market_vendors limit=\"6\"]"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-wordpress-095",
+              "type": "wordpress",
+              "props": {
+                "widget": "recent-posts",
+                "title": "Recent Posts Widget"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-wp-image-096",
+              "type": "wp-image",
+              "props": {
+                "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+                "alt": "WordPress image block",
+                "link": "#"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-wp-video-097",
+              "type": "wp-video",
+              "props": {
+                "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+                "poster": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
+                "autoplay": false,
+                "loop": false
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-wp-block-098",
+              "type": "wp-block",
+              "props": {
+                "title": "Custom WordPress Block"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-sidebar-099",
+              "type": "sidebar",
+              "props": {
+                "sidebar": ""
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-grid-113",
+          "type": "grid",
+          "props": {
+            "columns": 4,
+            "rows": 1,
+            "gap": 12,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-search-101",
+              "type": "search",
+              "props": {
+                "title": "Search"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-minimalist-102",
+              "type": "minimalist",
+              "props": {
+                "title": "Minimalist Link In Bio"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-pages-103",
+              "type": "pages",
+              "props": {
+                "title": "Pages"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-calendar-104",
+              "type": "calendar",
+              "props": {
+                "title": "Calendar"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-archives-105",
+              "type": "archives",
+              "props": {
+                "title": "Archives"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-recent-posts-106",
+              "type": "recent-posts",
+              "props": {
+                "title": "Recent Posts"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-recent-comments-107",
+              "type": "recent-comments",
+              "props": {
+                "title": "Recent Comments"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-rss-108",
+              "type": "rss",
+              "props": {
+                "title": "RSS"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-tag-cloud-109",
+              "type": "tag-cloud",
+              "props": {
+                "title": "Tag Cloud"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-navigation-menu-110",
+              "type": "navigation-menu",
+              "props": {
+                "title": "Navigation Menu"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-custom-html-111",
+              "type": "custom-html",
+              "props": {
+                "title": "Custom HTML"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-block-112",
+              "type": "block",
+              "props": {
+                "title": "Block"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "showcase-container-121",
+      "type": "container",
+      "props": {
+        "containerLayout": "flexbox",
+        "contentWidth": "full",
+        "width": 100,
+        "minHeight": 0,
+        "direction": "column",
+        "justify": "flex-start",
+        "align": "center",
+        "gap": 16,
+        "wrap": "nowrap"
+      },
+      "styles": {
+        "desktop": {
+          "normal": {
+            "display": "flex",
+            "flexDirection": "column",
+            "paddingTop": 48,
+            "paddingBottom": 48,
+            "backgroundColor": "#111827"
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "showcase-heading-118",
+          "type": "heading",
+          "props": {
+            "text": "Don't Miss What's Next",
+            "tag": "h2",
+            "link": "",
+            "size": "large",
+            "align": "center",
+            "color": "#ffffff",
+            "fontFamily": "",
+            "fontWeight": 0,
+            "textShadow": ""
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-paragraph-119",
+          "type": "paragraph",
+          "props": {
+            "text": "© Public Market Emeryville — Built with NextPress Page Builder Component Showcase",
+            "tag": "p",
+            "link": "",
+            "dropCap": false,
+            "columns": 1,
+            "columnGap": 16,
+            "align": "center",
+            "color": "#9ca3af",
+            "linkColor": "",
+            "fontSize": 0,
+            "lineHeight": 0
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-button-120",
+          "type": "button",
+          "props": {
+            "text": "Back to Top",
+            "url": "#top",
+            "align": "center",
+            "size": "md",
+            "buttonType": "info",
+            "icon": "",
+            "iconPosition": "before",
+            "buttonId": "",
+            "textColor": "#ffffff",
+            "backgroundColor": "#6d5dfc",
+            "borderRadius": 8,
+            "paddingX": 24,
+            "paddingY": 12,
+            "iconSpacing": 8
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "title": "Component Showcase — The Public Market",
+    "contentWidth": 1200,
+    "backgroundColor": "#ffffff",
+    "textColor": "#111827",
+    "customCss": ".npb-page { font-family: Inter, system-ui, sans-serif; } .npb-button { text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; border: 2px solid transparent; } .npb-form { display: grid; gap: 12px; } .npb-form label { display: grid; gap: 4px; font-weight: 500; color: #374151; } .npb-form input { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; } .npb-form button { padding: 12px 24px; background: #6d5dfc; color: #fff; border: 0; border-radius: 8px; font-weight: 600; cursor: pointer; }"
+  },
+  "globals": {
+    "colors": {
+      "primary": "#6d5dfc",
+      "secondary": "#1f2937",
+      "text": "#111827",
+      "accent": "#7c3aed",
+      "success": "#10b981",
+      "warning": "#f59e0b"
+    },
+    "fonts": {
+      "primary": "Inter, system-ui, sans-serif",
+      "secondary": "Georgia, serif"
+    },
+    "variables": {
+      "--npb-radius": "12px",
+      "--npb-shadow": "0 4px 24px rgba(0,0,0,0.08)"
+    },
+    "classes": [
+      {
+        "id": "showcase-card",
+        "name": "Showcase Card",
+        "styles": {
+          "desktop": {
+            "normal": {
+              "paddingTop": 24,
+              "paddingBottom": 24,
+              "paddingLeft": 24,
+              "paddingRight": 24,
+              "backgroundColor": "#ffffff",
+              "borderRadius": 12,
+              "boxShadow": "0 4px 24px rgba(0,0,0,0.08)"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

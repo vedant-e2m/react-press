@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { buildE2MHomePuckData } from "@nextpress/shared";
 
 const PUBLIC_MARKET_THEME = {
   name: "Public Market Emeryville",
@@ -213,69 +212,6 @@ async function upsertMenu(
   strapi.log.info(`Menu seeded: ${menu.name}`);
 }
 
-const HERO_PATTERN = {
-  name: "Hero + CTA",
-  description: "Full-width hero with headline and call-to-action button",
-  category: "hero",
-  puck_data: {
-    content: [
-      {
-        type: "Hero",
-        props: {
-          title: "Welcome to Your Site",
-          subtitle: "Build something amazing with NextPress",
-          ctaText: "Get Started",
-          ctaUrl: "/contact",
-          alignment: "center",
-          backgroundColor: "#18181b",
-          textColor: "#ffffff",
-        },
-      },
-      {
-        type: "Button",
-        props: {
-          label: "Learn More",
-          href: "/about",
-          variant: "secondary",
-          size: "lg",
-        },
-      },
-    ],
-    root: { props: {} },
-  },
-};
-
-const FEATURES_PATTERN = {
-  name: "Feature Grid",
-  description: "Three-column feature section",
-  category: "features",
-  puck_data: {
-    content: [
-      {
-        type: "FeatureGrid",
-        props: {
-          title: "Our Features",
-          subtitle: "Everything you need to succeed",
-          features: [
-            { title: "Fast", description: "Lightning-fast performance", iconUrl: "" },
-            { title: "Flexible", description: "Fully customizable blocks", iconUrl: "" },
-            { title: "Secure", description: "Enterprise-grade security", iconUrl: "" },
-          ],
-        },
-      },
-    ],
-    root: { props: {} },
-  },
-};
-
-const E2M_HOME_PATTERN = {
-  name: "E2M Solutions Homepage",
-  description: "Full E2M white-label agency homepage — hero, services, testimonials, blog, CTA",
-  category: "templates",
-  kind: "page",
-  puck_data: buildE2MHomePuckData(),
-};
-
 export async function seedAppearance(strapi: import("@strapi/strapi").Core.Strapi) {
   // Site settings — Public Market is the default homepage; E2M lives at /e2m
   const existingSettings = await strapi.db.query("api::site-setting.site-setting").findOne({});
@@ -321,25 +257,8 @@ export async function seedAppearance(strapi: import("@strapi/strapi").Core.Strap
     strapi.log.info(`Theme updated: ${theme.name}`);
   }
 
-  // Menus — Public Market (default site); E2M page uses NavBar block in puck_data
+  // Menus
   for (const menu of [HEADER_MENU, FOOTER_MENU]) {
     await upsertMenu(strapi, menu);
-  }
-
-  // Block patterns
-  for (const pattern of [HERO_PATTERN, FEATURES_PATTERN, E2M_HOME_PATTERN]) {
-    const existing = await strapi.db.query("api::block-pattern.block-pattern").findOne({
-      where: { name: pattern.name },
-    });
-    if (!existing) {
-      await strapi.documents("api::block-pattern.block-pattern").create({ data: pattern });
-      strapi.log.info(`Block pattern seeded: ${pattern.name}`);
-      continue;
-    }
-    await strapi.documents("api::block-pattern.block-pattern").update({
-      documentId: existing.documentId,
-      data: pattern,
-    });
-    strapi.log.info(`Block pattern updated: ${pattern.name}`);
   }
 }

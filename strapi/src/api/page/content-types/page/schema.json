@@ -5,7 +5,7 @@
     "singularName": "page",
     "pluralName": "pages",
     "displayName": "Page",
-    "description": "Visual pages built with the WordPress block editor (Gutenberg)"
+    "description": "Visual pages built with the native NextPress builder"
   },
   "options": {
     "draftAndPublish": false
@@ -30,7 +30,7 @@
     "scheduled_at": {
       "type": "datetime"
     },
-    "puck_data": {
+    "builder_data": {
       "type": "json"
     },
     "seo_title": {

@@ -42,7 +42,7 @@ import type {
  *
  * // Admin
  * const token = (await cms.login({ email, password })).token;
- * await cms.updatePage(page.id, { puckData, status: "published" }, token);
+ * await cms.updatePage(page.id, { builderData, status: "published" }, token);
  * ```
  */
 export interface ContentProvider {
@@ -119,7 +119,7 @@ export interface ContentProvider {
     resourceType: "page" | "post";
     resourceId: string;
     slug?: string;
-    puckData?: import("@nextpress/shared").PuckData | null;
+    builderData?: import("@nextpress/builder/types").BuilderDocument | null;
     content?: string | null;
     snapshot?: Record<string, unknown>;
   }, token: string): Promise<import("./types").ContentRevision>;

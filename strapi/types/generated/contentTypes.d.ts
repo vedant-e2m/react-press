@@ -485,7 +485,7 @@ export interface ApiBlockPatternBlockPattern
   extends Struct.CollectionTypeSchema {
   collectionName: 'block_patterns';
   info: {
-    description: 'Reusable Puck block layouts';
+    description: 'Reusable native builder layouts';
     displayName: 'Block Pattern';
     pluralName: 'block-patterns';
     singularName: 'block-pattern';
@@ -494,6 +494,7 @@ export interface ApiBlockPatternBlockPattern
     draftAndPublish: false;
   };
   attributes: {
+    builder_data: Schema.Attribute.JSON & Schema.Attribute.Required;
     category: Schema.Attribute.String & Schema.Attribute.DefaultTo<'general'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -510,7 +511,6 @@ export interface ApiBlockPatternBlockPattern
     name: Schema.Attribute.String & Schema.Attribute.Required;
     preview_image: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
-    puck_data: Schema.Attribute.JSON & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -561,6 +561,7 @@ export interface ApiContentRevisionContentRevision
     draftAndPublish: false;
   };
   attributes: {
+    builder_data: Schema.Attribute.JSON;
     content: Schema.Attribute.RichText;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -572,7 +573,6 @@ export interface ApiContentRevisionContentRevision
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    puck_data: Schema.Attribute.JSON;
     resource_id: Schema.Attribute.String & Schema.Attribute.Required;
     resource_type: Schema.Attribute.Enumeration<['page', 'post']> &
       Schema.Attribute.Required;
@@ -588,7 +588,7 @@ export interface ApiContentRevisionContentRevision
 export interface ApiCustomBlockCustomBlock extends Struct.CollectionTypeSchema {
   collectionName: 'custom_blocks';
   info: {
-    description: 'Editor-defined Puck blocks with custom fields and an HTML template';
+    description: 'Editor-defined native builder widgets with custom fields and an HTML template';
     displayName: 'Custom Block';
     pluralName: 'custom-blocks';
     singularName: 'custom-block';
@@ -597,6 +597,7 @@ export interface ApiCustomBlockCustomBlock extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    builder_type: Schema.Attribute.UID<'label'> & Schema.Attribute.Required;
     category: Schema.Attribute.String & Schema.Attribute.DefaultTo<'custom'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -610,7 +611,6 @@ export interface ApiCustomBlockCustomBlock extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    puck_type: Schema.Attribute.UID<'label'> & Schema.Attribute.Required;
     template: Schema.Attribute.Text & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -653,7 +653,7 @@ export interface ApiMenuMenu extends Struct.CollectionTypeSchema {
 export interface ApiPagePage extends Struct.CollectionTypeSchema {
   collectionName: 'pages';
   info: {
-    description: 'Visual pages built with the WordPress block editor (Gutenberg)';
+    description: 'Visual pages built with the native NextPress builder';
     displayName: 'Page';
     pluralName: 'pages';
     singularName: 'page';
@@ -666,6 +666,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    builder_data: Schema.Attribute.JSON;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -680,7 +681,6 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<'draft'>;
     parent: Schema.Attribute.Relation<'manyToOne', 'api::page.page'>;
     publishedAt: Schema.Attribute.DateTime;
-    puck_data: Schema.Attribute.JSON;
     scheduled_at: Schema.Attribute.DateTime;
     seo_description: Schema.Attribute.Text;
     seo_title: Schema.Attribute.String;

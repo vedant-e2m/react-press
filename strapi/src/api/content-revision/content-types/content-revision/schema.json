@@ -27,7 +27,7 @@
     "slug": {
       "type": "string"
     },
-    "puck_data": {
+    "builder_data": {
       "type": "json"
     },
     "content": {

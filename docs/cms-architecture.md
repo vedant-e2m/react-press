@@ -135,7 +135,7 @@ Core never lists `"strapi"` anywhere. The adapter defines its own `id`.
 | `cms-core` | Yes — contract + runtime |
 | `cms-strapi` (or rename `strapi-client`) | One reference adapter |
 
-OSS users can add other adapters outside the repo. Core + Puck + admin stay the same.
+OSS users can add other adapters outside the repo. Core, the native builder, and admin stay the same.
 
 ---
 
@@ -143,10 +143,10 @@ OSS users can add other adapters outside the repo. Core + Puck + admin stay the 
 
 All adapters map their native shapes to these types in `cms-core`:
 
-- `ContentPage` — includes `gutenbergData` (primary) and optional legacy `puckData`
+- `ContentPage` — includes a native `builderData` document
 - `ContentPost`, `ContentCategory`, `ContentMedia` — Phase 2
 - `AuthSession` — login result
 
-The visual editor is Gutenberg (Isolated Block Editor). Adapters store page layout JSON in the CMS (`puck_data` column today; documents use `{ editor: "gutenberg", … }`). Legacy Puck trees are converted on read via `@nextpress/gutenberg`.
+The visual editor is implemented by `@nextpress/builder`. Adapters store its versioned page document in the CMS `builder_data` JSON column. Old editor formats are intentionally unsupported.
 
 See [cms-providers.md](./cms-providers.md) for a list of known MIT-licensed CMS products.

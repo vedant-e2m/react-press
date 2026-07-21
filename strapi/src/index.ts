@@ -1,6 +1,5 @@
 import { seedDemoPages } from "./seed";
 import { seedAppearance } from "./seed/appearance";
-import { seedCustomBlocks } from "./seed/custom-blocks";
 
 const AUTHENTICATED_PERMISSIONS = [
   "api::page.page.find",
@@ -216,7 +215,6 @@ export default {
     await ensureDefaultAppUser(strapi);
     await seedDemoPages(strapi);
     await seedAppearance(strapi);
-    await seedCustomBlocks(strapi);
     registerScheduledPublishJob(strapi);
   },
 };

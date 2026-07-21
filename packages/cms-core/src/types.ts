@@ -1,18 +1,5 @@
-import type { CustomBlockField, PuckData } from "@nextpress/shared";
-
-/** Gutenberg page document (WordPress block tree + serialized HTML). */
-export type GutenbergData = {
-  editor: "gutenberg";
-  version: 1;
-  html: string;
-  blocks: Array<{
-    name: string;
-    attributes: Record<string, unknown>;
-    innerBlocks: GutenbergData["blocks"];
-    innerHTML?: string;
-    clientId?: string;
-  }>;
-};
+import type { BuilderDocument } from "@nextpress/builder/types";
+import type { CustomBlockField } from "@nextpress/shared";
 
 /**
  * Opaque key-value config passed from env or nextpress.config into an adapter.
@@ -32,13 +19,7 @@ export interface ContentPage {
   title: string;
   slug: string;
   status: PageStatus;
-  /**
-   * Primary page layout document (Gutenberg).
-   * Stored in CMS JSON; may have been converted from legacy Puck.
-   */
-  gutenbergData: GutenbergData | null;
-  /** @deprecated Legacy Puck JSON — kept for patterns / migration. Prefer `gutenbergData`. */
-  puckData: PuckData | null;
+  builderData: BuilderDocument | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   ogImageUrl?: string | null;
@@ -113,7 +94,7 @@ export interface ContentRevision {
   resourceType: "page" | "post";
   resourceId: string;
   slug?: string | null;
-  puckData?: PuckData | null;
+  builderData?: BuilderDocument | null;
   content?: string | null;
   createdAt: string;
 }
@@ -229,7 +210,7 @@ export interface UpdateThemeInput {
   isActive?: boolean;
 }
 
-/** Reusable Puck block layout. */
+/** Reusable native builder layout. */
 export interface ContentBlockPattern {
   id: string;
   name: string;
@@ -237,7 +218,7 @@ export interface ContentBlockPattern {
   category: string;
   /** Pattern type used by the editor (insert section vs apply full-page template). */
   kind?: "section" | "page";
-  puckData: PuckData;
+  builderData: BuilderDocument;
   previewImageUrl?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -248,13 +229,13 @@ export interface CreateBlockPatternInput {
   description?: string | null;
   category: string;
   kind?: "section" | "page";
-  puckData: PuckData;
+  builderData: BuilderDocument;
 }
 
 /** Editor-defined block/section with custom fields and an HTML template. */
 export interface ContentCustomBlock {
   id: string;
-  puckType: string;
+  builderType: string;
   label: string;
   category: string;
   fields: CustomBlockField[];
@@ -264,7 +245,7 @@ export interface ContentCustomBlock {
 }
 
 export interface CreateCustomBlockInput {
-  puckType: string;
+  builderType: string;
   label: string;
   category?: string;
   fields: CustomBlockField[];
@@ -332,9 +313,7 @@ export interface CreatePageInput {
   title: string;
   slug: string;
   status?: PageStatus;
-  gutenbergData?: GutenbergData | null;
-  /** @deprecated Prefer `gutenbergData`. */
-  puckData?: PuckData | null;
+  builderData?: BuilderDocument | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   ogImageUrl?: string | null;
@@ -345,9 +324,7 @@ export interface UpdatePageInput {
   title?: string;
   slug?: string;
   status?: PageStatus;
-  gutenbergData?: GutenbergData | null;
-  /** @deprecated Prefer `gutenbergData`. */
-  puckData?: PuckData | null;
+  builderData?: BuilderDocument | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   ogImageUrl?: string | null;

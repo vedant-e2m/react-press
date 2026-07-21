@@ -4,12 +4,11 @@ import type {
   AuthSession,
   ContentPage,
   CreatePageInput,
-  GutenbergData,
   ListPagesOptions,
   LoginInput,
   UpdatePageInput,
 } from "@nextpress/cms-core";
-import type { PuckData } from "@nextpress/shared";
+import type { BuilderDocument } from "@nextpress/builder/types";
 import {
   configureStrapiClient,
   strapi,
@@ -29,8 +28,7 @@ interface StrapiPage {
   title: string;
   slug: string;
   page_status: ContentPage["status"];
-  /** JSON column — GutenbergData or legacy PuckData. */
-  puck_data: GutenbergData | PuckData | null;
+  builder_data: BuilderDocument | null;
   seo_title?: string | null;
   seo_description?: string | null;
   og_image?: StrapiMediaRef | null;
@@ -40,33 +38,22 @@ interface StrapiPage {
   updatedAt: string;
 }
 
-function isGutenbergDoc(value: unknown): value is GutenbergData {
+function isBuilderDocument(value: unknown): value is BuilderDocument {
   return (
     !!value &&
     typeof value === "object" &&
-    (value as { editor?: unknown }).editor === "gutenberg" &&
-    Array.isArray((value as { blocks?: unknown }).blocks)
-  );
-}
-
-function isPuckDoc(value: unknown): value is PuckData {
-  return (
-    !!value &&
-    typeof value === "object" &&
-    Array.isArray((value as { content?: unknown }).content) &&
-    !isGutenbergDoc(value)
+    (value as { editor?: unknown }).editor === "nextpress" &&
+    Array.isArray((value as { content?: unknown }).content)
   );
 }
 
 function mapPage(doc: StrapiPage): ContentPage {
-  const raw = doc.puck_data;
   return {
     id: doc.documentId,
     title: doc.title,
     slug: doc.slug,
     status: doc.page_status,
-    gutenbergData: isGutenbergDoc(raw) ? raw : null,
-    puckData: isPuckDoc(raw) ? raw : null,
+    builderData: isBuilderDocument(doc.builder_data) ? doc.builder_data : null,
     seoTitle: doc.seo_title ?? null,
     seoDescription: doc.seo_description ?? null,
     ogImageUrl: doc.og_image?.url ? resolveMediaUrl(doc.og_image.url) : null,
@@ -162,7 +149,7 @@ export class StrapiContentProvider implements ContentProvider {
         title: input.title,
         slug: input.slug,
         page_status: input.status ?? "draft",
-        puck_data: input.puckData ?? input.gutenbergData ?? null,
+        builder_data: input.builderData ?? null,
         seo_title: input.seoTitle,
         seo_description: input.seoDescription,
       },
@@ -177,9 +164,7 @@ export class StrapiContentProvider implements ContentProvider {
     if (input.title !== undefined) data.title = input.title;
     if (input.slug !== undefined) data.slug = input.slug;
     if (input.status !== undefined) data.page_status = input.status;
-    // Prefer Puck JSON when both are sent — editor round-trips more reliably.
-    if (input.puckData !== undefined) data.puck_data = input.puckData;
-    else if (input.gutenbergData !== undefined) data.puck_data = input.gutenbergData;
+    if (input.builderData !== undefined) data.builder_data = input.builderData;
     if (input.seoTitle !== undefined) data.seo_title = input.seoTitle;
     if (input.seoDescription !== undefined) data.seo_description = input.seoDescription;
     if (input.publishedAt !== undefined) data.publishedAt = input.publishedAt;

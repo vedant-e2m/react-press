@@ -11,6 +11,9 @@ build
 
 # Env
 .env
+.env.*
+!.env.example
+!**/.env.example
 .env.local
 .env.*.local
 
@@ -31,6 +34,21 @@ strapi/public/uploads/*
 .screenshots/
 .design-redesign/
 tmp/
+coverage/
+playwright-report/
+test-results/
+*.pem
+
+# Local Elementor / canvas audit tooling + captures
+scripts/
+docs/compare/
+docs/elementor-canvas/
+docs/elementor-gap-audit/
+docs/elementor-layout-audit/
+docs/elementor-reference/
+docs/nextpress-canvas/
+docs/nextpress-current/
+docs/screenshots/
 
 # Cursor IDE (local agent skills)
 .cursor/
@@ -41,15 +59,18 @@ apps/web/public/imported/xd/auction-test*/
 # IDE
 .idea
 .vscode
+*.swp
+.DS_Store
 
 # Form submissions (local dev)
 apps/web/.data
-*.swp
-.DS_Store
 
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Docker
 pgdata

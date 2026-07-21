@@ -10,32 +10,6 @@ export interface StrapiEntity<T> {
   attributes?: T;
 }
 
-export interface Page {
-  id: number;
-  documentId: string;
-  title: string;
-  slug: string;
-  page_status: PageStatus;
-  puck_data: PuckData | null;
-  seo_title?: string | null;
-  seo_description?: string | null;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PuckData {
-  content: PuckBlock[];
-  root: { props: Record<string, unknown> };
-  zones?: Record<string, PuckBlock[]>;
-}
-
-export interface PuckBlock {
-  type: string;
-  props: Record<string, unknown>;
-  children?: PuckBlock[];
-}
-
 export interface Post {
   id: number;
   documentId: string;
@@ -49,4 +23,10 @@ export interface Post {
   updatedAt: string;
 }
 
-export * from "./plugins";
+export interface CustomBlockField {
+  name: string;
+  label: string;
+  type: "text" | "textarea" | "number" | "color" | "image" | "url";
+  defaultValue?: string | number;
+  required?: boolean;
+}
