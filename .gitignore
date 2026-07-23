@@ -53,8 +53,8 @@ docs/screenshots/
 # Cursor IDE (local agent skills)
 .cursor/
 
-# XD import scratch outputs (re-generated via admin or CLI)
-apps/web/public/imported/xd/auction-test*/
+# Local XD import scratch (not part of the product; keep out of git)
+apps/web/public/imported/
 
 # IDE
 .idea

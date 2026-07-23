@@ -21,6 +21,9 @@ describe("public market document", () => {
     expect(html).toMatch(/What(?:&#39;|&#x27;|'|')s Next/);
     expect(html).toContain("FOLLOW @PUBLICMARKETEMERYVILLE");
     expect(html).toContain("SUBSCRIBE");
+    expect(html).toContain("Skip to content");
+    expect(html).toContain('id="menu"');
+    expect(html).toContain("INSTAGRAM");
   });
 
   it("should include all 24 vendors", () => {

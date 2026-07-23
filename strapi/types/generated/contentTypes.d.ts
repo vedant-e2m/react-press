@@ -666,7 +666,8 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    builder_data: Schema.Attribute.JSON;
+    builder_data: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<'plugin::page-builder.builder-document'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

@@ -1,0 +1,27 @@
+{
+  "name": "page-builder",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NextPress visual page builder for Strapi admin",
+  "strapi": {
+    "name": "page-builder",
+    "displayName": "Page Builder",
+    "description": "Edit pages with the NextPress visual builder",
+    "kind": "plugin"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./strapi-admin": {
+      "source": "./admin/src/index.tsx",
+      "import": "./admin/src/index.tsx",
+      "require": "./admin/src/index.tsx",
+      "default": "./admin/src/index.tsx"
+    },
+    "./strapi-server": {
+      "source": "./server/src/index.ts",
+      "import": "./strapi-server.js",
+      "require": "./strapi-server.js",
+      "default": "./strapi-server.js"
+    }
+  }
+}

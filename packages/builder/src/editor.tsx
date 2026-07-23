@@ -12,14 +12,22 @@ import {
 import {
   addBuilderElement,
   cloneBuilderElement,
+  canMoveBuilderElementSibling,
   createBuilderElement,
   duplicateBuilderElement,
   findBuilderElement,
   insertBuilderElementAfter,
   moveBuilderElement,
+  moveBuilderElementSibling,
   removeBuilderElement,
   updateBuilderElement,
 } from "./document";
+import {
+  formatCssLength,
+  parseUnitValue as parseNumericUnitValue,
+  splitCssLength,
+  type CssLengthUnit,
+} from "./css-units";
 import { BuilderRenderer } from "./renderer";
 import type {
   BuilderBreakpoint,
@@ -33,6 +41,11 @@ import type {
   EntranceAnimation,
 } from "./types";
 import { builderWidgets, getBuilderWidget } from "./widgets";
+import {
+  SpacingDragOverlay,
+  type SpacingUpdates,
+} from "./spacing-overlay";
+import { ElementCanvasActions, ElementCanvasToolbar } from "./canvas-toolbar";
 
 type InspectorTab = "general" | "style" | "interactions";
 
@@ -322,6 +335,23 @@ function Control({
 
   if (control.type === "repeater") {
     const rows = Array.isArray(value) ? (value as Array<Record<string, unknown>>) : [];
+    const isFormFields = control.key === "fields";
+    const defaultRow = isFormFields
+      ? {
+          label: `Field #${rows.length + 1}`,
+          type: "text",
+          required: false,
+        }
+      : {
+          title: `Item #${rows.length + 1}`,
+          text: `List Item #${rows.length + 1}`,
+          content: "Add item content.",
+          icon: "✓",
+          url: "",
+          src: "",
+          alt: "",
+          network: "Facebook",
+        };
     return (
       <div className="npb-control npb-repeater">
         <div className="npb-repeater-head">
@@ -329,16 +359,7 @@ function Control({
           <button
             type="button"
             className="npb-icon-button"
-            onClick={() => onChange([...rows, {
-              title: `Item #${rows.length + 1}`,
-              text: `List Item #${rows.length + 1}`,
-              content: "Add item content.",
-              icon: "✓",
-              url: "",
-              src: "",
-              alt: "",
-              network: "Facebook",
-            }])}
+            onClick={() => onChange([...rows, defaultRow])}
           >
             + Add Item
           </button>
@@ -346,7 +367,7 @@ function Control({
         {rows.map((row, index) => (
           <div key={index} className="npb-repeater-item">
             <div className="npb-repeater-item-head">
-              <strong>{String(row.title ?? row.text ?? row.network ?? `Item #${index + 1}`)}</strong>
+              <strong>{String(row.label ?? row.title ?? row.text ?? row.network ?? `Item #${index + 1}`)}</strong>
               <button
                 type="button"
                 className="npb-icon-button"
@@ -356,7 +377,70 @@ function Control({
                 ×
               </button>
             </div>
-            {("title" in row || "text" in row || true) ? (
+            {isFormFields ? (
+              <>
+                <label className="npb-control npb-control-row">
+                  <span>Label</span>
+                  <input
+                    value={String(row.label ?? "")}
+                    onChange={(event) => {
+                      const next = [...rows];
+                      next[index] = { ...row, label: event.target.value };
+                      onChange(next);
+                    }}
+                  />
+                </label>
+                <label className="npb-control npb-control-row">
+                  <span>Type</span>
+                  <select
+                    value={String(row.type ?? "text")}
+                    onChange={(event) => {
+                      const next = [...rows];
+                      next[index] = { ...row, type: event.target.value };
+                      onChange(next);
+                    }}
+                  >
+                    <option value="text">Text</option>
+                    <option value="email">Email</option>
+                    <option value="tel">Tel</option>
+                    <option value="number">Number</option>
+                    <option value="textarea">Textarea</option>
+                    <option value="select">Select</option>
+                    <option value="checkbox">Checkbox</option>
+                  </select>
+                </label>
+                {String(row.type ?? "text") === "select" ? (
+                  <label className="npb-control npb-control-row">
+                    <span>Options</span>
+                    <input
+                      value={Array.isArray(row.options) ? row.options.join(", ") : String(row.options ?? "")}
+                      placeholder="Option 1, Option 2"
+                      onChange={(event) => {
+                        const next = [...rows];
+                        next[index] = {
+                          ...row,
+                          options: event.target.value.split(",").map((option) => option.trim()).filter(Boolean),
+                        };
+                        onChange(next);
+                      }}
+                    />
+                  </label>
+                ) : null}
+                <label className="npb-control npb-control-row">
+                  <span>Required</span>
+                  <input
+                    type="checkbox"
+                    checked={row.required === true || row.required === "true"}
+                    onChange={(event) => {
+                      const next = [...rows];
+                      next[index] = { ...row, required: event.target.checked };
+                      onChange(next);
+                    }}
+                  />
+                </label>
+              </>
+            ) : null}
+            {!isFormFields && ("title" in row || "text" in row || true) ? (
               <label className="npb-control npb-control-row">
                 <span>{("text" in row && !("title" in row)) ? "Text" : "Title"}</span>
                 <input
@@ -371,7 +455,7 @@ function Control({
                 />
               </label>
             ) : null}
-            {"content" in row || control.key === "items" ? (
+            {!isFormFields && ("content" in row || control.key === "items") ? (
               <label className="npb-control">
                 <span>Content</span>
                 <textarea
@@ -503,8 +587,7 @@ function Control({
 }
 
 function parseUnitValue(raw: unknown): string {
-  if (raw === undefined || raw === null || raw === "") return "";
-  return String(raw).replace(/px$/i, "");
+  return parseNumericUnitValue(raw);
 }
 
 function SpacingBox({
@@ -775,24 +858,42 @@ function EditorElement({
   element,
   selectedId,
   breakpoint,
+  styleState,
+  canMoveUp,
+  canMoveUpFor,
   onSelect,
   onAdd,
   onMove,
   onAddAfter,
   onDelete,
+  onDuplicate,
+  onMoveUp,
+  onEdit,
   onEmptyAdd,
   onContextMenu,
+  onBeginSpacingDrag,
+  onSpacingChange,
+  onEndSpacingDrag,
 }: {
   element: BuilderElement;
   selectedId: string | null;
   breakpoint: BuilderBreakpoint;
+  styleState: BuilderStyleState;
+  canMoveUp: boolean;
+  canMoveUpFor(id: string): boolean;
   onSelect(id: string): void;
   onAdd(type: string, parentId?: string): void;
   onMove(id: string, parentId?: string): void;
   onAddAfter(id: string): void;
   onDelete(id: string): void;
+  onDuplicate(id: string): void;
+  onMoveUp(id: string): void;
+  onEdit(id: string): void;
   onEmptyAdd(id: string): void;
   onContextMenu(id: string, x: number, y: number): void;
+  onBeginSpacingDrag(): void;
+  onSpacingChange(id: string, updates: SpacingUpdates): void;
+  onEndSpacingDrag(): void;
 }) {
   const widget = getBuilderWidget(element.type);
   if (!widget) {
@@ -808,20 +909,30 @@ function EditorElement({
       element={child}
       selectedId={selectedId}
       breakpoint={breakpoint}
+      styleState={styleState}
+      canMoveUp={canMoveUpFor(child.id)}
+      canMoveUpFor={canMoveUpFor}
       onSelect={onSelect}
       onAdd={onAdd}
       onMove={onMove}
       onAddAfter={onAddAfter}
       onDelete={onDelete}
+      onDuplicate={onDuplicate}
+      onMoveUp={onMoveUp}
+      onEdit={onEdit}
       onEmptyAdd={onEmptyAdd}
       onContextMenu={onContextMenu}
+      onBeginSpacingDrag={onBeginSpacingDrag}
+      onSpacingChange={onSpacingChange}
+      onEndSpacingDrag={onEndSpacingDrag}
     />
   ));
   const isContainer = Boolean(widget.acceptsChildren);
+  const isSelected = selectedId === element.id;
 
   return (
     <div
-      className={`npb-editor-element${selectedId === element.id ? " selected" : ""}${isContainer ? " npb-editor-container" : " npb-editor-widget"}`}
+      className={`npb-editor-element${isSelected ? " selected" : ""}${isContainer ? " npb-editor-container" : " npb-editor-widget"}`}
       style={styles}
       draggable
       onDragStart={(event) => {
@@ -849,57 +960,35 @@ function EditorElement({
         if (existingId) onMove(existingId, element.id);
       } : undefined}
     >
-      <ul
-        className={`npb-element-settings${isContainer ? " npb-element-settings-container" : ""}`}
-        onClick={(event) => event.stopPropagation()}
-      >
-        {isContainer ? (
-          <>
-            <li>
-              <button
-                type="button"
-                title={`Add ${widget.label}`}
-                aria-label={`Add ${widget.label}`}
-                onClick={() => onAddAfter(element.id)}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M5.25 5.25V1h1.5v4.25H11v1.5H6.75V11h-1.5V6.75H1v-1.5z" /></svg>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="npb-element-drag"
-                title={`Edit ${widget.label}`}
-                aria-label={`Edit ${widget.label}`}
-                onClick={() => onSelect(element.id)}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><g fill="currentColor"><circle cx="3.5" cy="2" r="1.15" /><circle cx="8.5" cy="2" r="1.15" /><circle cx="3.5" cy="6" r="1.15" /><circle cx="8.5" cy="6" r="1.15" /><circle cx="3.5" cy="10" r="1.15" /><circle cx="8.5" cy="10" r="1.15" /></g></svg>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                title={`Delete ${widget.label}`}
-                aria-label={`Delete ${widget.label}`}
-                onClick={() => onDelete(element.id)}
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="currentColor" d="M2.05 1 6 4.94 9.95 1 11 2.06 7.06 6 11 9.94 9.95 11 6 7.06 2.05 11 1 9.94 4.94 6 1 2.06z" /></svg>
-              </button>
-            </li>
-          </>
-        ) : (
-          <li>
-            <button
-              type="button"
-              title={`Edit ${widget.label}`}
-              aria-label={`Edit ${widget.label}`}
-              onClick={() => onSelect(element.id)}
-            >
-              <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.9 1.2a1.7 1.7 0 0 1 2.4 0l.5.5a1.7 1.7 0 0 1 0 2.4L6.6 12.3l-3.5 1 1-3.5zM10.9 3.6l1.5 1.5 1.2-1.2-1.5-1.5z" /></svg>
-            </button>
-          </li>
-        )}
-      </ul>
+      {isSelected ? (
+        <>
+          <ElementCanvasToolbar
+            widget={widget}
+            canMoveUp={canMoveUp}
+            onMoveUp={() => onMoveUp(element.id)}
+            onDuplicate={() => onDuplicate(element.id)}
+            onDelete={() => onDelete(element.id)}
+            onMore={(event) => onContextMenu(element.id, event.clientX, event.clientY)}
+            onDragStart={(event) => {
+              event.stopPropagation();
+              event.dataTransfer.setData("application/x-npb-element", element.id);
+            }}
+          />
+          <ElementCanvasActions
+            widgetLabel={widget.label}
+            onEdit={() => onEdit(element.id)}
+            onAddAfter={() => onAddAfter(element.id)}
+          />
+          <SpacingDragOverlay
+            element={element}
+            breakpoint={breakpoint}
+            styleState={styleState}
+            onBeginDrag={onBeginSpacingDrag}
+            onSpacingChange={(updates) => onSpacingChange(element.id, updates)}
+            onEndDrag={onEndSpacingDrag}
+          />
+        </>
+      ) : null}
       {widget.render({ element, children })}
       {isContainer && !element.children?.length ? (
         <div
@@ -1495,24 +1584,66 @@ function UnitField({
   onChange,
   placeholder = "",
   unit = "PX",
+  units,
 }: {
   label: string;
   value: unknown;
   onChange(value: string): void;
   placeholder?: string;
   unit?: string;
+  /** When provided, shows a unit selector (px / % / vh / …) instead of a fixed label. */
+  units?: CssLengthUnit[];
 }) {
+  const parsed = splitCssLength(value);
+  const availableUnits = units ?? null;
+  const activeUnit = availableUnits
+    ? (availableUnits.includes(parsed.unit) ? parsed.unit : availableUnits[0])
+    : null;
+
   return (
     <label className="npb-unit-field">
       <span className="npb-unit-field-label">{label}</span>
       <span className="npb-unit-field-input">
         <input
           inputMode="numeric"
-          value={parseUnitValue(value)}
+          value={activeUnit === "auto" ? "auto" : parsed.amount}
           placeholder={placeholder}
-          onChange={(event) => onChange(event.target.value === "" ? "" : `${event.target.value}px`)}
+          disabled={activeUnit === "auto"}
+          onChange={(event) => {
+            const next = event.target.value;
+            if (next === "") {
+              onChange("");
+              return;
+            }
+            if (activeUnit === "auto" || next === "auto") {
+              onChange("auto");
+              return;
+            }
+            onChange(formatCssLength(next, activeUnit ?? "px"));
+          }}
         />
-        <span className="npb-unit">{unit}</span>
+        {availableUnits && activeUnit ? (
+          <select
+            className="npb-unit npb-unit-select"
+            aria-label={`${label} unit`}
+            value={activeUnit}
+            onChange={(event) => {
+              const nextUnit = event.target.value as CssLengthUnit;
+              if (nextUnit === "auto") {
+                onChange("auto");
+                return;
+              }
+              const amount = parsed.amount && parsed.amount !== "auto" ? parsed.amount : "100";
+              onChange(formatCssLength(amount, nextUnit));
+            }}
+          >
+            {availableUnits.map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
+          </select>
+        ) : (
+          <span className="npb-unit">{unit}</span>
+        )}
       </span>
     </label>
   );
@@ -1671,16 +1802,17 @@ function SizeStyle({
   styles: CSSProperties;
   onChange(property: keyof CSSProperties, value: string | number): void;
 }) {
+  const sizeUnits: CssLengthUnit[] = ["px", "%", "vw", "vh", "rem", "auto"];
   const [showMore, setShowMore] = useState(false);
   return (
     <div className="npb-size-style">
       <div className="npb-size-grid">
-        <UnitField label="Width" value={styles.width} onChange={(next) => onChange("width", next)} />
-        <UnitField label="Height" value={styles.height} onChange={(next) => onChange("height", next)} />
-        <UnitField label="Min width" value={styles.minWidth} onChange={(next) => onChange("minWidth", next)} />
-        <UnitField label="Min height" value={styles.minHeight} onChange={(next) => onChange("minHeight", next)} />
-        <UnitField label="Max width" value={styles.maxWidth} onChange={(next) => onChange("maxWidth", next)} />
-        <UnitField label="Max height" value={styles.maxHeight} onChange={(next) => onChange("maxHeight", next)} />
+        <UnitField label="Width" value={styles.width} units={sizeUnits} onChange={(next) => onChange("width", next)} />
+        <UnitField label="Height" value={styles.height} units={sizeUnits} onChange={(next) => onChange("height", next)} />
+        <UnitField label="Min width" value={styles.minWidth} units={sizeUnits} onChange={(next) => onChange("minWidth", next)} />
+        <UnitField label="Min height" value={styles.minHeight} units={sizeUnits} onChange={(next) => onChange("minHeight", next)} />
+        <UnitField label="Max width" value={styles.maxWidth} units={sizeUnits} onChange={(next) => onChange("maxWidth", next)} />
+        <UnitField label="Max height" value={styles.maxHeight} units={sizeUnits} onChange={(next) => onChange("maxHeight", next)} />
       </div>
       <ChoiceGroup
         label="Overflow"
@@ -2258,7 +2390,7 @@ export function BuilderEditor({
   onPublish,
   templates = [],
   onSaveTemplate,
-  backHref = "/admin/pages",
+  backHref = "/admin",
 }: BuilderEditorProps) {
   const [history, setHistory] = useState<HistoryState>({ past: [], present: document, future: [] });
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -2278,6 +2410,7 @@ export function BuilderEditor({
   const [contextMenu, setContextMenu] = useState<{ id: string; x: number; y: number } | null>(null);
   const [insertTarget, setInsertTarget] = useState<string | null>(null);
   const initialDocument = useRef(document);
+  const spacingDragSnapshotRef = useRef<BuilderDocument | null>(null);
   const selected = useMemo(
     () => selectedId ? findBuilderElement(history.present.content, selectedId) : undefined,
     [history.present.content, selectedId],
@@ -2295,6 +2428,24 @@ export function BuilderEditor({
     setSelectedId(id);
     if (id) setTab("general");
   }, []);
+
+  const editElement = useCallback((id: string) => {
+    setSelectedId(id);
+    setTab("general");
+  }, []);
+
+  const canMoveUpFor = useCallback(
+    (id: string) => canMoveBuilderElementSibling(history.present, id, "up"),
+    [history.present],
+  );
+
+  const moveElementUp = useCallback((id: string) => {
+    commit(moveBuilderElementSibling(history.present, id, "up"));
+  }, [commit, history.present]);
+
+  const duplicateElement = useCallback((id: string) => {
+    commit(duplicateBuilderElement(history.present, id));
+  }, [commit, history.present]);
 
   const addWidget = useCallback((type: string, parentId?: string) => {
     const element = createBuilderElement(type);
@@ -2352,6 +2503,48 @@ export function BuilderEditor({
       };
     });
   }, [breakpoint, styleState, updateSelected]);
+
+  const beginSpacingDrag = useCallback(() => {
+    spacingDragSnapshotRef.current = history.present;
+  }, [history.present]);
+
+  const applySpacingUpdates = useCallback((elementId: string, updates: SpacingUpdates) => {
+    setHistory((current) => ({
+      ...current,
+      present: updateBuilderElement(current.present, elementId, (element) => {
+        const breakpointStyles = element.styles?.[breakpoint] ?? {};
+        const stateStyles = { ...(breakpointStyles[styleState] ?? {}) } as Record<string, unknown>;
+        for (const [property, value] of Object.entries(updates)) {
+          if (value === "") {
+            delete stateStyles[property];
+          } else {
+            stateStyles[property] = value;
+          }
+        }
+        return {
+          ...element,
+          styles: {
+            ...element.styles,
+            [breakpoint]: {
+              ...breakpointStyles,
+              [styleState]: stateStyles as CSSProperties,
+            },
+          },
+        };
+      }),
+    }));
+  }, [breakpoint, styleState]);
+
+  const endSpacingDrag = useCallback(() => {
+    const snapshot = spacingDragSnapshotRef.current;
+    if (!snapshot) return;
+    spacingDragSnapshotRef.current = null;
+    setHistory((current) => ({
+      past: [...current.past.slice(-49), snapshot],
+      present: current.present,
+      future: [],
+    }));
+  }, []);
 
   const undo = () => setHistory((current) => {
     const previous = current.past.at(-1);
@@ -2568,7 +2761,7 @@ export function BuilderEditor({
                 <button type="button" onClick={() => { setPanel("settings"); setSelectedId(null); setMainMenuOpen(false); }}><span><EditorIcon name="settings" /> Site Settings</span></button>
                 <button type="button" onClick={() => { setPanel("templates"); setSelectedId(null); setMainMenuOpen(false); }}><span>▦ Theme Builder</span></button>
                 <button type="button" onClick={() => { setShortcutsOpen(true); setMainMenuOpen(false); }}><span>⌨ Keyboard Shortcuts</span></button>
-                <a href={backHref}><span>↗ Exit to WordPress</span></a>
+                <a href={backHref}><span>↗ Exit to admin</span></a>
               </div>
             ) : null}
           </div>
@@ -2684,19 +2877,29 @@ export function BuilderEditor({
         ) : null}
         <div className="npb-stage" onDragOver={(event) => event.preventDefault()} onDrop={handleDrop}>
           <div className={`npb-canvas npb-${breakpoint}`} style={{ width: viewportWidths[breakpoint] }}>
+            <div className="npb-canvas-surface">
             {history.present.content.map((element) => (
               <EditorElement
                 key={element.id}
                 element={element}
                 selectedId={selectedId}
                 breakpoint={breakpoint}
+                styleState={styleState}
+                canMoveUp={canMoveUpFor(element.id)}
+                canMoveUpFor={canMoveUpFor}
                 onSelect={selectElement}
                 onAdd={addWidget}
                 onMove={(id, parentId) => commit(moveBuilderElement(history.present, id, parentId))}
                 onAddAfter={addSiblingAfter}
                 onDelete={deleteElement}
+                onDuplicate={duplicateElement}
+                onMoveUp={moveElementUp}
+                onEdit={editElement}
                 onEmptyAdd={startInsertInto}
                 onContextMenu={(id, x, y) => setContextMenu({ id, x, y })}
+                onBeginSpacingDrag={beginSpacingDrag}
+                onSpacingChange={applySpacingUpdates}
+                onEndSpacingDrag={endSpacingDrag}
               />
             ))}
             <AddSectionArea
@@ -2707,6 +2910,7 @@ export function BuilderEditor({
               }}
               onDropWidget={(type) => addWidget(type)}
             />
+            </div>
           </div>
         </div>
       </div>

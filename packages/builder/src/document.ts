@@ -34,9 +34,11 @@ export function createBuilderElement(type: string): BuilderElement {
     props: structuredClone(widget.defaultProps),
     styles: {
       desktop: {
-        normal: type === "flexbox" || type === "container"
+        normal: type === "flexbox"
           ? { display: "flex", flexDirection: "column" }
-          : {},
+          : type === "grid"
+            ? { display: "grid" }
+            : {},
       },
     },
     children: widget.acceptsChildren ? [] : undefined,
@@ -171,4 +173,89 @@ export function moveBuilderElement(
     return document;
   }
   return addBuilderElement(removeBuilderElement(document, id), element, parentId);
+}
+
+interface ElementSiblingLocation {
+  parentId?: string;
+  siblings: BuilderElement[];
+  index: number;
+}
+
+function findElementSiblingLocation(
+  elements: BuilderElement[],
+  id: string,
+  parentId?: string,
+): ElementSiblingLocation | undefined {
+  const index = elements.findIndex((element) => element.id === id);
+  if (index !== -1) {
+    return { parentId, siblings: elements, index };
+  }
+
+  for (const element of elements) {
+    if (!element.children?.length) {
+      continue;
+    }
+    const found = findElementSiblingLocation(element.children, id, element.id);
+    if (found) {
+      return found;
+    }
+  }
+
+  return undefined;
+}
+
+function replaceSiblingList(
+  document: BuilderDocument,
+  parentId: string | undefined,
+  siblings: BuilderElement[],
+): BuilderDocument {
+  if (!parentId) {
+    return { ...document, content: siblings };
+  }
+
+  return updateBuilderElement(document, parentId, (parent) => ({
+    ...parent,
+    children: siblings,
+  }));
+}
+
+/** Reorders an element among its siblings. */
+export function moveBuilderElementSibling(
+  document: BuilderDocument,
+  id: string,
+  direction: "up" | "down",
+): BuilderDocument {
+  const location = findElementSiblingLocation(document.content, id);
+  if (!location) {
+    return document;
+  }
+
+  const targetIndex = direction === "up" ? location.index - 1 : location.index + 1;
+  if (targetIndex < 0 || targetIndex >= location.siblings.length) {
+    return document;
+  }
+
+  const nextSiblings = [...location.siblings];
+  [nextSiblings[location.index], nextSiblings[targetIndex]] = [
+    nextSiblings[targetIndex],
+    nextSiblings[location.index],
+  ];
+
+  return replaceSiblingList(document, location.parentId, nextSiblings);
+}
+
+/** Returns whether an element can be moved among its siblings. */
+export function canMoveBuilderElementSibling(
+  document: BuilderDocument,
+  id: string,
+  direction: "up" | "down",
+): boolean {
+  const location = findElementSiblingLocation(document.content, id);
+  if (!location) {
+    return false;
+  }
+
+  return direction === "up"
+    ? location.index > 0
+    : location.index < location.siblings.length - 1;
 }

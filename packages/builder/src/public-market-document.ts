@@ -1,4 +1,4 @@
-import type { BuilderDocument, BuilderElement, ResponsiveStyles } from "./types";
+import type { BuilderDocument, BuilderElement, BuilderElementAdvanced, ResponsiveStyles } from "./types";
 import { getBuilderWidget } from "./widgets";
 
 const CDN = "https://publicmarketemeryville.channel13.cloud/wp-content/uploads";
@@ -29,6 +29,7 @@ interface ElementOptions {
   id?: string;
   styles?: ResponsiveStyles;
   classes?: string[];
+  advanced?: BuilderElementAdvanced;
   children?: BuilderElement[];
 }
 
@@ -76,6 +77,7 @@ function el(type: string, props: Record<string, unknown> = {}, options: ElementO
     props: { ...structuredClone(widget.defaultProps), ...props },
     styles: options.styles ?? { desktop: { normal: {} } },
     classes: options.classes,
+    advanced: options.advanced,
     children: widget.acceptsChildren ? options.children ?? [] : options.children,
   };
 }
@@ -636,22 +638,19 @@ export function createPublicMarketDocument(): BuilderDocument {
       },
     },
     children: [
-      el("tabs", {
-        direction: "horizontal",
+      el("paragraph", {
+        text: TOP_BAR_MESSAGES[0],
         align: "center",
-        titleColor: C.accent,
-        activeTitleColor: C.accent,
-        contentColor: C.accent,
-        items: TOP_BAR_MESSAGES.map((message) => ({ title: message, content: message })),
+        color: C.accent,
       }, {
         styles: {
           desktop: {
             normal: {
-              width: "100%",
-              maxWidth: 710,
               fontSize: 16,
               fontWeight: 400,
-              textAlign: "center",
+              lineHeight: 1.4,
+              marginBottom: 0,
+              maxWidth: 710,
             },
           },
         },
@@ -659,21 +658,16 @@ export function createPublicMarketDocument(): BuilderDocument {
     ],
   });
 
-  const header = el("container", {
-    containerLayout: "flexbox",
-    contentWidth: "boxed",
-    direction: "row",
-    justify: "space-between",
-    align: "center",
-    gap: 0,
-    minHeight: 80,
-  }, {
+  const heroHeader = el("flexbox", { tag: "div", contentWidth: "full" }, {
     styles: {
       desktop: {
         normal: {
           display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
           position: "absolute",
-          top: 40,
+          top: 0,
           left: 0,
           right: 0,
           zIndex: 20,
@@ -697,7 +691,7 @@ export function createPublicMarketDocument(): BuilderDocument {
         primaryColor: C.white,
         size: 20,
       }, {
-        styles: { desktop: { normal: { filter: "brightness(0) invert(1)" } } },
+        styles: { desktop: { normal: { filter: "brightness(0) invert(1)", minWidth: 40 } } },
       }),
       el("image", {
         src: ASSETS.logo,
@@ -717,7 +711,159 @@ export function createPublicMarketDocument(): BuilderDocument {
           },
         },
       }),
-      marketButton("ORDER FOOD", "https://publicmarketemeryville.menu/", "link", "right"),
+      el("button", {
+        text: "ORDER FOOD",
+        url: "https://publicmarketemeryville.menu/",
+        align: "right",
+        size: "small",
+        backgroundColor: "transparent",
+        textColor: C.white,
+        borderRadius: 0,
+        paddingX: 0,
+        paddingY: 0,
+      }, {
+        styles: {
+          desktop: {
+            normal: {
+              fontSize: 14,
+              fontWeight: 400,
+              letterSpacing: 0.08,
+              textTransform: "uppercase",
+              borderWidth: 0,
+              minWidth: 0,
+            },
+          },
+        },
+      }),
+    ],
+  });
+
+  const navMenu = el("container", {
+    containerLayout: "flexbox",
+    contentWidth: "full",
+    direction: "column",
+    align: "center",
+    justify: "center",
+    gap: 40,
+    minHeight: 0,
+  }, {
+    advanced: { cssId: "menu" },
+    classes: ["pme-nav-overlay"],
+    styles: {
+      desktop: {
+        normal: {
+          display: "none",
+          position: "fixed",
+          inset: 0,
+          zIndex: 100,
+          backgroundColor: "rgba(31,31,31,0.97)",
+          paddingTop: 120,
+          paddingBottom: 80,
+          paddingLeft: 44,
+          paddingRight: 44,
+          textAlign: "center",
+          color: C.white,
+        },
+      },
+    },
+    children: [
+      el("button", {
+        text: "✕",
+        url: "#top",
+        align: "center",
+        size: "small",
+        backgroundColor: "transparent",
+        textColor: C.white,
+        borderRadius: 0,
+        paddingX: 0,
+        paddingY: 0,
+      }, {
+        styles: {
+          desktop: {
+            normal: {
+              position: "absolute",
+              top: 52,
+              right: 44,
+              fontSize: 28,
+              borderWidth: 0,
+              minWidth: 0,
+            },
+          },
+        },
+      }),
+      el("icon-list", {
+        layout: "traditional",
+        align: "center",
+        spaceBetween: 24,
+        textColor: C.white,
+        iconColor: C.accent,
+        items: [
+          { text: "Vendors", icon: "", url: "/vendors/" },
+          { text: "Leasing", icon: "", url: "#leasing" },
+          { text: "Directory", icon: "", url: "/directory/" },
+          { text: "Events", icon: "", url: "/events/" },
+          { text: "Order Food", icon: "", url: "https://publicmarketemeryville.menu/" },
+          { text: "Contact", icon: "", url: "/contact/" },
+        ],
+      }, {
+        styles: {
+          desktop: {
+            normal: {
+              fontSize: 28,
+              fontFamily: "'Faculty Glyphic', Georgia, serif",
+              letterSpacing: 0.04,
+              textTransform: "uppercase",
+            },
+          },
+        },
+      }),
+      el("icon-list", {
+        layout: "traditional",
+        align: "center",
+        spaceBetween: 14,
+        textColor: C.muted,
+        iconColor: C.accent,
+        items: [
+          { text: "Food Hall", icon: "", url: "/leasing-type/food-hall/" },
+          { text: "Office & Life Science", icon: "", url: "/leasing-type/office-life-science/" },
+          { text: "Adjacent Retail", icon: "", url: "/leasing-type/adjacent-retail/" },
+        ],
+      }, {
+        styles: {
+          desktop: {
+            normal: {
+              fontSize: 18,
+              letterSpacing: 0.04,
+              textTransform: "uppercase",
+            },
+          },
+        },
+      }),
+      el("social-icons", {
+        items: [
+          { network: "Instagram", icon: "IG", url: "https://www.instagram.com/publicmarketemeryville/" },
+          { network: "Facebook", icon: "f", url: "https://www.facebook.com/PublicMarketEmeryville/" },
+        ],
+        shape: "rounded",
+        columns: "auto",
+        align: "center",
+        size: 18,
+        spacing: 20,
+        padding: 0,
+        primaryColor: C.white,
+        secondaryColor: C.accent,
+      }, {
+        styles: {
+          desktop: {
+            normal: {
+              marginTop: 20,
+              letterSpacing: 0.08,
+              textTransform: "uppercase",
+              fontSize: 14,
+            },
+          },
+        },
+      }),
     ],
   });
 
@@ -727,7 +873,7 @@ export function createPublicMarketDocument(): BuilderDocument {
     direction: "column",
     justify: "center",
     align: "center",
-    gap: 36,
+    gap: 0,
     minHeight: 600,
   }, {
     styles: {
@@ -735,12 +881,13 @@ export function createPublicMarketDocument(): BuilderDocument {
         normal: {
           display: "flex",
           position: "relative",
+          width: "100%",
           minHeight: "100vh",
-          paddingTop: 100,
+          paddingTop: 120,
           paddingBottom: 100,
           textAlign: "center",
           color: C.white,
-          backgroundColor: C.black,
+          overflow: "hidden",
         },
       },
     },
@@ -748,15 +895,17 @@ export function createPublicMarketDocument(): BuilderDocument {
       el("video", {
         src: ASSETS.heroVideo,
         poster: ASSETS.heroPoster,
+        posterEnabled: true,
         autoplay: true,
         controls: false,
         loop: true,
         muted: true,
         playsInline: true,
-        preload: "none",
+        preload: "metadata",
         aspectRatio: "16:9",
         download: false,
       }, {
+        advanced: { cssClasses: "pme-hero-media" },
         styles: {
           desktop: {
             normal: {
@@ -764,7 +913,6 @@ export function createPublicMarketDocument(): BuilderDocument {
               inset: 0,
               width: "100%",
               height: "100%",
-              objectFit: "cover",
               zIndex: 0,
             },
           },
@@ -783,47 +931,87 @@ export function createPublicMarketDocument(): BuilderDocument {
           },
         },
       }),
-      el("heading", {
-        text: "Welcome To\nThe Public Market",
-        tag: "h1",
-        align: "center",
-        color: C.white,
-      }, {
+      heroHeader,
+      el("flexbox", { tag: "div", contentWidth: "full" }, {
         styles: {
           desktop: {
             normal: {
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 20,
               position: "relative",
               zIndex: 2,
-              fontSize: 90,
-              fontWeight: 400,
-              lineHeight: 1.22,
-              maxWidth: 900,
+              flex: 1,
+              width: "100%",
+              paddingLeft: 24,
+              paddingRight: 24,
             },
           },
         },
-        advanced: { entranceAnimation: "fadeInUp", animationDuration: "normal" },
-      }),
-      el("paragraph", {
-        text: "MORE THAN JUST A FOOD HALL",
-        align: "center",
-        color: C.white,
-      }, {
-        styles: {
-          desktop: {
-            normal: {
-              position: "relative",
-              zIndex: 2,
-              fontSize: 20,
-              fontWeight: 400,
-              letterSpacing: 0.04,
+        children: [
+          el("heading", {
+            text: "Welcome To",
+            tag: "h1",
+            align: "center",
+            color: C.white,
+          }, {
+            styles: {
+              desktop: {
+                normal: {
+                  fontSize: 72,
+                  fontWeight: 400,
+                  lineHeight: 1.08,
+                  marginBottom: 0,
+                },
+              },
+              mobile: { normal: { fontSize: 42 } },
             },
-          },
-        },
+          }),
+          el("heading", {
+            text: "The Public Market",
+            tag: "h1",
+            align: "center",
+            color: C.white,
+          }, {
+            styles: {
+              desktop: {
+                normal: {
+                  fontSize: 72,
+                  fontWeight: 400,
+                  lineHeight: 1.08,
+                  marginBottom: 0,
+                },
+              },
+              mobile: { normal: { fontSize: 42 } },
+            },
+            advanced: { entranceAnimation: "fadeInUp", animationDuration: "normal" },
+          }),
+          el("paragraph", {
+            text: "MORE THAN JUST A FOOD HALL",
+            align: "center",
+            color: C.white,
+          }, {
+            styles: {
+              desktop: {
+                normal: {
+                  fontSize: 20,
+                  fontWeight: 400,
+                  letterSpacing: 0.04,
+                  marginBottom: 0,
+                  marginTop: 16,
+                },
+              },
+            },
+          }),
+        ],
       }),
       el("read-more", {
-        text: "Scroll",
+        text: "Scroll ↓",
         link: "#about-us",
       }, {
+        advanced: { cssClasses: "pme-scroll-link" },
         styles: {
           desktop: {
             normal: {
@@ -833,6 +1021,9 @@ export function createPublicMarketDocument(): BuilderDocument {
               transform: "translateX(-50%)",
               zIndex: 2,
               color: C.accent,
+              fontSize: 14,
+              letterSpacing: 0.08,
+              textTransform: "uppercase",
             },
           },
         },
@@ -842,16 +1033,18 @@ export function createPublicMarketDocument(): BuilderDocument {
 
   const aboutSection = el("container", {
     containerLayout: "flexbox",
-    contentWidth: "boxed",
+    contentWidth: "full",
     direction: "column",
     align: "center",
     gap: 48,
     minHeight: 0,
   }, {
+    advanced: { cssId: "about-us" },
     styles: {
       desktop: {
         normal: {
           display: "flex",
+          width: "100%",
           paddingTop: 140,
           paddingBottom: 80,
           paddingLeft: 44,
@@ -867,7 +1060,7 @@ export function createPublicMarketDocument(): BuilderDocument {
         alt: "Public Market emblem",
         align: "center",
       }, {
-        styles: { desktop: { normal: { width: 170, marginBottom: 56 } } },
+        styles: { desktop: { normal: { width: 170, marginBottom: 20 } } },
       }),
       el("flexbox", { tag: "div", contentWidth: "boxed" }, {
         styles: {
@@ -880,6 +1073,9 @@ export function createPublicMarketDocument(): BuilderDocument {
               gap: 32,
               flexWrap: "nowrap",
               width: "100%",
+              maxWidth: 1280,
+              marginLeft: "auto",
+              marginRight: "auto",
             },
           },
           tablet: { normal: { flexWrap: "wrap", justifyContent: "center" } },
@@ -894,22 +1090,30 @@ export function createPublicMarketDocument(): BuilderDocument {
             gap: 29,
             minHeight: 0,
           }, {
-            styles: { desktop: { normal: { flex: 1, maxWidth: 690, paddingLeft: 32, paddingRight: 32 } } },
+            styles: { desktop: { normal: { flex: 1, minWidth: 320, maxWidth: 690, paddingLeft: 32, paddingRight: 32 } } },
             children: [
               el("heading", {
-                text: "More than just\na food hall",
+                text: "More than just",
                 tag: "h2",
                 align: "center",
                 color: C.text,
               }, {
-                styles: { desktop: { normal: { fontSize: 70, fontWeight: 400, lineHeight: 1.17, marginBottom: 0 } } },
+                styles: { desktop: { normal: { fontSize: 70, fontWeight: 400, lineHeight: 1.1, marginBottom: 0 } } },
+              }),
+              el("heading", {
+                text: "a food hall",
+                tag: "h2",
+                align: "center",
+                color: C.text,
+              }, {
+                styles: { desktop: { normal: { fontSize: 70, fontWeight: 400, lineHeight: 1.1, marginBottom: 0 } } },
               }),
               el("paragraph", {
                 text: "Emeryville Public Market is more than a food hall—it's a vibrant, mixed-use destination where culture, commerce, and community intersect. Anchored by a curated collection of local culinary experiences, the Market is energized by a seamless blend of retail, office, and life science spaces that activate the environment from morning through evening. This layered ecosystem creates a dynamic, always-on destination—one where people come not just to dine, but to connect, work, discover, and be part of a thriving, innovation-driven community.",
                 align: "center",
                 color: C.text,
               }, {
-                styles: { desktop: { normal: { fontSize: 21, lineHeight: 1.47, fontWeight: 300 } } },
+                styles: { desktop: { normal: { fontSize: 21, lineHeight: 1.47, fontWeight: 300, marginTop: 29 } } },
               }),
             ],
           }),
@@ -941,24 +1145,29 @@ export function createPublicMarketDocument(): BuilderDocument {
             normal: {
               display: "flex",
               flexDirection: "row",
-              alignItems: "flex-start",
+              alignItems: "flex-end",
               justifyContent: "center",
               gap: 0,
-              flexWrap: "wrap",
+              flexWrap: "nowrap",
               width: "100%",
+              maxWidth: 1280,
+              marginLeft: "auto",
+              marginRight: "auto",
               marginTop: -80,
+              overflowX: "auto",
+              paddingBottom: 40,
             },
           },
         },
         children: [
-          polaroid(GALLERY_ITEMS[0].label, GALLERY_ITEMS[0].image, "12%", 375),
-          polaroid(GALLERY_ITEMS[1].label, GALLERY_ITEMS[1].image, "14%", 388),
-          polaroid(GALLERY_ITEMS[2].label, GALLERY_ITEMS[2].image, "13%", 375),
-          polaroid(GALLERY_ITEMS[3].label, GALLERY_ITEMS[3].image, "19%", 339),
-          polaroid(GALLERY_ITEMS[4].label, GALLERY_ITEMS[4].image, "14%", 380),
-          polaroid(GALLERY_ITEMS[5].label, GALLERY_ITEMS[5].image, "14%", 380),
-          polaroid(GALLERY_ITEMS[6].label, GALLERY_ITEMS[6].image, "20%", 339),
-          polaroid(GALLERY_ITEMS[7].label, GALLERY_ITEMS[7].image, "13%", 392),
+          polaroid(GALLERY_ITEMS[0].label, GALLERY_ITEMS[0].image, "168px", 375),
+          polaroid(GALLERY_ITEMS[1].label, GALLERY_ITEMS[1].image, "196px", 388),
+          polaroid(GALLERY_ITEMS[2].label, GALLERY_ITEMS[2].image, "182px", 375),
+          polaroid(GALLERY_ITEMS[3].label, GALLERY_ITEMS[3].image, "266px", 339),
+          polaroid(GALLERY_ITEMS[4].label, GALLERY_ITEMS[4].image, "196px", 380),
+          polaroid(GALLERY_ITEMS[5].label, GALLERY_ITEMS[5].image, "196px", 380),
+          polaroid(GALLERY_ITEMS[6].label, GALLERY_ITEMS[6].image, "280px", 339),
+          polaroid(GALLERY_ITEMS[7].label, GALLERY_ITEMS[7].image, "182px", 392),
         ],
       }),
     ],
@@ -966,7 +1175,7 @@ export function createPublicMarketDocument(): BuilderDocument {
 
   const vendorsSection = el("container", {
     containerLayout: "flexbox",
-    contentWidth: "boxed",
+    contentWidth: "full",
     direction: "column",
     align: "stretch",
     gap: 0,
@@ -977,6 +1186,7 @@ export function createPublicMarketDocument(): BuilderDocument {
         normal: {
           display: "flex",
           position: "relative",
+          width: "100%",
           paddingTop: 100,
           paddingBottom: 80,
           paddingLeft: 44,
@@ -1029,6 +1239,10 @@ export function createPublicMarketDocument(): BuilderDocument {
               position: "relative",
               zIndex: 2,
               marginBottom: 116,
+              maxWidth: 1280,
+              marginLeft: "auto",
+              marginRight: "auto",
+              width: "100%",
             },
           },
         },
@@ -1071,6 +1285,7 @@ export function createPublicMarketDocument(): BuilderDocument {
     gap: 0,
     minHeight: 0,
   }, {
+    advanced: { cssId: "leasing" },
     styles: {
       desktop: {
         normal: {
@@ -1584,11 +1799,32 @@ export function createPublicMarketDocument(): BuilderDocument {
     editor: "nextpress",
     version: 1,
     content: [
+      el("read-more", { text: "Skip to content", link: "#about-us" }, {
+        styles: {
+          desktop: {
+            normal: {
+              position: "absolute",
+              left: -9999,
+              top: 0,
+              zIndex: 999,
+            },
+            focus: {
+              left: 16,
+              top: 16,
+              backgroundColor: C.white,
+              color: C.text,
+              paddingTop: 8,
+              paddingBottom: 8,
+              paddingLeft: 16,
+              paddingRight: 16,
+            },
+          },
+        },
+      }),
       el("menu-anchor", { id: "top" }),
       topBar,
-      header,
+      navMenu,
       hero,
-      el("menu-anchor", { id: "about-us" }),
       aboutSection,
       el("menu-anchor", { id: "vendors" }),
       vendorsSection,
@@ -1604,16 +1840,23 @@ export function createPublicMarketDocument(): BuilderDocument {
       textColor: C.text,
       customCss: [
         "@import url('https://fonts.googleapis.com/css2?family=Caveat&family=Faculty+Glyphic&family=Roboto:ital,wght@0,300;0,400;0,500;1,300&display=swap');",
-        ".npb-page { font-family: Roboto, sans-serif; font-weight: 300; color: #494747; }",
-        ".npb-page h1, .npb-page h2, .npb-page h3, .npb-page h4, .npb-page h5, .npb-page h6 { font-family: 'Faculty Glyphic', Georgia, serif; font-weight: 400; }",
-        ".npb-button { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }",
+        ".npb-page { font-family: Roboto, sans-serif; font-weight: 300; color: #494747; width: 100%; max-width: none; overflow-x: hidden; }",
+        ".npb-page h1, .npb-page h2, .npb-page h3, .npb-page h4, .npb-page h5, .npb-page h6 { font-family: 'Faculty Glyphic', Georgia, serif; font-weight: 400; margin: 0; }",
+        ".npb-page figure { margin: 0; }",
+        ".npb-page .npb-button { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }",
+        ".npb-page a { text-decoration: none; }",
+        ".pme-hero-media { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; z-index: 0 !important; overflow: hidden !important; }",
+        ".pme-hero-media .npb-video { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; padding-bottom: 0 !important; }",
+        ".pme-hero-media .npb-video video { width: 100%; height: 100%; object-fit: cover; }",
+        ".pme-scroll-link a { color: #6FA84C !important; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; font-size: 14px; }",
+        ".pme-nav-overlay:target { display: flex !important; }",
+        ".pme-nav-overlay .npb-icon-list { list-style: none; padding: 0; margin: 0; }",
+        ".pme-nav-overlay .npb-icon-list a { color: inherit; text-decoration: none; }",
+        ".npb-class-pme-vendor-card { box-shadow: none; }",
         ".npb-form { display: grid; gap: 46px; max-width: 425px; margin: 0 auto; }",
         ".npb-form label { display: grid; gap: 8px; font-size: 30px; font-family: 'Faculty Glyphic', Georgia, serif; color: #494747; text-align: center; }",
         ".npb-form input { border: 0; border-bottom: 1px solid #494747; border-radius: 0; background: transparent; padding: 0 22px 12px; text-align: center; font-size: 30px; font-family: 'Faculty Glyphic', Georgia, serif; color: #494747; }",
         ".npb-form button { min-width: 153px; padding: 13px 12px 10px; background: #6FA84C; color: #fff; border: 1px solid #6FA84C; border-radius: 0; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; margin: 0 auto; }",
-        ".npb-tabs [role='tablist'] { display: none; }",
-        ".npb-tabs [role='tabpanel'] { text-align: center; color: #6FA84C; }",
-        ".npb-carousel-arrows button { background: #FCFBF0; border: 0; width: 78px; height: 56px; color: #6FA84C; }",
       ].join("\n"),
     },
     globals: {

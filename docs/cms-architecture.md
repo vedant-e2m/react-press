@@ -1,6 +1,6 @@
 # CMS architecture — decoupled plugin model
 
-NextPress core is **CMS-agnostic**. No CMS names, URLs, or switch statements live in `@nextpress/cms-core`.
+NextPress **public site** code is **CMS-agnostic**. No CMS names, URLs, or switch statements live in `@nextpress/cms-core`. **Admin** is Strapi (including the page-builder plugin) — not a Next.js admin app.
 
 ---
 
@@ -8,7 +8,16 @@ NextPress core is **CMS-agnostic**. No CMS names, URLs, or switch statements liv
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  apps/web, apps/react, admin, API routes                     │
+│  Admin: Strapi admin + page-builder plugin                    │
+│  (content editing, media, settings — sole admin portal)       │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ Strapi REST / plugin APIs
+┌───────────────────────────▼─────────────────────────────────┐
+│  Strapi 5                                                     │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────────┐
+│  apps/web (public site only), apps/react                      │
 │  import { getCms } from "@/lib/cms"   ← never import Strapi  │
 └───────────────────────────┬─────────────────────────────────┘
                             │
@@ -35,7 +44,8 @@ NextPress core is **CMS-agnostic**. No CMS names, URLs, or switch statements liv
 |---------|----------------|---------------------|
 | `cms-core` | Interfaces + runtime only | **No** |
 | `cms-strapi` | Strapi → `ContentProvider` mapping | Yes |
-| `apps/web` | Calls `getCms()` | **No** (only wires adapter at bootstrap) |
+| `apps/web` | Public site; calls `getCms()` | **No** (only wires adapter at bootstrap) |
+| Strapi admin + page-builder plugin | Sole admin / editing UI | Yes |
 
 ---
 
@@ -43,7 +53,7 @@ NextPress core is **CMS-agnostic**. No CMS names, URLs, or switch statements liv
 
 ### Option A — Config file (build-time choice)
 
-The app picks its adapter via dependency + config. Core stays unaware.
+The public app picks its adapter via dependency + config. Core stays unaware.
 
 ```typescript
 // nextpress.config.ts
@@ -68,7 +78,7 @@ initCms(nextpressConfig.cms.adapter, nextpressConfig.cms.options);
 export { getCms } from "@nextpress/cms-core";
 ```
 
-Swap CMS = change npm dependency + config file. Zero changes to page/admin code.
+Swap CMS = change npm dependency + config file. Zero changes to public page code.
 
 ### Option B — Environment (deploy-time choice)
 
@@ -134,8 +144,9 @@ Core never lists `"strapi"` anywhere. The adapter defines its own `id`.
 |---------|-----------|
 | `cms-core` | Yes — contract + runtime |
 | `cms-strapi` (or rename `strapi-client`) | One reference adapter |
+| Strapi + page-builder plugin | Sole admin |
 
-OSS users can add other adapters outside the repo. Core, the native builder, and admin stay the same.
+OSS users can add other adapters outside the repo for the public site. Core and the native builder package stay the same; editing happens in Strapi admin.
 
 ---
 
@@ -145,8 +156,8 @@ All adapters map their native shapes to these types in `cms-core`:
 
 - `ContentPage` — includes a native `builderData` document
 - `ContentPost`, `ContentCategory`, `ContentMedia` — Phase 2
-- `AuthSession` — login result
+- `AuthSession` — login result (CMS Users & Permissions; not a Next.js admin session)
 
-The visual editor is implemented by `@nextpress/builder`. Adapters store its versioned page document in the CMS `builder_data` JSON column. Old editor formats are intentionally unsupported.
+The visual editor is implemented by `@nextpress/builder` and embedded in the Strapi page-builder plugin. Adapters store its versioned page document in the CMS `builder_data` JSON column. Old editor formats are intentionally unsupported.
 
 See [cms-providers.md](./cms-providers.md) for a list of known MIT-licensed CMS products.

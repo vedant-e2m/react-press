@@ -97,9 +97,18 @@ export interface BuilderControlSection {
   controls: BuilderControl[];
 }
 
+export interface BuilderHostProps {
+  id?: string;
+  "data-npb-id": string;
+  className?: string;
+  style?: CSSProperties;
+}
+
 export interface BuilderWidgetRenderProps {
   element: BuilderElement;
   children?: ReactNode;
+  /** When set, the widget root should spread these so styles target the real layout element. */
+  hostProps?: BuilderHostProps;
 }
 
 export interface BuilderWidget {
@@ -110,5 +119,10 @@ export interface BuilderWidget {
   defaultProps: Record<string, unknown>;
   controls: BuilderControlSection[];
   acceptsChildren?: boolean;
+  /**
+   * When true, the public renderer does not wrap the widget in an extra div.
+   * The widget must apply `hostProps` to its layout root so size/flex/background work.
+   */
+  rendersAsHost?: boolean;
   render(props: BuilderWidgetRenderProps): ReactNode;
 }

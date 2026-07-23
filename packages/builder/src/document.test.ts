@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   EMPTY_BUILDER_DOCUMENT,
   addBuilderElement,
+  canMoveBuilderElementSibling,
   cloneBuilderElement,
   createBuilderElement,
   duplicateBuilderElement,
   findBuilderElement,
   insertBuilderElementAfter,
   moveBuilderElement,
+  moveBuilderElementSibling,
   removeBuilderElement,
   updateBuilderElement,
 } from "./document";
@@ -88,6 +90,18 @@ describe("builder document operations", () => {
 
     expect(moved.content).toHaveLength(1);
     expect(moved.content[0]?.children?.[0]?.id).toBe(heading.id);
+  });
+
+  it("should move an element up among its siblings", () => {
+    const first = createBuilderElement("heading");
+    const second = createBuilderElement("paragraph");
+    const document = addBuilderElement(addBuilderElement(EMPTY_BUILDER_DOCUMENT, first), second);
+
+    const moved = moveBuilderElementSibling(document, second.id, "up");
+
+    expect(moved.content.map((item) => item.id)).toEqual([second.id, first.id]);
+    expect(canMoveBuilderElementSibling(document, first.id, "up")).toBe(false);
+    expect(canMoveBuilderElementSibling(document, second.id, "up")).toBe(true);
   });
 
   it("should clone an element subtree with fresh ids", () => {

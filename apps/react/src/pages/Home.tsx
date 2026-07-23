@@ -49,8 +49,8 @@ export function Home() {
         </div>
 
         <p className="note">
-          Admin lives in the Next.js app at{" "}
-          <a href="http://localhost:3000/admin">localhost:3000/admin</a>
+          Admin lives in Strapi at{" "}
+          <a href="http://localhost:1338/admin">localhost:1338/admin</a>
           {" · "}
           <a href="/showcase">View component showcase</a>
           {" · "}

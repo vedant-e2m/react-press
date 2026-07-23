@@ -3,7 +3,7 @@
   "version": 1,
   "content": [
     {
-      "id": "showcase-menu-anchor-122",
+      "id": "showcase-menu-anchor-128",
       "type": "menu-anchor",
       "props": {
         "id": "top"
@@ -130,13 +130,13 @@
                 "buttonType": "info",
                 "icon": "→",
                 "iconPosition": "after",
-                "buttonId": "",
+                "buttonId": "hero-order-btn",
                 "textColor": "#6d5dfc",
                 "backgroundColor": "#ffffff",
                 "borderRadius": 999,
                 "paddingX": 32,
                 "paddingY": 14,
-                "iconSpacing": 8
+                "iconSpacing": 10
               },
               "styles": {
                 "desktop": {
@@ -151,9 +151,9 @@
                 "text": "View Vendors",
                 "url": "#gallery",
                 "align": "center",
-                "size": "md",
+                "size": "lg",
                 "buttonType": "info",
-                "icon": "",
+                "icon": "▦",
                 "iconPosition": "before",
                 "buttonId": "",
                 "textColor": "#ffffff",
@@ -211,7 +211,7 @@
       ]
     },
     {
-      "id": "showcase-container-022",
+      "id": "showcase-container-025",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -239,7 +239,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-019",
+          "id": "showcase-heading-022",
           "type": "heading",
           "props": {
             "text": "Layout Components",
@@ -264,7 +264,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-020",
+          "id": "showcase-paragraph-023",
           "type": "paragraph",
           "props": {
             "text": "Div block, flexbox, grid, and container — the structural backbone of every page.",
@@ -292,7 +292,7 @@
           }
         },
         {
-          "id": "showcase-divider-021",
+          "id": "showcase-divider-024",
           "type": "divider",
           "props": {
             "style": "solid",
@@ -319,7 +319,8 @@
             "rows": 1,
             "gap": 24,
             "justify": "stretch",
-            "align": "stretch"
+            "align": "stretch",
+            "tag": "section"
           },
           "styles": {
             "desktop": {
@@ -334,7 +335,7 @@
               "type": "div-block",
               "props": {
                 "tag": "section",
-                "link": ""
+                "link": "#div-block-demo"
               },
               "styles": {
                 "desktop": {
@@ -397,9 +398,9 @@
               "id": "showcase-flexbox-013",
               "type": "flexbox",
               "props": {
-                "contentWidth": "full",
-                "tag": "div",
-                "link": ""
+                "contentWidth": "boxed",
+                "tag": "section",
+                "link": "#flexbox-demo"
               },
               "styles": {
                 "desktop": {
@@ -424,14 +425,16 @@
                     "icon": "▦",
                     "view": "stacked",
                     "shape": "circle",
-                    "link": "",
+                    "link": "#icon",
                     "align": "center",
                     "size": 36,
-                    "rotate": 0,
-                    "padding": 0,
-                    "fitToSize": false,
+                    "rotate": 15,
+                    "padding": 6,
+                    "fitToSize": true,
                     "primaryColor": "#6d5dfc",
-                    "secondaryColor": "#fff"
+                    "secondaryColor": "#fff",
+                    "borderWidth": 2,
+                    "borderRadius": 50
                   },
                   "styles": {
                     "desktop": {
@@ -446,7 +449,7 @@
                     "icon": "▭",
                     "view": "framed",
                     "shape": "square",
-                    "link": "",
+                    "link": "#icon-framed",
                     "align": "center",
                     "size": 36,
                     "rotate": 0,
@@ -466,7 +469,82 @@
           ]
         },
         {
-          "id": "showcase-spacer-015",
+          "id": "showcase-container-017",
+          "type": "container",
+          "props": {
+            "containerLayout": "grid",
+            "contentWidth": "boxed",
+            "width": 100,
+            "minHeight": 120,
+            "direction": "row",
+            "justify": "center",
+            "align": "center",
+            "gap": 16,
+            "wrap": "wrap"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {
+                "display": "grid",
+                "gridTemplateColumns": "1fr 1fr",
+                "paddingTop": 24,
+                "paddingBottom": 24,
+                "paddingLeft": 24,
+                "paddingRight": 24,
+                "backgroundColor": "#ecfdf5",
+                "borderRadius": 12
+              }
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-paragraph-015",
+              "type": "paragraph",
+              "props": {
+                "text": "Grid-layout container with boxed content width.",
+                "tag": "p",
+                "link": "",
+                "dropCap": false,
+                "columns": 1,
+                "columnGap": 16,
+                "align": "center",
+                "color": "",
+                "linkColor": "",
+                "fontSize": 0,
+                "lineHeight": 0
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-icon-016",
+              "type": "icon",
+              "props": {
+                "icon": "▦",
+                "view": "stacked",
+                "shape": "square",
+                "link": "",
+                "align": "center",
+                "size": 40,
+                "rotate": 0,
+                "padding": 0,
+                "fitToSize": false,
+                "primaryColor": "#059669",
+                "secondaryColor": "#fff"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-spacer-018",
           "type": "spacer",
           "props": {
             "height": 16
@@ -478,7 +556,7 @@
           }
         },
         {
-          "id": "showcase-container-018",
+          "id": "showcase-container-021",
           "type": "container",
           "props": {
             "containerLayout": "flexbox",
@@ -507,7 +585,7 @@
           },
           "children": [
             {
-              "id": "showcase-heading-016",
+              "id": "showcase-heading-019",
               "type": "heading",
               "props": {
                 "text": "Nested Container",
@@ -527,7 +605,7 @@
               }
             },
             {
-              "id": "showcase-read-more-017",
+              "id": "showcase-read-more-020",
               "type": "read-more",
               "props": {
                 "text": "Explore leasing options →",
@@ -544,7 +622,7 @@
       ]
     },
     {
-      "id": "showcase-container-037",
+      "id": "showcase-container-042",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -572,7 +650,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-034",
+          "id": "showcase-heading-039",
           "type": "heading",
           "props": {
             "text": "Typography & Basic",
@@ -597,7 +675,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-035",
+          "id": "showcase-paragraph-040",
           "type": "paragraph",
           "props": {
             "text": "Headings, paragraphs, rich text, spacers, and dividers with full style control.",
@@ -625,7 +703,7 @@
           }
         },
         {
-          "id": "showcase-divider-036",
+          "id": "showcase-divider-041",
           "type": "divider",
           "props": {
             "style": "solid",
@@ -645,7 +723,7 @@
           }
         },
         {
-          "id": "showcase-grid-033",
+          "id": "showcase-grid-038",
           "type": "grid",
           "props": {
             "columns": 2,
@@ -661,7 +739,7 @@
           },
           "children": [
             {
-              "id": "showcase-div-block-027",
+              "id": "showcase-div-block-030",
               "type": "div-block",
               "props": {
                 "tag": "div",
@@ -674,18 +752,18 @@
               },
               "children": [
                 {
-                  "id": "showcase-heading-023",
+                  "id": "showcase-heading-026",
                   "type": "heading",
                   "props": {
                     "text": "Heading XL",
                     "tag": "h2",
-                    "link": "",
+                    "link": "#heading-demo",
                     "size": "xl",
                     "align": "left",
-                    "color": "",
-                    "fontFamily": "",
-                    "fontWeight": 0,
-                    "textShadow": ""
+                    "color": "#111827",
+                    "fontFamily": "Georgia, serif",
+                    "fontWeight": 700,
+                    "textShadow": "0 2px 8px rgba(0,0,0,0.12)"
                   },
                   "styles": {
                     "desktop": {
@@ -694,13 +772,13 @@
                   }
                 },
                 {
-                  "id": "showcase-heading-024",
+                  "id": "showcase-heading-027",
                   "type": "heading",
                   "props": {
-                    "text": "Heading Medium",
-                    "tag": "h3",
+                    "text": "Heading Small",
+                    "tag": "h4",
                     "link": "",
-                    "size": "medium",
+                    "size": "small",
                     "align": "left",
                     "color": "",
                     "fontFamily": "",
@@ -714,20 +792,20 @@
                   }
                 },
                 {
-                  "id": "showcase-paragraph-025",
+                  "id": "showcase-paragraph-028",
                   "type": "paragraph",
                   "props": {
                     "text": "Drop cap paragraph with multi-column support. Emeryville Public Market energizes the environment from morning through evening.",
                     "tag": "p",
-                    "link": "",
+                    "link": "#paragraph-demo",
                     "dropCap": true,
                     "columns": 2,
                     "columnGap": 24,
                     "align": "justify",
-                    "color": "",
-                    "linkColor": "",
-                    "fontSize": 0,
-                    "lineHeight": 0
+                    "color": "#374151",
+                    "linkColor": "#6d5dfc",
+                    "fontSize": 16,
+                    "lineHeight": 1.7
                   },
                   "styles": {
                     "desktop": {
@@ -736,7 +814,7 @@
                   }
                 },
                 {
-                  "id": "showcase-text-editor-026",
+                  "id": "showcase-text-editor-029",
                   "type": "text-editor",
                   "props": {
                     "text": "<p><strong>Rich text editor</strong> supports <em>HTML markup</em>, <a href='#'>links</a>, and styled content.</p>",
@@ -758,7 +836,7 @@
               ]
             },
             {
-              "id": "showcase-div-block-032",
+              "id": "showcase-div-block-037",
               "type": "div-block",
               "props": {
                 "tag": "div",
@@ -771,7 +849,7 @@
               },
               "children": [
                 {
-                  "id": "showcase-divider-028",
+                  "id": "showcase-divider-031",
                   "type": "divider",
                   "props": {
                     "style": "dashed",
@@ -791,12 +869,12 @@
                   }
                 },
                 {
-                  "id": "showcase-text-path-029",
+                  "id": "showcase-text-path-032",
                   "type": "text-path",
                   "props": {
                     "text": "Curvy Text Path Widget",
                     "pathType": "wave",
-                    "link": "",
+                    "link": "#text-path",
                     "align": "center",
                     "direction": "default",
                     "showPath": true
@@ -808,7 +886,41 @@
                   }
                 },
                 {
-                  "id": "showcase-menu-anchor-030",
+                  "id": "showcase-text-path-033",
+                  "type": "text-path",
+                  "props": {
+                    "text": "Arc Path · Reversed",
+                    "pathType": "arc",
+                    "link": "",
+                    "align": "start",
+                    "direction": "reversed",
+                    "showPath": true
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-text-path-034",
+                  "type": "text-path",
+                  "props": {
+                    "text": "Circle Path",
+                    "pathType": "circle",
+                    "link": "",
+                    "align": "end",
+                    "direction": "default",
+                    "showPath": false
+                  },
+                  "styles": {
+                    "desktop": {
+                      "normal": {}
+                    }
+                  }
+                },
+                {
+                  "id": "showcase-menu-anchor-035",
                   "type": "menu-anchor",
                   "props": {
                     "id": "vendors"
@@ -820,7 +932,7 @@
                   }
                 },
                 {
-                  "id": "showcase-html-031",
+                  "id": "showcase-html-036",
                   "type": "html",
                   "props": {
                     "html": "<p style='padding:12px 16px;background:#fef3c7;border-radius:8px;color:#92400e'><strong>HTML widget:</strong> Custom markup block for advanced layouts.</p>"
@@ -838,7 +950,7 @@
       ]
     },
     {
-      "id": "showcase-container-050",
+      "id": "showcase-container-055",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -866,7 +978,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-047",
+          "id": "showcase-heading-052",
           "type": "heading",
           "props": {
             "text": "Media & Embeds",
@@ -891,7 +1003,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-048",
+          "id": "showcase-paragraph-053",
           "type": "paragraph",
           "props": {
             "text": "Images, galleries, carousels, video, YouTube, and SVG assets.",
@@ -919,7 +1031,7 @@
           }
         },
         {
-          "id": "showcase-divider-049",
+          "id": "showcase-divider-054",
           "type": "divider",
           "props": {
             "style": "solid",
@@ -931,186 +1043,6 @@
             "addElement": "icon",
             "text": "",
             "icon": "★"
-          },
-          "styles": {
-            "desktop": {
-              "normal": {}
-            }
-          }
-        },
-        {
-          "id": "showcase-grid-040",
-          "type": "grid",
-          "props": {
-            "columns": 2,
-            "rows": 1,
-            "gap": 24,
-            "justify": "stretch",
-            "align": "stretch"
-          },
-          "styles": {
-            "desktop": {
-              "normal": {}
-            }
-          },
-          "children": [
-            {
-              "id": "showcase-image-038",
-              "type": "image",
-              "props": {
-                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
-                "alt": "Food hall spread",
-                "caption": "The food hall at dusk",
-                "captionType": "custom",
-                "link": "",
-                "linkTo": "none",
-                "objectFit": "cover",
-                "align": "center",
-                "width": 100,
-                "height": 0,
-                "opacity": 1,
-                "borderRadius": 12
-              },
-              "styles": {
-                "desktop": {
-                  "normal": {}
-                }
-              }
-            },
-            {
-              "id": "showcase-image-box-039",
-              "type": "image-box",
-              "props": {
-                "image": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
-                "title": "Image Box",
-                "description": "Image with title, description, and configurable position.",
-                "link": "",
-                "titleTag": "h3",
-                "imagePosition": "top",
-                "align": "left",
-                "verticalAlign": "top",
-                "imageSpacing": 15,
-                "contentSpacing": 0,
-                "imageWidth": 100,
-                "imageHeight": 0,
-                "objectFit": "cover",
-                "imageBorderRadius": 12,
-                "imageOpacity": 100,
-                "titleColor": "#111827",
-                "titleFontSize": 22,
-                "descriptionColor": "#6b7280"
-              },
-              "styles": {
-                "desktop": {
-                  "normal": {}
-                }
-              }
-            }
-          ]
-        },
-        {
-          "id": "showcase-gallery-041",
-          "type": "gallery",
-          "props": {
-            "images": [
-              {
-                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
-                "alt": "Food hall",
-                "title": "Curated vendors",
-                "description": "Global flavors under one roof"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
-                "alt": "Market interior",
-                "title": "Community hub",
-                "description": "Retail, office, and life science"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
-                "alt": "Vendor stall",
-                "title": "Local favorites",
-                "description": "From ramen to rooftop yoga"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
-                "alt": "Coffee bar",
-                "title": "Morning rituals",
-                "description": "Artisan coffee and tea"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
-                "alt": "Wellness studio",
-                "title": "Move & connect",
-                "description": "Fitness and wellness vendors"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
-                "alt": "Dining room",
-                "title": "Evening energy",
-                "description": "A destination from dawn to dusk"
-              }
-            ],
-            "columns": "3",
-            "linkTo": "file",
-            "caption": "title",
-            "lightbox": "yes",
-            "orderBy": "default",
-            "spacing": 10,
-            "gap": "extended",
-            "borderRadius": 8,
-            "captionColor": "#374151",
-            "captionAlign": "center",
-            "captionSpacing": 8
-          },
-          "styles": {
-            "desktop": {
-              "normal": {}
-            }
-          }
-        },
-        {
-          "id": "showcase-carousel-042",
-          "type": "carousel",
-          "props": {
-            "images": [
-              {
-                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
-                "alt": "Food hall"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
-                "alt": "Market interior"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
-                "alt": "Vendor stall"
-              },
-              {
-                "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
-                "alt": "Coffee bar"
-              }
-            ],
-            "slidesToShow": "3",
-            "slidesToScroll": "1",
-            "navigation": "both",
-            "imageSpacing": 16,
-            "carouselName": "vendor-carousel",
-            "imageStretch": "yes",
-            "linkTo": "none",
-            "lightbox": "yes",
-            "autoplay": true,
-            "pauseOnHover": true,
-            "autoplaySpeed": 5000,
-            "infinite": true,
-            "effect": "slide",
-            "speed": 500,
-            "direction": "ltr",
-            "arrowSize": 20,
-            "arrowColor": "#6d5dfc",
-            "dotSize": 8,
-            "dotColor": "#d1d5db",
-            "activeDotColor": "#6d5dfc",
-            "borderRadius": 8
           },
           "styles": {
             "desktop": {
@@ -1135,19 +1067,22 @@
           },
           "children": [
             {
-              "id": "showcase-video-043",
-              "type": "video",
+              "id": "showcase-image-043",
+              "type": "image",
               "props": {
-                "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                "poster": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
-                "autoplay": false,
-                "controls": true,
-                "loop": true,
-                "muted": true,
-                "playsInline": true,
-                "preload": "metadata",
-                "aspectRatio": "16:9",
-                "download": true
+                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+                "alt": "Food hall spread",
+                "caption": "The food hall at dusk",
+                "captionType": "custom",
+                "link": "#gallery",
+                "linkTo": "custom",
+                "objectFit": "cover",
+                "align": "center",
+                "width": 100,
+                "height": 280,
+                "opacity": 0.95,
+                "borderRadius": 12,
+                "resolution": "large"
               },
               "styles": {
                 "desktop": {
@@ -1156,11 +1091,28 @@
               }
             },
             {
-              "id": "showcase-youtube-044",
-              "type": "youtube",
+              "id": "showcase-image-box-044",
+              "type": "image-box",
               "props": {
-                "videoUrl": "https://www.youtube.com/watch?v=ScMzIvxBSi4",
-                "title": "Public Market Tour"
+                "image": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
+                "title": "Image Box",
+                "description": "Image with title, description, and configurable position.",
+                "link": "#image-box",
+                "titleTag": "h3",
+                "imagePosition": "left",
+                "align": "left",
+                "verticalAlign": "middle",
+                "imageSpacing": 20,
+                "contentSpacing": 8,
+                "imageWidth": 40,
+                "imageHeight": 160,
+                "objectFit": "cover",
+                "imageBorderRadius": 12,
+                "imageOpacity": 90,
+                "titleColor": "#111827",
+                "titleFontSize": 22,
+                "descriptionColor": "#6b7280",
+                "descriptionFontSize": 15
               },
               "styles": {
                 "desktop": {
@@ -1171,7 +1123,197 @@
           ]
         },
         {
-          "id": "showcase-svg-046",
+          "id": "showcase-gallery-046",
+          "type": "gallery",
+          "props": {
+            "images": [
+              {
+                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+                "alt": "Food hall",
+                "title": "Curated vendors",
+                "description": "Global flavors under one roof",
+                "url": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
+                "alt": "Market interior",
+                "title": "Community hub",
+                "description": "Retail, office, and life science",
+                "url": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
+                "alt": "Vendor stall",
+                "title": "Local favorites",
+                "description": "From ramen to rooftop yoga",
+                "url": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+                "alt": "Coffee bar",
+                "title": "Morning rituals",
+                "description": "Artisan coffee and tea",
+                "url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
+                "alt": "Wellness studio",
+                "title": "Move & connect",
+                "description": "Fitness and wellness vendors",
+                "url": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
+                "alt": "Dining room",
+                "title": "Evening energy",
+                "description": "A destination from dawn to dusk",
+                "url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80"
+              }
+            ],
+            "columns": "3",
+            "linkTo": "custom",
+            "caption": "description",
+            "lightbox": "yes",
+            "orderBy": "random",
+            "spacing": 14,
+            "gap": "custom",
+            "borderRadius": 8,
+            "captionColor": "#374151",
+            "captionAlign": "center",
+            "borderColor": "#d1d5db",
+            "borderWidth": 1,
+            "captionSpacing": 8
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-carousel-047",
+          "type": "carousel",
+          "props": {
+            "images": [
+              {
+                "src": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+                "alt": "Food hall",
+                "url": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80",
+                "alt": "Market interior",
+                "url": "https://images.unsplash.com/photo-1441986300917-6466bd253576?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80",
+                "alt": "Vendor stall",
+                "url": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80"
+              },
+              {
+                "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+                "alt": "Coffee bar",
+                "url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+              }
+            ],
+            "slidesToShow": "3",
+            "slidesToScroll": "2",
+            "navigation": "both",
+            "imageSpacing": 16,
+            "carouselName": "vendor-carousel",
+            "imageStretch": "yes",
+            "linkTo": "file",
+            "lightbox": "default",
+            "autoplay": true,
+            "pauseOnHover": true,
+            "autoplaySpeed": 4000,
+            "infinite": true,
+            "effect": "fade",
+            "speed": 600,
+            "direction": "ltr",
+            "arrowSize": 24,
+            "arrowColor": "#6d5dfc",
+            "dotSize": 10,
+            "dotColor": "#d1d5db",
+            "activeDotColor": "#6d5dfc",
+            "borderRadius": 8
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-050",
+          "type": "grid",
+          "props": {
+            "columns": 2,
+            "rows": 1,
+            "gap": 24,
+            "justify": "stretch",
+            "align": "stretch"
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          },
+          "children": [
+            {
+              "id": "showcase-video-048",
+              "type": "video",
+              "props": {
+                "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+                "start": 0,
+                "end": 5,
+                "poster": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
+                "posterEnabled": true,
+                "posterResolution": "large",
+                "autoplay": false,
+                "controls": true,
+                "loop": true,
+                "muted": true,
+                "playsInline": true,
+                "preload": "auto",
+                "aspectRatio": "16:9",
+                "download": false
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            },
+            {
+              "id": "showcase-youtube-049",
+              "type": "youtube",
+              "props": {
+                "videoUrl": "https://www.youtube.com/watch?v=ScMzIvxBSi4",
+                "videoId": "",
+                "title": "Public Market Tour",
+                "start": 10,
+                "end": 120,
+                "autoplay": false,
+                "mute": true,
+                "loop": true,
+                "lazyload": true,
+                "playerControls": true,
+                "captions": true,
+                "privacyMode": true,
+                "rel": false,
+                "aspectRatio": "16:9"
+              },
+              "styles": {
+                "desktop": {
+                  "normal": {}
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "showcase-svg-051",
           "type": "svg",
           "props": {
             "src": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Bitmap_Icon_Bookmark.svg",
@@ -1186,7 +1328,7 @@
       ]
     },
     {
-      "id": "showcase-container-068",
+      "id": "showcase-container-074",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -1214,7 +1356,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-065",
+          "id": "showcase-heading-071",
           "type": "heading",
           "props": {
             "text": "Content Blocks",
@@ -1239,7 +1381,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-066",
+          "id": "showcase-paragraph-072",
           "type": "paragraph",
           "props": {
             "text": "Icon boxes, testimonials, alerts, tabs, accordion, and toggle widgets.",
@@ -1267,7 +1409,7 @@
           }
         },
         {
-          "id": "showcase-divider-067",
+          "id": "showcase-divider-073",
           "type": "divider",
           "props": {
             "style": "solid",
@@ -1287,7 +1429,7 @@
           }
         },
         {
-          "id": "showcase-grid-054",
+          "id": "showcase-grid-059",
           "type": "grid",
           "props": {
             "columns": 3,
@@ -1303,28 +1445,32 @@
           },
           "children": [
             {
-              "id": "showcase-icon-box-051",
+              "id": "showcase-icon-box-056",
               "type": "icon-box",
               "props": {
                 "icon": "🍽",
                 "view": "stacked",
                 "title": "Food Hall",
                 "description": "Curated local culinary experiences from morning to evening.",
-                "link": "",
+                "link": "#food-hall",
                 "titleTag": "h3",
                 "iconPosition": "top",
                 "align": "center",
                 "verticalAlign": "top",
                 "iconSpacing": 15,
-                "contentSpacing": 0,
+                "contentSpacing": 6,
                 "iconSize": 32,
                 "iconRotate": 0,
-                "iconPadding": 0,
+                "iconPadding": 8,
                 "shape": "circle",
                 "primaryColor": "#6d5dfc",
                 "secondaryColor": "#ffffff",
+                "iconBorderWidth": 2,
+                "iconBorderRadius": 50,
                 "titleColor": "#111827",
-                "titleFontSize": 20
+                "titleFontSize": 20,
+                "descriptionColor": "#6b7280",
+                "descriptionFontSize": 14
               },
               "styles": {
                 "desktop": {
@@ -1333,7 +1479,7 @@
               }
             },
             {
-              "id": "showcase-icon-box-052",
+              "id": "showcase-icon-box-057",
               "type": "icon-box",
               "props": {
                 "icon": "🏢",
@@ -1342,17 +1488,18 @@
                 "description": "Innovation-driven spaces that activate the environment.",
                 "link": "",
                 "titleTag": "h3",
-                "iconPosition": "top",
-                "align": "center",
-                "verticalAlign": "top",
+                "iconPosition": "left",
+                "align": "left",
+                "verticalAlign": "middle",
                 "iconSpacing": 15,
                 "contentSpacing": 0,
-                "iconSize": 40,
+                "iconSize": 28,
                 "iconRotate": 0,
                 "iconPadding": 0,
                 "shape": "square",
                 "primaryColor": "#7c3aed",
                 "iconBorderWidth": 2,
+                "iconBorderRadius": 8,
                 "titleFontSize": 20
               },
               "styles": {
@@ -1362,7 +1509,7 @@
               }
             },
             {
-              "id": "showcase-icon-box-053",
+              "id": "showcase-icon-box-058",
               "type": "icon-box",
               "props": {
                 "icon": "🛍",
@@ -1371,9 +1518,9 @@
                 "description": "Seamless blend of retail experiences alongside dining.",
                 "link": "",
                 "titleTag": "h3",
-                "iconPosition": "top",
-                "align": "center",
-                "verticalAlign": "top",
+                "iconPosition": "bottom",
+                "align": "right",
+                "verticalAlign": "bottom",
                 "iconSpacing": 15,
                 "contentSpacing": 0,
                 "iconSize": 36,
@@ -1392,19 +1539,22 @@
           ]
         },
         {
-          "id": "showcase-testimonial-055",
+          "id": "showcase-testimonial-060",
           "type": "testimonial",
           "props": {
             "content": "The Public Market isn't just where we eat — it's where our team connects, discovers, and feels part of a thriving community.",
             "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80",
             "name": "Sarah Chen",
             "title": "Local Entrepreneur",
-            "link": "",
+            "link": "#testimonial",
             "imagePosition": "aside",
             "align": "left",
             "textColor": "#374151",
+            "contentFontSize": 17,
             "nameColor": "#111827",
+            "nameFontSize": 18,
             "jobColor": "#6b7280",
+            "jobFontSize": 14,
             "imageSize": 72,
             "imageBorderRadius": 50
           },
@@ -1415,7 +1565,7 @@
           }
         },
         {
-          "id": "showcase-grid-060",
+          "id": "showcase-grid-065",
           "type": "grid",
           "props": {
             "columns": 2,
@@ -1431,7 +1581,7 @@
           },
           "children": [
             {
-              "id": "showcase-alert-056",
+              "id": "showcase-alert-061",
               "type": "alert",
               "props": {
                 "alertType": "info",
@@ -1441,7 +1591,14 @@
                 "icon": "ℹ",
                 "backgroundColor": "#eff6ff",
                 "borderColor": "#3b82f6",
-                "titleColor": "#1e40af"
+                "borderWidth": 5,
+                "titleColor": "#1e40af",
+                "titleFontSize": 16,
+                "titleFontWeight": 700,
+                "descriptionColor": "#1e3a8a",
+                "descriptionFontSize": 14,
+                "dismissSize": 18,
+                "dismissColor": "#3b82f6"
               },
               "styles": {
                 "desktop": {
@@ -1450,7 +1607,7 @@
               }
             },
             {
-              "id": "showcase-alert-057",
+              "id": "showcase-alert-062",
               "type": "alert",
               "props": {
                 "alertType": "success",
@@ -1468,7 +1625,7 @@
               }
             },
             {
-              "id": "showcase-alert-058",
+              "id": "showcase-alert-063",
               "type": "alert",
               "props": {
                 "alertType": "warning",
@@ -1486,7 +1643,7 @@
               }
             },
             {
-              "id": "showcase-alert-059",
+              "id": "showcase-alert-064",
               "type": "alert",
               "props": {
                 "alertType": "danger",
@@ -1506,7 +1663,7 @@
           ]
         },
         {
-          "id": "showcase-tabs-061",
+          "id": "showcase-tabs-066",
           "type": "tabs",
           "props": {
             "items": [
@@ -1524,7 +1681,7 @@
               }
             ],
             "direction": "horizontal",
-            "align": "start",
+            "align": "stretch",
             "titleColor": "#6b7280",
             "activeTitleColor": "#6d5dfc",
             "contentColor": "#374151",
@@ -1537,7 +1694,38 @@
           }
         },
         {
-          "id": "showcase-grid-064",
+          "id": "showcase-tabs-067",
+          "type": "tabs",
+          "props": {
+            "items": [
+              {
+                "title": "Morning",
+                "content": "Coffee, pastries, and fresh juice bars open from 7am."
+              },
+              {
+                "title": "Afternoon",
+                "content": "Lunch vendors, grab-and-go options, and coworking lounges."
+              },
+              {
+                "title": "Evening",
+                "content": "Dinner service, live music, and rooftop events."
+              }
+            ],
+            "direction": "vertical",
+            "align": "start",
+            "titleColor": "#6b7280",
+            "activeTitleColor": "#7c3aed",
+            "contentColor": "#374151",
+            "titleSpacing": 12
+          },
+          "styles": {
+            "desktop": {
+              "normal": {}
+            }
+          }
+        },
+        {
+          "id": "showcase-grid-070",
           "type": "grid",
           "props": {
             "columns": 2,
@@ -1553,7 +1741,7 @@
           },
           "children": [
             {
-              "id": "showcase-accordion-062",
+              "id": "showcase-accordion-068",
               "type": "accordion",
               "props": {
                 "items": [
@@ -1574,18 +1762,22 @@
                 "iconPosition": "end",
                 "expandIcon": "+",
                 "collapseIcon": "−",
-                "titleTag": "div",
-                "faqSchema": false,
+                "titleTag": "h4",
+                "faqSchema": true,
                 "defaultState": "expanded_first",
                 "maxExpanded": "one",
                 "animationDuration": 400,
                 "spaceBetween": 8,
-                "distanceFromContent": 0,
+                "distanceFromContent": 8,
                 "titleBackground": "#f9fafb",
                 "titleColor": "#111827",
                 "activeTitleColor": "#6d5dfc",
+                "titleFontSize": 16,
+                "iconSize": 14,
+                "iconColor": "#6d5dfc",
                 "contentBackground": "#ffffff",
-                "contentColor": "#4b5563"
+                "contentColor": "#4b5563",
+                "contentFontSize": 14
               },
               "styles": {
                 "desktop": {
@@ -1594,7 +1786,7 @@
               }
             },
             {
-              "id": "showcase-toggle-063",
+              "id": "showcase-toggle-069",
               "type": "toggle",
               "props": {
                 "items": [
@@ -1622,7 +1814,7 @@
       ]
     },
     {
-      "id": "showcase-container-081",
+      "id": "showcase-container-087",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -1650,7 +1842,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-078",
+          "id": "showcase-heading-084",
           "type": "heading",
           "props": {
             "text": "Stats & Indicators",
@@ -1675,7 +1867,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-079",
+          "id": "showcase-paragraph-085",
           "type": "paragraph",
           "props": {
             "text": "Counters, progress bars, star ratings, and icon lists.",
@@ -1703,7 +1895,7 @@
           }
         },
         {
-          "id": "showcase-divider-080",
+          "id": "showcase-divider-086",
           "type": "divider",
           "props": {
             "style": "solid",
@@ -1723,7 +1915,7 @@
           }
         },
         {
-          "id": "showcase-grid-072",
+          "id": "showcase-grid-078",
           "type": "grid",
           "props": {
             "columns": 3,
@@ -1739,19 +1931,21 @@
           },
           "children": [
             {
-              "id": "showcase-counter-069",
+              "id": "showcase-counter-075",
               "type": "counter",
               "props": {
                 "start": 0,
                 "end": 40,
-                "prefix": "",
+                "prefix": "~",
                 "suffix": "+",
                 "duration": 2000,
                 "separator": "default",
                 "title": "Vendors",
-                "titleTag": "div",
+                "titleTag": "h4",
                 "titlePosition": "after",
                 "numberAlign": "center",
+                "titleGap": 8,
+                "numberGap": 4,
                 "numberColor": "#6d5dfc",
                 "numberFontSize": 56,
                 "titleColor": "#6b7280",
@@ -1764,15 +1958,15 @@
               }
             },
             {
-              "id": "showcase-counter-070",
+              "id": "showcase-counter-076",
               "type": "counter",
               "props": {
-                "start": 0,
+                "start": 100,
                 "end": 1200,
                 "prefix": "",
                 "suffix": "K",
-                "duration": 2000,
-                "separator": "default",
+                "duration": 2500,
+                "separator": "dot",
                 "title": "Annual Visitors",
                 "titleTag": "div",
                 "titlePosition": "before",
@@ -1788,7 +1982,7 @@
               }
             },
             {
-              "id": "showcase-counter-071",
+              "id": "showcase-counter-077",
               "type": "counter",
               "props": {
                 "start": 0,
@@ -1796,11 +1990,11 @@
                 "prefix": "",
                 "suffix": " yrs",
                 "duration": 2000,
-                "separator": "default",
+                "separator": "space",
                 "title": "Community Hub",
                 "titleTag": "div",
-                "titlePosition": "after",
-                "numberAlign": "center",
+                "titlePosition": "start",
+                "numberAlign": "stretch",
                 "numberColor": "#059669",
                 "numberFontSize": 56
               },
@@ -1813,7 +2007,7 @@
           ]
         },
         {
-          "id": "showcase-grid-075",
+          "id": "showcase-grid-081",
           "type": "grid",
           "props": {
             "columns": 2,
@@ -1829,11 +2023,11 @@
           },
           "children": [
             {
-              "id": "showcase-progress-073",
+              "id": "showcase-progress-079",
               "type": "progress",
               "props": {
                 "title": "Food Hall Occupancy",
-                "titleTag": "span",
+                "titleTag": "h4",
                 "displayTitle": true,
                 "progressType": "success",
                 "value": 92,
@@ -1843,6 +2037,8 @@
                 "borderRadius": 8,
                 "barColor": "#10b981",
                 "barBackground": "#e5e7eb",
+                "titleColor": "#111827",
+                "percentageColor": "#059669",
                 "innerTextColor": "#ffffff"
               },
               "styles": {
@@ -1852,19 +2048,22 @@
               }
             },
             {
-              "id": "showcase-progress-074",
+              "id": "showcase-progress-080",
               "type": "progress",
               "props": {
                 "title": "Event Calendar",
                 "titleTag": "span",
                 "displayTitle": true,
-                "progressType": "info",
+                "progressType": "warning",
                 "value": 78,
                 "displayPercentage": true,
                 "innerText": "",
                 "barHeight": 14,
                 "borderRadius": 8,
-                "barColor": "#3b82f6"
+                "barColor": "#f59e0b",
+                "barBackground": "#fef3c7",
+                "titleColor": "#92400e",
+                "percentageColor": "#b45309"
               },
               "styles": {
                 "desktop": {
@@ -1875,7 +2074,7 @@
           ]
         },
         {
-          "id": "showcase-rating-076",
+          "id": "showcase-rating-082",
           "type": "rating",
           "props": {
             "rating": 4.5,
@@ -1893,7 +2092,7 @@
           }
         },
         {
-          "id": "showcase-icon-list-077",
+          "id": "showcase-icon-list-083",
           "type": "icon-list",
           "props": {
             "layout": "traditional",
@@ -1904,17 +2103,17 @@
               {
                 "text": "Free Wi-Fi throughout the market",
                 "icon": "📶",
-                "url": ""
+                "url": "#wifi"
               },
               {
                 "text": "Pet-friendly outdoor seating",
                 "icon": "🐾",
-                "url": ""
+                "url": "#pets"
               },
               {
                 "text": "Accessible entrances and restrooms",
                 "icon": "♿",
-                "url": ""
+                "url": "#accessibility"
               },
               {
                 "text": "Live music every Thursday",
@@ -1923,13 +2122,14 @@
               }
             ],
             "divider": true,
-            "dividerStyle": "solid",
+            "dividerStyle": "dashed",
             "dividerColor": "#e5e7eb",
             "dividerWeight": 1,
             "iconColor": "#6d5dfc",
             "textColor": "#374151",
             "iconSize": 18,
-            "iconGap": 10
+            "iconGap": 10,
+            "textSize": 15
           },
           "styles": {
             "desktop": {
@@ -1940,7 +2140,7 @@
       ]
     },
     {
-      "id": "showcase-container-093",
+      "id": "showcase-container-099",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -1968,7 +2168,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-090",
+          "id": "showcase-heading-096",
           "type": "heading",
           "props": {
             "text": "Interactive & Social",
@@ -1993,7 +2193,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-091",
+          "id": "showcase-paragraph-097",
           "type": "paragraph",
           "props": {
             "text": "Forms, maps, social icons, and audio embeds.",
@@ -2021,7 +2221,7 @@
           }
         },
         {
-          "id": "showcase-divider-092",
+          "id": "showcase-divider-098",
           "type": "divider",
           "props": {
             "style": "solid",
@@ -2041,7 +2241,7 @@
           }
         },
         {
-          "id": "showcase-grid-088",
+          "id": "showcase-grid-094",
           "type": "grid",
           "props": {
             "columns": 2,
@@ -2057,7 +2257,7 @@
           },
           "children": [
             {
-              "id": "showcase-form-082",
+              "id": "showcase-form-088",
               "type": "form",
               "props": {
                 "fields": [
@@ -2086,7 +2286,7 @@
               }
             },
             {
-              "id": "showcase-div-block-087",
+              "id": "showcase-div-block-093",
               "type": "div-block",
               "props": {
                 "tag": "div",
@@ -2099,7 +2299,7 @@
               },
               "children": [
                 {
-                  "id": "showcase-heading-083",
+                  "id": "showcase-heading-089",
                   "type": "heading",
                   "props": {
                     "text": "Visit Us",
@@ -2119,17 +2319,17 @@
                   }
                 },
                 {
-                  "id": "showcase-google-maps-084",
+                  "id": "showcase-google-maps-090",
                   "type": "google-maps",
                   "props": {
                     "query": "5959 Shellmound St, Emeryville, CA 94608",
                     "zoom": 15,
                     "height": 280,
                     "blur": 0,
-                    "brightness": 100,
-                    "contrast": 105,
-                    "saturate": 110,
-                    "hue": 0
+                    "brightness": 105,
+                    "contrast": 110,
+                    "saturate": 120,
+                    "hue": 10
                   },
                   "styles": {
                     "desktop": {
@@ -2138,7 +2338,7 @@
                   }
                 },
                 {
-                  "id": "showcase-spacer-085",
+                  "id": "showcase-spacer-091",
                   "type": "spacer",
                   "props": {
                     "height": 20
@@ -2150,7 +2350,7 @@
                   }
                 },
                 {
-                  "id": "showcase-social-icons-086",
+                  "id": "showcase-social-icons-092",
                   "type": "social-icons",
                   "props": {
                     "items": [
@@ -2176,7 +2376,7 @@
                     "size": 20,
                     "spacing": 10,
                     "padding": 12,
-                    "color": "#ffffff",
+                    "primaryColor": "#ffffff",
                     "secondaryColor": "#6d5dfc"
                   },
                   "styles": {
@@ -2190,7 +2390,7 @@
           ]
         },
         {
-          "id": "showcase-audio-089",
+          "id": "showcase-audio-095",
           "type": "audio",
           "props": {
             "src": "https://soundcloud.com/forss/flickermood",
@@ -2215,7 +2415,7 @@
       ]
     },
     {
-      "id": "showcase-container-117",
+      "id": "showcase-container-123",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -2243,7 +2443,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-114",
+          "id": "showcase-heading-120",
           "type": "heading",
           "props": {
             "text": "WordPress & Legacy Widgets",
@@ -2268,7 +2468,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-115",
+          "id": "showcase-paragraph-121",
           "type": "paragraph",
           "props": {
             "text": "Shortcodes, WordPress blocks, and compatibility placeholders.",
@@ -2296,7 +2496,7 @@
           }
         },
         {
-          "id": "showcase-divider-116",
+          "id": "showcase-divider-122",
           "type": "divider",
           "props": {
             "style": "solid",
@@ -2316,7 +2516,7 @@
           }
         },
         {
-          "id": "showcase-grid-100",
+          "id": "showcase-grid-106",
           "type": "grid",
           "props": {
             "columns": 3,
@@ -2332,7 +2532,7 @@
           },
           "children": [
             {
-              "id": "showcase-shortcode-094",
+              "id": "showcase-shortcode-100",
               "type": "shortcode",
               "props": {
                 "code": "[public_market_vendors limit=\"6\"]"
@@ -2344,7 +2544,7 @@
               }
             },
             {
-              "id": "showcase-wordpress-095",
+              "id": "showcase-wordpress-101",
               "type": "wordpress",
               "props": {
                 "widget": "recent-posts",
@@ -2357,7 +2557,7 @@
               }
             },
             {
-              "id": "showcase-wp-image-096",
+              "id": "showcase-wp-image-102",
               "type": "wp-image",
               "props": {
                 "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
@@ -2371,13 +2571,13 @@
               }
             },
             {
-              "id": "showcase-wp-video-097",
+              "id": "showcase-wp-video-103",
               "type": "wp-video",
               "props": {
                 "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
                 "poster": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80",
                 "autoplay": false,
-                "loop": false
+                "loop": true
               },
               "styles": {
                 "desktop": {
@@ -2386,7 +2586,7 @@
               }
             },
             {
-              "id": "showcase-wp-block-098",
+              "id": "showcase-wp-block-104",
               "type": "wp-block",
               "props": {
                 "title": "Custom WordPress Block"
@@ -2398,7 +2598,7 @@
               }
             },
             {
-              "id": "showcase-sidebar-099",
+              "id": "showcase-sidebar-105",
               "type": "sidebar",
               "props": {
                 "sidebar": ""
@@ -2412,7 +2612,7 @@
           ]
         },
         {
-          "id": "showcase-grid-113",
+          "id": "showcase-grid-119",
           "type": "grid",
           "props": {
             "columns": 4,
@@ -2428,7 +2628,7 @@
           },
           "children": [
             {
-              "id": "showcase-search-101",
+              "id": "showcase-search-107",
               "type": "search",
               "props": {
                 "title": "Search"
@@ -2440,7 +2640,7 @@
               }
             },
             {
-              "id": "showcase-minimalist-102",
+              "id": "showcase-minimalist-108",
               "type": "minimalist",
               "props": {
                 "title": "Minimalist Link In Bio"
@@ -2452,7 +2652,7 @@
               }
             },
             {
-              "id": "showcase-pages-103",
+              "id": "showcase-pages-109",
               "type": "pages",
               "props": {
                 "title": "Pages"
@@ -2464,7 +2664,7 @@
               }
             },
             {
-              "id": "showcase-calendar-104",
+              "id": "showcase-calendar-110",
               "type": "calendar",
               "props": {
                 "title": "Calendar"
@@ -2476,7 +2676,7 @@
               }
             },
             {
-              "id": "showcase-archives-105",
+              "id": "showcase-archives-111",
               "type": "archives",
               "props": {
                 "title": "Archives"
@@ -2488,7 +2688,7 @@
               }
             },
             {
-              "id": "showcase-recent-posts-106",
+              "id": "showcase-recent-posts-112",
               "type": "recent-posts",
               "props": {
                 "title": "Recent Posts"
@@ -2500,7 +2700,7 @@
               }
             },
             {
-              "id": "showcase-recent-comments-107",
+              "id": "showcase-recent-comments-113",
               "type": "recent-comments",
               "props": {
                 "title": "Recent Comments"
@@ -2512,7 +2712,7 @@
               }
             },
             {
-              "id": "showcase-rss-108",
+              "id": "showcase-rss-114",
               "type": "rss",
               "props": {
                 "title": "RSS"
@@ -2524,7 +2724,7 @@
               }
             },
             {
-              "id": "showcase-tag-cloud-109",
+              "id": "showcase-tag-cloud-115",
               "type": "tag-cloud",
               "props": {
                 "title": "Tag Cloud"
@@ -2536,7 +2736,7 @@
               }
             },
             {
-              "id": "showcase-navigation-menu-110",
+              "id": "showcase-navigation-menu-116",
               "type": "navigation-menu",
               "props": {
                 "title": "Navigation Menu"
@@ -2548,7 +2748,7 @@
               }
             },
             {
-              "id": "showcase-custom-html-111",
+              "id": "showcase-custom-html-117",
               "type": "custom-html",
               "props": {
                 "title": "Custom HTML"
@@ -2560,7 +2760,7 @@
               }
             },
             {
-              "id": "showcase-block-112",
+              "id": "showcase-block-118",
               "type": "block",
               "props": {
                 "title": "Block"
@@ -2576,7 +2776,7 @@
       ]
     },
     {
-      "id": "showcase-container-121",
+      "id": "showcase-container-127",
       "type": "container",
       "props": {
         "containerLayout": "flexbox",
@@ -2602,7 +2802,7 @@
       },
       "children": [
         {
-          "id": "showcase-heading-118",
+          "id": "showcase-heading-124",
           "type": "heading",
           "props": {
             "text": "Don't Miss What's Next",
@@ -2622,7 +2822,7 @@
           }
         },
         {
-          "id": "showcase-paragraph-119",
+          "id": "showcase-paragraph-125",
           "type": "paragraph",
           "props": {
             "text": "© Public Market Emeryville — Built with NextPress Page Builder Component Showcase",
@@ -2644,7 +2844,7 @@
           }
         },
         {
-          "id": "showcase-button-120",
+          "id": "showcase-button-126",
           "type": "button",
           "props": {
             "text": "Back to Top",

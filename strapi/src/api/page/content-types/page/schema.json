@@ -31,7 +31,8 @@
       "type": "datetime"
     },
     "builder_data": {
-      "type": "json"
+      "type": "customField",
+      "customField": "plugin::page-builder.builder-document"
     },
     "seo_title": {
       "type": "string"

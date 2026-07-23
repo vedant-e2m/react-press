@@ -1,5 +1,13 @@
 import type { CSSProperties, JSX } from "react";
-import type { BuilderControl, BuilderControlSection, BuilderControlTab, BuilderElement, BuilderWidget } from "./types";
+import type {
+  BuilderBreakpoint,
+  BuilderControl,
+  BuilderControlSection,
+  BuilderControlTab,
+  BuilderElement,
+  BuilderHostProps,
+  BuilderWidget,
+} from "./types";
 
 const text = (key: string, label: string, defaultValue = ""): BuilderControl => ({
   key,
@@ -49,11 +57,48 @@ const htmlTagOptions = [
 ];
 const value = (props: Record<string, unknown>, key: string, fallback = "") =>
   typeof props[key] === "string" ? props[key] : fallback;
+const stringProp = (props: Record<string, unknown>, key: string, fallback = ""): string => {
+  const raw = props[key];
+  return typeof raw === "string" && raw.trim() !== "" ? raw : fallback;
+};
+
+const HTML_WIDGET_DEFAULT = '<div class="example">HTML Code</div>';
+
+/** Strips script tags and inline event handlers from custom HTML blocks. */
+function sanitizeWidgetHtml(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/\son\w+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, "")
+    .replace(/javascript:/gi, "");
+}
 const numeric = (props: Record<string, unknown>, key: string, fallback = 0) =>
   typeof props[key] === "number" ? props[key] : fallback;
 const items = (props: Record<string, unknown>, key: string) =>
   Array.isArray(props[key]) ? (props[key] as Array<Record<string, unknown>>) : [];
 const hasLinkedDescendant = (elements: BuilderElement[] = []): boolean => elements.some((child) => Boolean(child.props.link) || hasLinkedDescendant(child.children));
+
+const aspectRatios: Record<string, string> = {
+  "16:9": "56.25%",
+  "21:9": "42.85%",
+  "4:3": "75%",
+  "1:1": "100%",
+  "9:16": "177.77%",
+};
+
+/** Builds an HTML5 media fragment URL for start/end trim points. */
+function buildVideoSrc(props: Record<string, unknown>): string {
+  const src = value(props, "src");
+  if (!src) {
+    return "";
+  }
+  const start = numeric(props, "start", 0);
+  const end = numeric(props, "end", 0);
+  if (!start && !end) {
+    return src;
+  }
+  const fragment = end ? `${start},${end}` : String(start);
+  return `${src}#t=${fragment}`;
+}
 
 const headingTags = [
   ...["h1", "h2", "h3", "h4", "h5", "h6"].map((tag) => ({
@@ -65,13 +110,441 @@ const headingTags = [
   { label: "P", value: "p" },
 ];
 
+const headingSizePresets: Record<string, number> = {
+  small: 18,
+  medium: 28,
+  large: 36,
+  xl: 48,
+  xxl: 64,
+};
+
+const headingTagDefaults: Record<string, number> = {
+  h1: 48,
+  h2: 36,
+  h3: 28,
+  h4: 22,
+  h5: 18,
+  h6: 14,
+};
+
+function headingHasStyleFontSize(element: BuilderElement): boolean {
+  return elementStyleHas(element, "fontSize");
+}
+
+function elementStyleHas(element: BuilderElement, property: keyof CSSProperties): boolean {
+  return ["desktop", "tablet", "mobile"].some((breakpoint) => {
+    const styles = element.styles?.[breakpoint as keyof typeof element.styles]?.normal;
+    const val = styles?.[property];
+    return val !== undefined && val !== "";
+  });
+}
+
+function elementStyleHasAtBreakpoint(
+  element: BuilderElement,
+  property: keyof CSSProperties,
+  breakpoint: BuilderBreakpoint,
+): boolean {
+  const responsive = element.styles?.[breakpoint];
+  if (!responsive) {
+    return false;
+  }
+  return (["normal", "hover", "active", "focus"] as const).some((state) => {
+    const val = responsive[state]?.[property];
+    return val !== undefined && val !== "";
+  });
+}
+
+function propNumber(props: Record<string, unknown>, key: string, fallback = 0): number {
+  const raw = props[key];
+  if (typeof raw === "number" && Number.isFinite(raw)) {
+    return raw;
+  }
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const parsed = Number(raw);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return fallback;
+}
+
+const COUNTER_SEPARATOR_CHARS: Record<string, string> = {
+  default: ",",
+  dot: ".",
+  space: " ",
+  underline: "_",
+  apostrophe: "'",
+};
+
+/** Formats a counter end value with the selected thousand separator. */
+function formatCounterNumber(value: number, separator = "default"): string {
+  const negative = value < 0;
+  const digits = String(Math.abs(Math.trunc(value)));
+  if (separator === "none") {
+    return `${negative ? "-" : ""}${digits}`;
+  }
+  const sep = COUNTER_SEPARATOR_CHARS[separator] ?? COUNTER_SEPARATOR_CHARS.default;
+  const formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+  return `${negative ? "-" : ""}${formatted}`;
+}
+
+const FORM_INPUT_TYPES = new Set([
+  "text",
+  "email",
+  "tel",
+  "url",
+  "number",
+  "password",
+  "date",
+  "time",
+  "search",
+]);
+
+/** Coerces serialized form-field required flags onto a boolean. */
+function formFieldRequired(raw: unknown): boolean {
+  if (typeof raw === "boolean") {
+    return raw;
+  }
+  if (typeof raw === "string") {
+    return raw === "true" || raw === "1";
+  }
+  return Boolean(raw);
+}
+
+/** Builds a stable field name from the label with an index fallback. */
+function formFieldName(label: string, index: number): string {
+  const slug = label
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return slug || `field-${index + 1}`;
+}
+
+/** Parses select options from repeater field data. */
+function formFieldOptions(field: Record<string, unknown>): string[] {
+  if (Array.isArray(field.options)) {
+    return field.options.map(String).filter(Boolean);
+  }
+  const raw = value(field, "options");
+  if (!raw) {
+    return [];
+  }
+  return raw.split(",").map((option) => option.trim()).filter(Boolean);
+}
+
+/** Renders a single form field control based on its configured type. */
+function renderFormFieldControl(field: Record<string, unknown>, index: number): JSX.Element {
+  const label = value(field, "label");
+  const type = value(field, "type", "text");
+  const name = formFieldName(label, index);
+  const required = formFieldRequired(field.required);
+  const placeholder = value(field, "placeholder");
+
+  if (type === "textarea") {
+    return (
+      <textarea
+        name={name}
+        required={required}
+        placeholder={placeholder || undefined}
+      />
+    );
+  }
+
+  if (type === "select") {
+    const options = formFieldOptions(field);
+    return (
+      <select name={name} required={required}>
+        <option value="">{placeholder || "Select…"}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
+  if (type === "checkbox") {
+    return <input type="checkbox" name={name} required={required} />;
+  }
+
+  const inputType = FORM_INPUT_TYPES.has(type) ? type : "text";
+  return (
+    <input
+      type={inputType}
+      name={name}
+      required={required}
+      placeholder={placeholder || undefined}
+    />
+  );
+}
+
+function counterTextAlign(align: string): CSSProperties["textAlign"] | undefined {
+  if (align === "left" || align === "right" || align === "center") {
+    return align;
+  }
+  return undefined;
+}
+
+function counterFlexJustify(align: string): CSSProperties["justifyContent"] {
+  if (align === "left") {
+    return "flex-start";
+  }
+  if (align === "right") {
+    return "flex-end";
+  }
+  if (align === "stretch") {
+    return "stretch";
+  }
+  return "center";
+}
+
+const SPACER_HEIGHT_PROP_KEYS: Record<BuilderBreakpoint, string> = {
+  desktop: "height",
+  tablet: "heightTablet",
+  mobile: "heightMobile",
+};
+
+function spacerPropHeight(element: BuilderElement, breakpoint: BuilderBreakpoint): number | undefined {
+  const key = SPACER_HEIGHT_PROP_KEYS[breakpoint];
+  const raw = element.props[key];
+  if (raw === undefined || raw === "") {
+    return breakpoint === "desktop" ? propNumber(element.props, "height", 50) : undefined;
+  }
+  const value = propNumber(element.props, key, breakpoint === "desktop" ? 50 : 0);
+  return value > 0 ? value : undefined;
+}
+
+function buildSpacerHostStyle(element: BuilderElement, hostProps?: BuilderHostProps): CSSProperties {
+  const style: CSSProperties = { ...hostProps?.style };
+  if (!elementStyleHasAtBreakpoint(element, "height", "desktop")) {
+    style.height = spacerPropHeight(element, "desktop") ?? 50;
+  }
+  return style;
+}
+
+/** Emits tablet/mobile spacer heights from content props when the style panel has no height. */
+export function spacerHeightRulesFor(element: BuilderElement): string {
+  if (element.type !== "spacer") {
+    return "";
+  }
+
+  const selector = `[data-npb-id="${element.id}"]`;
+  const rules: string[] = [];
+  const tablet = spacerPropHeight(element, "tablet");
+  const mobile = spacerPropHeight(element, "mobile");
+
+  if (tablet !== undefined && !elementStyleHasAtBreakpoint(element, "height", "tablet")) {
+    rules.push(`@media(max-width:1024px){${selector}{height:${tablet}px}}`);
+  }
+  if (mobile !== undefined && !elementStyleHasAtBreakpoint(element, "height", "mobile")) {
+    rules.push(`@media(max-width:767px){${selector}{height:${mobile}px}}`);
+  }
+
+  return rules.join("");
+}
+
+function headingHasStyleProperty(element: BuilderElement, property: keyof CSSProperties): boolean {
+  return elementStyleHas(element, property);
+}
+
+/** Resolves image href from linkTo mode and custom link prop. */
+function resolveImageHref(props: Record<string, unknown>): string {
+  const linkTo = value(props, "linkTo", "none");
+  const customLink = value(props, "link");
+  if (linkTo === "file") {
+    return value(props, "src");
+  }
+  if (linkTo === "custom") {
+    return customLink;
+  }
+  return customLink;
+}
+
+/** Resolves caption text from captionType (custom or alt fallback). */
+function resolveImageCaption(props: Record<string, unknown>): string {
+  const captionType = value(props, "captionType", "custom");
+  if (captionType === "alt") {
+    return value(props, "alt");
+  }
+  return value(props, "caption");
+}
+
+/** Resolves gallery item caption from caption mode. */
+function resolveGalleryCaption(image: Record<string, unknown>, captionMode: string): string {
+  if (captionMode === "none") {
+    return "";
+  }
+  if (captionMode === "title") {
+    return value(image, "title");
+  }
+  if (captionMode === "description") {
+    return value(image, "description");
+  }
+  if (captionMode === "caption") {
+    return value(image, "caption");
+  }
+  return value(image, "alt");
+}
+
+/** Resolves gallery item href from linkTo mode. */
+function resolveGalleryHref(linkTo: string, image: Record<string, unknown>): string {
+  const src = value(image, "src");
+  if (linkTo === "file") {
+    return src;
+  }
+  if (linkTo === "custom" || linkTo === "attachment") {
+    return value(image, "url");
+  }
+  return "";
+}
+
+/** Returns true when gallery lightbox is enabled. */
+function isGalleryLightboxEnabled(lightbox: string): boolean {
+  return lightbox !== "no";
+}
+
+/** Stable shuffle for gallery random order (deterministic per seed). */
+function orderGalleryImages(
+  images: Array<Record<string, unknown>>,
+  orderBy: string,
+  seed: string,
+): Array<Record<string, unknown>> {
+  if (orderBy !== "random" || images.length < 2) {
+    return images;
+  }
+
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+
+  const copy = [...images];
+  for (let i = copy.length - 1; i > 0; i--) {
+    hash = (hash * 1664525 + 1013904223) >>> 0;
+    const j = hash % (i + 1);
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+
+  return copy;
+}
+
+/** Merges widget prop defaults onto the img element; style panel rules emit via renderer. */
+function buildImageInlineStyle(element: BuilderElement): CSSProperties {
+  const props = element.props;
+  const style: CSSProperties = {
+    display: "block",
+    maxWidth: "100%",
+  };
+
+  if (!elementStyleHas(element, "objectFit")) {
+    style.objectFit = value(props, "objectFit", "cover") as CSSProperties["objectFit"];
+  }
+
+  if (!elementStyleHas(element, "borderRadius")) {
+    const radius = numeric(props, "borderRadius", 0);
+    if (radius) {
+      style.borderRadius = radius;
+    }
+  }
+
+  if (!elementStyleHas(element, "opacity")) {
+    style.opacity = numeric(props, "opacity", 1);
+  }
+
+  if (!elementStyleHas(element, "width")) {
+    const width = numeric(props, "width", 100);
+    if (width) {
+      style.width = `${width}%`;
+    }
+  }
+
+  if (!elementStyleHas(element, "height")) {
+    const height = numeric(props, "height", 0);
+    if (height) {
+      style.height = height;
+    }
+  }
+
+  return style;
+}
+
+/** Resolves heading font size from style panel, size preset, or semantic tag defaults. */
+function resolveHeadingFontSize(element: BuilderElement, tag: string): number | undefined {
+  if (headingHasStyleFontSize(element)) {
+    return undefined;
+  }
+
+  const size = value(element.props, "size", "default");
+  if (size !== "default" && headingSizePresets[size]) {
+    return headingSizePresets[size];
+  }
+
+  return headingTagDefaults[tag];
+}
+
+const BUTTON_TYPE_PRESETS: Record<string, { backgroundColor: string; color: string }> = {
+  info: { backgroundColor: "#6d5dfc", color: "#ffffff" },
+  success: { backgroundColor: "#10b981", color: "#ffffff" },
+  warning: { backgroundColor: "#f59e0b", color: "#111827" },
+  danger: { backgroundColor: "#ef4444", color: "#ffffff" },
+  secondary: { backgroundColor: "#6b7280", color: "#ffffff" },
+  outline: { backgroundColor: "transparent", color: "#6d5dfc" },
+  link: { backgroundColor: "transparent", color: "#6d5dfc" },
+};
+
+/** Maps legacy size values from seed documents onto canonical class suffixes. */
+function normalizeButtonSize(size: string): string {
+  if (size === "small") return "sm";
+  if (size === "medium") return "md";
+  return size;
+}
+
+function elementUsesStyleProperty(element: BuilderElement, property: keyof CSSProperties): boolean {
+  return (["desktop", "tablet", "mobile"] as const).some((breakpoint) => {
+    const responsive = element.styles?.[breakpoint];
+    if (!responsive) {
+      return false;
+    }
+    return (
+      responsive.normal?.[property] !== undefined
+      || responsive.hover?.[property] !== undefined
+      || responsive.active?.[property] !== undefined
+      || responsive.focus?.[property] !== undefined
+    );
+  });
+}
+
 const alignOptions = ["left", "center", "right", "justify"].map((item) => ({
   label: item,
   value: item,
 }));
 
-const flexOptions = (key: string, label: string, options: string[], defaultValue: string) =>
-  select(key, label, options.map((item) => ({ label: item, value: item })), defaultValue);
+const dividerAlignOptions = ["left", "center", "right"].map((item) => ({
+  label: item,
+  value: item,
+}));
+
+function dividerLineStyle(props: Record<string, unknown>): CSSProperties {
+  const weight = numeric(props, "weight", 1);
+  return {
+    border: "none",
+    borderTop: `${weight}px ${value(props, "style", "solid")} ${value(props, "color", "#d0d5dd")}`,
+    height: 0,
+    margin: 0,
+  };
+}
+
+function dividerHorizontalMargins(align: string): CSSProperties {
+  if (align === "left") {
+    return { marginLeft: 0, marginRight: "auto" };
+  }
+  if (align === "right") {
+    return { marginLeft: "auto", marginRight: 0 };
+  }
+  return { marginInline: "auto" };
+}
 
 const choices = (
   key: string,
@@ -142,6 +615,49 @@ function FlexContainer({
   );
 }
 
+const BOXED_CONTENT_MAX = "var(--npb-content-width, 1200px)";
+
+/** Inline layout from container General props (always wins over stylesheet defaults). */
+function containerPropStyles(element: {
+  props: Record<string, unknown>;
+  styles?: import("./types").ResponsiveStyles;
+}): CSSProperties {
+  const props = element.props;
+  const isGrid = value(props, "containerLayout", "flexbox") === "grid";
+  const isBoxed = value(props, "contentWidth", "full") === "boxed";
+  const widthPct = numeric(props, "width", 100);
+  const result: CSSProperties = {};
+
+  if (isBoxed) {
+    result.width = `min(${widthPct}%, ${BOXED_CONTENT_MAX})`;
+    result.marginInline = "auto";
+  } else {
+    result.width = `${widthPct}%`;
+  }
+
+  result.display = isGrid ? "grid" : "flex";
+
+  if (!isGrid) {
+    result.flexDirection = value(props, "direction", "column") as CSSProperties["flexDirection"];
+    result.flexWrap = value(props, "wrap", "nowrap") as CSSProperties["flexWrap"];
+  }
+
+  result.justifyContent = value(props, "justify", "flex-start");
+  result.alignItems = value(props, "align", "stretch");
+
+  const gap = numeric(props, "gap", 20);
+  if (gap) {
+    result.gap = gap;
+  }
+
+  const minHeight = numeric(props, "minHeight", 0);
+  if (minHeight) {
+    result.minHeight = minHeight;
+  }
+
+  return result;
+}
+
 export const builderWidgets: BuilderWidget[] = [
   {
     type: "div-block",
@@ -150,6 +666,8 @@ export const builderWidgets: BuilderWidget[] = [
     icon: "▭",
     defaultProps: { tag: "div", link: "" },
     acceptsChildren: true,
+    /** Styles (size/flex/bg) must sit on the real layout root, not an outer chrome wrapper. */
+    rendersAsHost: true,
     controls: settings([
       select("tag", "HTML Tag", [
         { label: "Div", value: "div" },
@@ -164,12 +682,50 @@ export const builderWidgets: BuilderWidget[] = [
       ], "div"),
       { key: "link", label: "Link", type: "url" },
     ]),
-    render: ({ element, children }) => {
+    render: ({ element, children, hostProps }) => {
       const Tag = value(element.props, "tag", "div") as keyof JSX.IntrinsicElements;
       const link = value(element.props, "link");
-      const body = <Tag className="npb-div-block">{children}</Tag>;
-      if (!link) return body;
-      return hasLinkedDescendant(element.children) ? <div className="npb-div-link" data-href={link}>{body}</div> : <a href={link} className="npb-div-link">{body}</a>;
+      const hostClassName = ["npb-div-block", hostProps?.className].filter(Boolean).join(" ") || undefined;
+
+      if (!link) {
+        return (
+          <Tag
+            id={hostProps?.id}
+            data-npb-id={hostProps?.["data-npb-id"]}
+            className={hostClassName ?? "npb-div-block"}
+            style={hostProps?.style}
+          >
+            {children}
+          </Tag>
+        );
+      }
+
+      const inner = <Tag className="npb-div-block">{children}</Tag>;
+      const linkClassName = ["npb-div-link", hostProps?.className].filter(Boolean).join(" ");
+      if (hasLinkedDescendant(element.children)) {
+        return (
+          <div
+            id={hostProps?.id}
+            data-npb-id={hostProps?.["data-npb-id"]}
+            className={linkClassName}
+            style={hostProps?.style}
+            data-href={link}
+          >
+            {inner}
+          </div>
+        );
+      }
+      return (
+        <a
+          href={link}
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={linkClassName}
+          style={hostProps?.style}
+        >
+          {inner}
+        </a>
+      );
     },
   },
   {
@@ -183,6 +739,8 @@ export const builderWidgets: BuilderWidget[] = [
       link: "",
     },
     acceptsChildren: true,
+    /** Flex + size styles must target the real layout root so children are flex items. */
+    rendersAsHost: true,
     controls: [
       section("Settings", [
         select("tag", "HTML Tag", [
@@ -203,23 +761,57 @@ export const builderWidgets: BuilderWidget[] = [
         ], "full"),
       ], "general"),
     ],
-    render: ({ element, children }) => (
-      <div
-        className="npb-flexbox"
-        style={{
-          width: value(element.props, "contentWidth", "full") === "boxed" ? "min(100%, 1200px)" : "100%",
-          marginInline: value(element.props, "contentWidth", "full") === "boxed" ? "auto" : undefined,
-        }}
-      >
-        {(() => {
-          const Tag = value(element.props, "tag", "div") as keyof JSX.IntrinsicElements;
-          const link = value(element.props, "link");
-          const body = <Tag className="npb-flex-inner"><FlexContainer element={element}>{children}</FlexContainer></Tag>;
-          if (!link) return body;
-          return hasLinkedDescendant(element.children) ? <div className="npb-div-link" data-href={link}>{body}</div> : <a href={link} className="npb-div-link">{body}</a>;
-        })()}
-      </div>
-    ),
+    render: ({ element, children, hostProps }) => {
+      const Tag = value(element.props, "tag", "div") as keyof JSX.IntrinsicElements;
+      const link = value(element.props, "link");
+      const isBoxed = value(element.props, "contentWidth", "full") === "boxed";
+      const contentWidthStyle: CSSProperties = {
+        width: isBoxed ? "min(100%, 1200px)" : "100%",
+        marginInline: isBoxed ? "auto" : undefined,
+      };
+      const hostClassName = ["npb-flexbox", hostProps?.className].filter(Boolean).join(" ") || undefined;
+      const mergedStyle = { ...contentWidthStyle, ...hostProps?.style };
+
+      if (!link) {
+        return (
+          <Tag
+            id={hostProps?.id}
+            data-npb-id={hostProps?.["data-npb-id"]}
+            className={hostClassName ?? "npb-flexbox"}
+            style={mergedStyle}
+          >
+            {children}
+          </Tag>
+        );
+      }
+
+      const inner = <Tag className="npb-flexbox">{children}</Tag>;
+      const linkClassName = ["npb-div-link", hostProps?.className].filter(Boolean).join(" ");
+      if (hasLinkedDescendant(element.children)) {
+        return (
+          <div
+            id={hostProps?.id}
+            data-npb-id={hostProps?.["data-npb-id"]}
+            className={linkClassName}
+            style={mergedStyle}
+            data-href={link}
+          >
+            {inner}
+          </div>
+        );
+      }
+      return (
+        <a
+          href={link}
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={linkClassName}
+          style={mergedStyle}
+        >
+          {inner}
+        </a>
+      );
+    },
   },
   {
     type: "container",
@@ -238,6 +830,8 @@ export const builderWidgets: BuilderWidget[] = [
       wrap: "nowrap",
     },
     acceptsChildren: true,
+    /** Layout + styles must target one host so children participate in flex/grid. */
+    rendersAsHost: true,
     controls: [
       section("Container", [
         choices("containerLayout", "Container Layout", [
@@ -259,7 +853,19 @@ export const builderWidgets: BuilderWidget[] = [
         wrapChoices(),
       ], "general"),
     ],
-    render: ({ element, children }) => <FlexContainer element={element}>{children}</FlexContainer>,
+    render: ({ element, children, hostProps }) => {
+      const hostClassName = ["npb-container", hostProps?.className].filter(Boolean).join(" ") || "npb-container";
+      return (
+        <div
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={hostClassName}
+          style={{ ...hostProps?.style, ...containerPropStyles(element) }}
+        >
+          {children}
+        </div>
+      );
+    },
   },
   {
     type: "grid",
@@ -267,6 +873,7 @@ export const builderWidgets: BuilderWidget[] = [
     category: "Layout",
     icon: "▦",
     defaultProps: {
+      tag: "div",
       columns: 3,
       rows: 1,
       gap: 16,
@@ -274,6 +881,8 @@ export const builderWidgets: BuilderWidget[] = [
       align: "stretch",
     },
     acceptsChildren: true,
+    /** Layout + styles must target one host so children are real grid items. */
+    rendersAsHost: true,
     controls: [
       ...settings([
         select("tag", "HTML Tag", htmlTagOptions, "div"),
@@ -296,21 +905,28 @@ export const builderWidgets: BuilderWidget[] = [
         ], "stretch"),
       ], "style"),
     ],
-    render: ({ element, children }) => (
-      <div
-        className="npb-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${numeric(element.props, "columns", 3)}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${numeric(element.props, "rows", 1)}, minmax(0, auto))`,
-          gap: numeric(element.props, "gap", 16),
-          justifyItems: value(element.props, "justify", "stretch"),
-          alignItems: value(element.props, "align", "stretch"),
-        }}
-      >
-        {children}
-      </div>
-    ),
+    render: ({ element, children, hostProps }) => {
+      const Tag = value(element.props, "tag", "div") as keyof JSX.IntrinsicElements;
+      const hostClassName = ["npb-grid", hostProps?.className].filter(Boolean).join(" ") || "npb-grid";
+      const gridStyle: CSSProperties = {
+        display: "grid",
+        gridTemplateColumns: `repeat(${numeric(element.props, "columns", 3)}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${numeric(element.props, "rows", 1)}, minmax(0, auto))`,
+        gap: numeric(element.props, "gap", 16),
+        justifyItems: value(element.props, "justify", "stretch") as CSSProperties["justifyItems"],
+        alignItems: value(element.props, "align", "stretch") as CSSProperties["alignItems"],
+      };
+      return (
+        <Tag
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={hostClassName}
+          style={{ ...gridStyle, ...hostProps?.style }}
+        >
+          {children}
+        </Tag>
+      );
+    },
   },
   {
     type: "heading",
@@ -338,25 +954,27 @@ export const builderWidgets: BuilderWidget[] = [
       ], "general"),
     ],
     render: ({ element }) => {
-      const Tag = value(element.props, "tag", "h2") as keyof JSX.IntrinsicElements;
-      const sizes: Record<string, number> = {
-        small: 18,
-        medium: 28,
-        large: 36,
-        xl: 48,
-        xxl: 64,
+      const tag = value(element.props, "tag", "h2");
+      const Tag = tag as keyof JSX.IntrinsicElements;
+      const fontSize = resolveHeadingFontSize(element, tag);
+      const inlineStyle: CSSProperties = {
+        ...(elementStyleHas(element, "textAlign")
+          ? {}
+          : { textAlign: value(element.props, "align", "left") as CSSProperties["textAlign"] }),
+        ...(fontSize !== undefined ? { fontSize } : {}),
+        ...(elementStyleHas(element, "color")
+          ? {}
+          : { color: value(element.props, "color") || undefined }),
+        ...(elementStyleHas(element, "fontFamily")
+          ? {}
+          : { fontFamily: value(element.props, "fontFamily") || undefined }),
+        ...(elementStyleHas(element, "fontWeight")
+          ? {}
+          : { fontWeight: numeric(element.props, "fontWeight", 0) || undefined }),
+        textShadow: value(element.props, "textShadow") || undefined,
       };
-      const size = value(element.props, "size", "default");
       const heading = (
-        <Tag style={{
-          textAlign: value(element.props, "align", "left") as "left",
-          fontSize: sizes[size],
-          color: value(element.props, "color") || undefined,
-          fontFamily: value(element.props, "fontFamily") || undefined,
-          fontWeight: numeric(element.props, "fontWeight", 0) || undefined,
-          textShadow: value(element.props, "textShadow") || undefined,
-        }}
-        >
+        <Tag style={inlineStyle}>
           {value(element.props, "text", "Heading")}
         </Tag>
       );
@@ -382,6 +1000,8 @@ export const builderWidgets: BuilderWidget[] = [
       fontSize: 0,
       lineHeight: 0,
     },
+    /** Typography and layout styles must apply on the semantic tag, not an outer wrapper. */
+    rendersAsHost: true,
     controls: [
       section("Content", [
         { ...text("text", "Paragraph", "Type your paragraph here"), type: "textarea" },
@@ -395,25 +1015,44 @@ export const builderWidgets: BuilderWidget[] = [
         { key: "link", label: "Link", type: "url" },
       ], "general"),
     ],
-    render: ({ element }) => {
+    render: ({ element, hostProps }) => {
       const Tag = value(element.props, "tag", "p") as keyof JSX.IntrinsicElements;
-      return (
+      const link = value(element.props, "link");
+      const className = [
+        element.props.dropCap ? "npb-drop-cap" : undefined,
+        hostProps?.className,
+      ].filter(Boolean).join(" ") || undefined;
+
+      const body = (
         <Tag
-          className={element.props.dropCap ? "npb-drop-cap" : undefined}
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={className}
           style={{
+            ...hostProps?.style,
             whiteSpace: "pre-wrap",
-            textAlign: value(element.props, "align", "left") as "left",
+            textAlign: elementStyleHas(element, "textAlign")
+              ? undefined
+              : (value(element.props, "align", "left") as CSSProperties["textAlign"]),
             columnCount: Math.max(1, numeric(element.props, "columns", 1)),
             columnGap: numeric(element.props, "columnGap", 16),
-            color: value(element.props, "color") || undefined,
-            fontSize: numeric(element.props, "fontSize", 0) || undefined,
-            lineHeight: numeric(element.props, "lineHeight", 0) || undefined,
+            color: elementStyleHas(element, "color")
+              ? undefined
+              : (value(element.props, "color") || undefined),
+            fontSize: elementStyleHas(element, "fontSize")
+              ? undefined
+              : (numeric(element.props, "fontSize", 0) || undefined),
+            lineHeight: elementStyleHas(element, "lineHeight")
+              ? undefined
+              : (numeric(element.props, "lineHeight", 0) || undefined),
             "--npb-link-color": value(element.props, "linkColor") || undefined,
           } as CSSProperties}
         >
           {value(element.props, "text")}
         </Tag>
       );
+
+      return link ? <a href={link}>{body}</a> : body;
     },
   },
   {
@@ -432,6 +1071,8 @@ export const builderWidgets: BuilderWidget[] = [
       fontSize: 0,
       lineHeight: 0,
     },
+    /** Typography and column layout must apply on the rich-text host, not an outer wrapper. */
+    rendersAsHost: true,
     controls: [
       section("Content", [
         { ...text("text", "Text Editor", "Add your text here."), type: "richtext" },
@@ -447,22 +1088,40 @@ export const builderWidgets: BuilderWidget[] = [
         number("lineHeight", "Line Height"),
       ], "style"),
     ],
-    render: ({ element }) => (
-      <div
-        className={element.props.dropCap ? "npb-drop-cap" : undefined}
-        style={{
-          whiteSpace: "pre-wrap",
-          textAlign: value(element.props, "align", "left") as "left",
-          columnCount: Math.max(1, numeric(element.props, "columns", 1)),
-          columnGap: numeric(element.props, "columnGap", 16),
-          color: value(element.props, "color") || undefined,
-          fontSize: numeric(element.props, "fontSize", 0) || undefined,
-          lineHeight: numeric(element.props, "lineHeight", 0) || undefined,
-          "--npb-link-color": value(element.props, "linkColor") || undefined,
-        } as CSSProperties}
-        dangerouslySetInnerHTML={{ __html: value(element.props, "text") }}
-      />
-    ),
+    render: ({ element, hostProps }) => {
+      const className = [
+        element.props.dropCap ? "npb-drop-cap" : undefined,
+        hostProps?.className,
+      ].filter(Boolean).join(" ") || undefined;
+
+      return (
+        <div
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={className}
+          style={{
+            ...hostProps?.style,
+            whiteSpace: "pre-wrap",
+            textAlign: elementStyleHas(element, "textAlign")
+              ? undefined
+              : (value(element.props, "align", "left") as CSSProperties["textAlign"]),
+            columnCount: Math.max(1, numeric(element.props, "columns", 1)),
+            columnGap: numeric(element.props, "columnGap", 16),
+            color: elementStyleHas(element, "color")
+              ? undefined
+              : (value(element.props, "color") || undefined),
+            fontSize: elementStyleHas(element, "fontSize")
+              ? undefined
+              : (numeric(element.props, "fontSize", 0) || undefined),
+            lineHeight: elementStyleHas(element, "lineHeight")
+              ? undefined
+              : (numeric(element.props, "lineHeight", 0) || undefined),
+            "--npb-link-color": value(element.props, "linkColor") || undefined,
+          } as CSSProperties}
+          dangerouslySetInnerHTML={{ __html: value(element.props, "text") }}
+        />
+      );
+    },
   },
   {
     type: "image",
@@ -483,6 +1142,8 @@ export const builderWidgets: BuilderWidget[] = [
       opacity: 1,
       borderRadius: 0,
     },
+    /** Size/object-fit styles must target the img, not an outer chrome wrapper. */
+    rendersAsHost: true,
     controls: [
       section("Content", [
         { key: "src", label: "Image", type: "image" },
@@ -497,27 +1158,42 @@ export const builderWidgets: BuilderWidget[] = [
         { key: "link", label: "Link", type: "url" },
       ], "general"),
     ],
-    render: ({ element }) => {
+    render: ({ element, hostProps }) => {
       const src = value(element.props, "src");
-      const href = value(element.props, "link");
+      const href = resolveImageHref(element.props);
+      const captionText = resolveImageCaption(element.props);
+      const align = value(element.props, "align", "center") as CSSProperties["textAlign"];
+      const imgStyle = buildImageInlineStyle(element);
+
       const image = src ? (
         <img
+          className="npb-image"
           src={src}
           alt={value(element.props, "alt")}
-          style={{
-            borderRadius: numeric(element.props, "borderRadius", 0) || undefined,
-            height: numeric(element.props, "height", 0) || undefined,
-            objectFit: value(element.props, "objectFit", "cover") as "cover",
-            opacity: numeric(element.props, "opacity", 1),
-            width: `${numeric(element.props, "width", 100)}%`,
-          }}
+          style={imgStyle}
         />
       ) : (
         <div className="npb-placeholder">Choose image</div>
       );
+
+      const linkedImage = href ? <a href={href}>{image}</a> : image;
+      const hostClassName = ["npb-image-widget", hostProps?.className].filter(Boolean).join(" ") || undefined;
+
       return (
-        <figure style={{ textAlign: value(element.props, "align", "center") as "center" }}>
-          {href ? <a href={href}>{image}</a> : image}
+        <figure
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={hostClassName}
+          style={{
+            ...hostProps?.style,
+            textAlign: elementStyleHas(element, "textAlign")
+              ? undefined
+              : align,
+            margin: 0,
+          }}
+        >
+          {linkedImage}
+          {captionText ? <figcaption>{captionText}</figcaption> : null}
         </figure>
       );
     },
@@ -527,6 +1203,8 @@ export const builderWidgets: BuilderWidget[] = [
     label: "Button",
     category: "Atomic",
     icon: "▣",
+    /** Style/hover CSS must target the interactive anchor, not an outer wrapper. */
+    rendersAsHost: true,
     defaultProps: {
       text: "Click here",
       url: "",
@@ -550,26 +1228,92 @@ export const builderWidgets: BuilderWidget[] = [
       section("Settings", [
         { key: "url", label: "Link", type: "url" },
       ], "general"),
+      section("Button", [
+        choices("align", "Alignment", [
+          { label: "Start", value: "left", icon: "⇤" },
+          { label: "Center", value: "center", icon: "↔" },
+          { label: "End", value: "right", icon: "⇥" },
+        ], "left"),
+        choices("size", "Size", [
+          { label: "XS", value: "xs", icon: "XS" },
+          { label: "SM", value: "sm", icon: "SM" },
+          { label: "MD", value: "md", icon: "MD" },
+          { label: "LG", value: "lg", icon: "LG" },
+          { label: "XL", value: "xl", icon: "XL" },
+        ], "md"),
+        choices("buttonType", "Type", [
+          { label: "Info", value: "info", icon: "Info" },
+          { label: "Success", value: "success", icon: "Success" },
+          { label: "Warning", value: "warning", icon: "Warning" },
+          { label: "Danger", value: "danger", icon: "Danger" },
+          { label: "Secondary", value: "secondary", icon: "Secondary" },
+          { label: "Outline", value: "outline", icon: "Outline" },
+          { label: "Link", value: "link", icon: "Link" },
+        ], "info"),
+        { key: "icon", label: "Icon", type: "icon" },
+        choices("iconPosition", "Icon Position", [
+          { label: "Before", value: "before", icon: "Before" },
+          { label: "After", value: "after", icon: "After" },
+        ], "before"),
+      ], "style"),
+      section("Colors", [
+        { key: "backgroundColor", label: "Background", type: "color" },
+        { key: "textColor", label: "Text", type: "color" },
+        number("borderRadius", "Border Radius", 4),
+      ], "style"),
+      section("Spacing", [
+        number("paddingX", "Horizontal Padding", 24),
+        number("paddingY", "Vertical Padding", 12),
+        number("iconSpacing", "Icon Spacing", 8),
+      ], "style"),
     ],
-    render: ({ element }) => {
-      const icon = value(element.props, "icon");
-      const before = value(element.props, "iconPosition", "before") === "before";
+    render: ({ element, hostProps }) => {
+      const props = element.props;
+      const icon = value(props, "icon");
+      const before = value(props, "iconPosition", "before") === "before";
+      const align = value(props, "align", "left") as "left" | "center" | "right";
+      const buttonType = value(props, "buttonType", "info");
+      const size = normalizeButtonSize(value(props, "size", "md"));
+      const preset = BUTTON_TYPE_PRESETS[buttonType] ?? BUTTON_TYPE_PRESETS.info;
+      const isOutline = buttonType === "outline";
+      const isLink = buttonType === "link";
+      const paddingY = numeric(props, "paddingY", 12);
+      const paddingX = numeric(props, "paddingX", 24);
+      const borderRadius = numeric(props, "borderRadius", isLink ? 0 : 4);
+      const textColor = value(props, "textColor") || preset.color;
+      const backgroundColor = value(props, "backgroundColor") || preset.backgroundColor;
+      const usesStyleBackground = elementUsesStyleProperty(element, "backgroundColor");
+      const usesStyleColor = elementUsesStyleProperty(element, "color");
+
+      const buttonStyle: CSSProperties = {
+        borderRadius: isLink ? 0 : borderRadius,
+        gap: numeric(props, "iconSpacing", 8),
+        padding: isLink ? `${paddingY}px ${paddingX}px` : `${paddingY}px ${paddingX}px`,
+        ...(isOutline ? { border: `2px solid ${textColor}`, backgroundColor: "transparent" } : {}),
+        ...(isLink ? { backgroundColor: "transparent", border: "none", textDecoration: "underline" } : {}),
+        ...(!isOutline && !isLink && !usesStyleBackground ? { backgroundColor } : {}),
+        ...(!usesStyleColor ? { color: textColor } : {}),
+        ...hostProps?.style,
+      };
+
+      const buttonClassName = [
+        "npb-button",
+        `npb-button-${buttonType}`,
+        `npb-button-${size}`,
+        hostProps?.className,
+      ].filter(Boolean).join(" ");
+
       return (
-        <div style={{ textAlign: value(element.props, "align", "left") as "left" }}>
+        <div className="npb-button-align" style={{ textAlign: align }}>
           <a
-            id={value(element.props, "buttonId") || undefined}
-            className={`npb-button npb-button-${value(element.props, "buttonType", "info")} npb-button-${value(element.props, "size", "md")}`}
-            href={value(element.props, "url", "#") || "#"}
-            style={{
-              backgroundColor: value(element.props, "backgroundColor", "#6d5dfc"),
-              borderRadius: numeric(element.props, "borderRadius", 4),
-              color: value(element.props, "textColor", "#ffffff"),
-              gap: numeric(element.props, "iconSpacing", 8),
-              padding: `${numeric(element.props, "paddingY", 12)}px ${numeric(element.props, "paddingX", 24)}px`,
-            }}
+            id={hostProps?.id || value(props, "buttonId") || undefined}
+            data-npb-id={hostProps?.["data-npb-id"]}
+            className={buttonClassName}
+            href={value(props, "url", "#") || "#"}
+            style={buttonStyle}
           >
             {icon && before ? <span aria-hidden="true">{icon}</span> : null}
-            {value(element.props, "text", "Click here")}
+            {value(props, "text", "Click here")}
             {icon && !before ? <span aria-hidden="true">{icon}</span> : null}
           </a>
         </div>
@@ -627,24 +1371,34 @@ export const builderWidgets: BuilderWidget[] = [
       section("Settings", [], "general"),
     ],
     render: ({ element }) => {
-      const ratios: Record<string, string> = {
-        "16:9": "56.25%",
-        "21:9": "42.85%",
-        "4:3": "75%",
-        "1:1": "100%",
-        "9:16": "177.77%",
-      };
+      const aspect = value(element.props, "aspectRatio", "16:9");
+      const paddingBottom = aspectRatios[aspect] ?? aspectRatios["16:9"];
+      const src = buildVideoSrc(element.props);
+
+      if (!src) {
+        return (
+          <div className="npb-video npb-video-empty" style={{ paddingBottom }}>
+            <div className="npb-placeholder">Add a video URL</div>
+          </div>
+        );
+      }
+
+      const poster = element.props.posterEnabled
+        ? value(element.props, "poster") || undefined
+        : undefined;
+      const preload = value(element.props, "preload", "metadata") as "auto" | "metadata" | "none";
+
       return (
-        <div className="npb-video" style={{ paddingBottom: ratios[value(element.props, "aspectRatio", "16:9")] }}>
+        <div className="npb-video" style={{ paddingBottom }}>
           <video
-            src={`${value(element.props, "src")}${numeric(element.props, "start", 0) || numeric(element.props, "end", 0) ? `#t=${numeric(element.props, "start", 0)}${numeric(element.props, "end", 0) ? `,${numeric(element.props, "end", 0)}` : ""}` : ""}`}
-            poster={element.props.posterEnabled ? value(element.props, "poster") : undefined}
+            src={src}
+            poster={poster}
             autoPlay={Boolean(element.props.autoplay)}
             controls={element.props.controls !== false}
             loop={Boolean(element.props.loop)}
             muted={Boolean(element.props.muted)}
             playsInline={element.props.playsInline !== false}
-            preload={value(element.props, "preload", "metadata")}
+            preload={preload}
             controlsList={element.props.download === false ? "nodownload" : undefined}
           />
         </div>
@@ -675,8 +1429,16 @@ export const builderWidgets: BuilderWidget[] = [
     controls: [
       section("Content", [
         text("videoUrl", "YouTube URL", "https://www.youtube.com/watch?v=XHOmBV4"),
+        text("title", "Title", "YouTube video"),
         number("start", "Start time", 0),
         number("end", "End time", 0),
+        select("aspectRatio", "Aspect ratio", [
+          { label: "16:9", value: "16:9" },
+          { label: "21:9", value: "21:9" },
+          { label: "4:3", value: "4:3" },
+          { label: "1:1", value: "1:1" },
+          { label: "9:16", value: "9:16" },
+        ], "16:9"),
         { key: "autoplay", label: "Autoplay", type: "switch" },
         { key: "mute", label: "Mute", type: "switch" },
         { key: "loop", label: "Loop", type: "switch" },
@@ -700,15 +1462,25 @@ export const builderWidgets: BuilderWidget[] = [
       if (numeric(element.props, "start", 0)) params.set("start", String(numeric(element.props, "start", 0)));
       if (numeric(element.props, "end", 0)) params.set("end", String(numeric(element.props, "end", 0)));
       if (element.props.captions) params.set("cc_load_policy", "1");
-      if (!element.props.rel) params.set("rel", "0");
+      if (element.props.rel === false) params.set("rel", "0");
       if (element.props.playerControls === false) params.set("controls", "0");
       const host = element.props.privacyMode ? "www.youtube-nocookie.com" : "www.youtube.com";
-      const ratios: Record<string, string> = { "16:9": "56.25%", "21:9": "42.85%", "4:3": "75%", "1:1": "100%" };
+      const aspect = value(element.props, "aspectRatio", "16:9");
+      const paddingBottom = aspectRatios[aspect] ?? aspectRatios["16:9"];
+
+      if (!videoId) {
+        return (
+          <div className="npb-video npb-video-empty" style={{ paddingBottom }}>
+            <div className="npb-placeholder">Add a YouTube URL</div>
+          </div>
+        );
+      }
+
       return (
-        <div className="npb-video" style={{ paddingBottom: ratios[value(element.props, "aspectRatio", "16:9")] }}>
+        <div className="npb-video" style={{ paddingBottom }}>
           <iframe
             title={value(element.props, "title", "YouTube video")}
-            loading={element.props.lazyload ? "lazy" : "eager"}
+            loading={element.props.lazyload !== false ? "lazy" : "eager"}
             src={`https://${host}/embed/${encodeURIComponent(videoId)}?${params.toString()}`}
             allowFullScreen
           />
@@ -733,23 +1505,63 @@ export const builderWidgets: BuilderWidget[] = [
         text("text", "Text"),
         text("icon", "Icon", "★"),
       ], "general"),
-      section("Settings", [], "general"),
+      section("Settings", [
+        number("width", "Width", 100),
+        number("weight", "Weight", 1),
+        number("gap", "Gap", 16),
+        { key: "color", label: "Color", type: "color" },
+        select("align", "Alignment", dividerAlignOptions, "center"),
+      ], "general"),
     ],
-    render: ({ element }) => (
-      <div className="npb-divider" style={{ textAlign: value(element.props, "align", "center") as "center" }}>
-        <hr style={{
-          borderStyle: value(element.props, "style", "solid"),
-          borderColor: value(element.props, "color", "#d0d5dd"),
-          width: `${numeric(element.props, "width", 100)}%`,
-          borderWidth: numeric(element.props, "weight", 1),
-          marginBlock: numeric(element.props, "gap", 16),
-          marginInline: "auto",
-        }}
-        />
-        {value(element.props, "addElement") === "text" ? <span>{value(element.props, "text")}</span> : null}
-        {value(element.props, "addElement") === "icon" ? <span>{value(element.props, "icon", "★")}</span> : null}
-      </div>
-    ),
+    render: ({ element }) => {
+      const props = element.props;
+      const align = value(props, "align", "center");
+      const width = numeric(props, "width", 100);
+      const gap = numeric(props, "gap", 16);
+      const addElement = value(props, "addElement", "none");
+      const lineStyle = dividerLineStyle(props);
+      const label = addElement === "text"
+        ? value(props, "text")
+        : addElement === "icon"
+          ? value(props, "icon", "★") || "★"
+          : "";
+
+      if (label) {
+        return (
+          <div className="npb-divider npb-divider-with-element">
+            <div
+              className="npb-divider-row"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                width: `${width}%`,
+                marginBlock: gap,
+                ...dividerHorizontalMargins(align),
+              }}
+            >
+              <hr style={{ ...lineStyle, flex: 1 }} aria-hidden="true" />
+              <span className="npb-divider-label">{label}</span>
+              <hr style={{ ...lineStyle, flex: 1 }} aria-hidden="true" />
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="npb-divider">
+          <hr
+            aria-hidden="true"
+            style={{
+              ...lineStyle,
+              width: `${width}%`,
+              marginBlock: gap,
+              ...dividerHorizontalMargins(align),
+            }}
+          />
+        </div>
+      );
+    },
   },
   {
     type: "spacer",
@@ -757,8 +1569,21 @@ export const builderWidgets: BuilderWidget[] = [
     category: "Basic",
     icon: "↕",
     defaultProps: { height: 50 },
+    /** Space height must apply on the host so style-panel size rules do not fight an inner wrapper. */
+    rendersAsHost: true,
     controls: content([{ key: "height", label: "Space", type: "range", min: 1, max: 500, defaultValue: 50, responsive: true }]),
-    render: ({ element }) => <div aria-hidden="true" style={{ height: numeric(element.props, "height", 50) }} />,
+    render: ({ element, hostProps }) => {
+      const className = ["npb-spacer", hostProps?.className].filter(Boolean).join(" ") || "npb-spacer";
+      return (
+        <div
+          aria-hidden="true"
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={className}
+          style={buildSpacerHostStyle(element, hostProps)}
+        />
+      );
+    },
   },
   {
     type: "svg",
@@ -766,13 +1591,39 @@ export const builderWidgets: BuilderWidget[] = [
     category: "Atomic",
     icon: "◇",
     defaultProps: { src: "", title: "SVG image" },
+    /** Size/object-fit styles must target the img, not an outer chrome wrapper. */
+    rendersAsHost: true,
     controls: [
       section("Content", [
         { key: "src", label: "SVG", type: "url" },
       ], "general"),
-      section("Settings", [], "general"),
+      section("Settings", [
+        text("title", "Title", "SVG image"),
+      ], "general"),
     ],
-    render: ({ element }) => <img src={value(element.props, "src")} alt={value(element.props, "title", "SVG image")} />,
+    render: ({ element, hostProps }) => {
+      const src = value(element.props, "src");
+      const hostClassName = ["npb-svg-widget", hostProps?.className].filter(Boolean).join(" ") || undefined;
+
+      return (
+        <figure
+          id={hostProps?.id}
+          data-npb-id={hostProps?.["data-npb-id"]}
+          className={hostClassName}
+          style={{ ...hostProps?.style, margin: 0 }}
+        >
+          {src ? (
+            <img
+              className="npb-svg"
+              src={src}
+              alt={value(element.props, "title") || "SVG image"}
+            />
+          ) : (
+            <div className="npb-placeholder">Add an SVG URL</div>
+          )}
+        </figure>
+      );
+    },
   },
   {
     type: "google-maps",
@@ -794,19 +1645,40 @@ export const builderWidgets: BuilderWidget[] = [
         { key: "hue", label: "Hue", type: "range", min: 0, max: 360, defaultValue: 0 },
       ], "style"),
     ],
-    render: ({ element }) => (
-      <iframe
-        title="Map"
-        loading="lazy"
-        style={{
-          width: "100%",
-          height: numeric(element.props, "height", 300),
-          border: 0,
-          filter: `blur(${numeric(element.props, "blur", 0)}px) brightness(${numeric(element.props, "brightness", 100)}%) contrast(${numeric(element.props, "contrast", 100)}%) saturate(${numeric(element.props, "saturate", 100)}%) hue-rotate(${numeric(element.props, "hue", 0)}deg)`,
-        }}
-        src={`https://www.google.com/maps?q=${encodeURIComponent(value(element.props, "query"))}&z=${numeric(element.props, "zoom", 10)}&output=embed`}
-      />
-    ),
+    render: ({ element }) => {
+      const query = value(element.props, "query").trim();
+      const height = propNumber(element.props, "height", 300);
+      const zoom = propNumber(element.props, "zoom", 10);
+      const blur = propNumber(element.props, "blur", 0);
+      const brightness = propNumber(element.props, "brightness", 100);
+      const contrast = propNumber(element.props, "contrast", 100);
+      const saturate = propNumber(element.props, "saturate", 100);
+      const hue = propNumber(element.props, "hue", 0);
+
+      if (!query) {
+        return (
+          <div className="npb-maps npb-maps-empty" style={{ height }}>
+            <div className="npb-placeholder">Add a location</div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="npb-maps">
+          <iframe
+            title="Map"
+            loading="lazy"
+            style={{
+              width: "100%",
+              height,
+              border: 0,
+              filter: `blur(${blur}px) brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%) hue-rotate(${hue}deg)`,
+            }}
+            src={`https://www.google.com/maps?q=${encodeURIComponent(query)}&z=${zoom}&output=embed`}
+          />
+        </div>
+      );
+    },
   },
   {
     type: "alert",
@@ -866,7 +1738,7 @@ export const builderWidgets: BuilderWidget[] = [
           className={`npb-alert npb-alert-${type}`}
           style={{
             background: value(element.props, "backgroundColor") || tone.bg,
-            borderLeft: `${numeric(element.props, "borderWidth", 5)}px solid ${value(element.props, "borderColor") || tone.border}`,
+            borderLeft: `${propNumber(element.props, "borderWidth", 5)}px solid ${value(element.props, "borderColor") || tone.border}`,
             padding: "12px 16px",
             display: "flex",
             gap: 12,
@@ -877,21 +1749,21 @@ export const builderWidgets: BuilderWidget[] = [
           <div style={{ flex: 1 }}>
             <strong style={{
               color: value(element.props, "titleColor") || undefined,
-              fontSize: numeric(element.props, "titleFontSize", 16) || undefined,
-              fontWeight: numeric(element.props, "titleFontWeight", 700) || undefined,
-            }}>{value(element.props, "title")}</strong>
+              fontSize: propNumber(element.props, "titleFontSize", 16) || undefined,
+              fontWeight: propNumber(element.props, "titleFontWeight", 700) || undefined,
+            }}>{value(element.props, "title", "This is an Alert")}</strong>
             <p style={{
               margin: "4px 0 0",
               color: value(element.props, "descriptionColor") || undefined,
-              fontSize: numeric(element.props, "descriptionFontSize", 14) || undefined,
-            }}>{value(element.props, "description")}</p>
+              fontSize: propNumber(element.props, "descriptionFontSize", 14) || undefined,
+            }}>{value(element.props, "description", "I am a description. Click the dismiss button to remove this alert from view.")}</p>
           </div>
           {element.props.showDismiss !== false ? (
             <button
               type="button"
               aria-label="Dismiss"
               style={{
-                fontSize: numeric(element.props, "dismissSize", 16),
+                fontSize: propNumber(element.props, "dismissSize", 16),
                 color: value(element.props, "dismissColor") || undefined,
                 background: "transparent",
                 border: 0,
@@ -1009,18 +1881,18 @@ export const builderWidgets: BuilderWidget[] = [
               color: view === "stacked" ? secondary : primary,
               background: view === "stacked" ? primary : undefined,
               border: view === "framed" ? `${numeric(element.props, "iconBorderWidth", 2)}px solid ${primary}` : undefined,
-              borderRadius: shape === "square" ? numeric(element.props, "iconBorderRadius", 0) : "50%",
+              borderRadius: shape === "square" ? numeric(element.props, "iconBorderRadius", 50) : "50%",
             }}
           >
             {value(element.props, "icon", "★")}
           </span>
           <div style={{ order: 1 }}>
-            <Tag style={{ color: value(element.props, "titleColor") || undefined, fontSize: numeric(element.props, "titleFontSize", 20) || undefined }}>{value(element.props, "title")}</Tag>
+            <Tag style={{ color: value(element.props, "titleColor") || undefined, fontSize: numeric(element.props, "titleFontSize", 20) || undefined }}>{value(element.props, "title", "This is the heading")}</Tag>
             <p style={{
               marginTop: numeric(element.props, "contentSpacing", 0),
               color: value(element.props, "descriptionColor") || undefined,
               fontSize: numeric(element.props, "descriptionFontSize", 14) || undefined,
-            }}>{value(element.props, "description")}</p>
+            }}>{value(element.props, "description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.")}</p>
           </div>
         </div>
       );
@@ -1125,17 +1997,17 @@ export const builderWidgets: BuilderWidget[] = [
             flexDirection: position === "top" ? "column" : "row",
             alignItems: value(element.props, "verticalAlign") === "middle" ? "center" : value(element.props, "verticalAlign") === "bottom" ? "flex-end" : "flex-start",
             gap: numeric(element.props, "imageSpacing", 15),
-            textAlign: value(element.props, "align", "center") as "left" | "center" | "right",
+            textAlign: value(element.props, "align", "center") as CSSProperties["textAlign"],
           }}
         >
           {img}
           <div style={{ order: 1 }}>
-            <Tag style={{ color: value(element.props, "titleColor") || undefined, fontSize: numeric(element.props, "titleFontSize", 20) || undefined }}>{value(element.props, "title")}</Tag>
+            <Tag style={{ color: value(element.props, "titleColor") || undefined, fontSize: numeric(element.props, "titleFontSize", 20) || undefined }}>{value(element.props, "title", "This is the heading")}</Tag>
             <p style={{
               marginTop: numeric(element.props, "contentSpacing", 0),
               color: value(element.props, "descriptionColor") || undefined,
               fontSize: numeric(element.props, "descriptionFontSize", 14) || undefined,
-            }}>{value(element.props, "description")}</p>
+            }}>{value(element.props, "description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.")}</p>
           </div>
         </div>
       );
@@ -1207,18 +2079,18 @@ export const builderWidgets: BuilderWidget[] = [
           {value(element.props, "image") ? (
             <img
               src={value(element.props, "image")}
-              alt=""
+              alt={value(element.props, "name", "John Doe")}
               width={numeric(element.props, "imageSize", 60)}
               height={numeric(element.props, "imageSize", 60)}
               style={{ borderRadius: numeric(element.props, "imageBorderRadius", 50), objectFit: "cover" }}
             />
           ) : null}
           <div>
-            <p>{value(element.props, "content")}</p>
+            <p>{value(element.props, "content", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.")}</p>
             <cite>
-              <strong style={{ color: value(element.props, "nameColor") || undefined, fontSize: numeric(element.props, "nameFontSize", 16) || undefined }}>{value(element.props, "name")}</strong>
+              <strong style={{ color: value(element.props, "nameColor") || undefined, fontSize: numeric(element.props, "nameFontSize", 16) || undefined }}>{value(element.props, "name", "John Doe")}</strong>
               {" "}
-              <span style={{ color: value(element.props, "jobColor") || undefined, fontSize: numeric(element.props, "jobFontSize", 14) || undefined }}>{value(element.props, "title")}</span>
+              <span style={{ color: value(element.props, "jobColor") || undefined, fontSize: numeric(element.props, "jobFontSize", 14) || undefined }}>{value(element.props, "title", "Designer")}</span>
             </cite>
           </div>
         </blockquote>
@@ -1295,8 +2167,25 @@ export const builderWidgets: BuilderWidget[] = [
       ], "style"),
     ],
     render: ({ element }) => {
-      const gapMap: Record<string, number> = { none: 0, narrow: 5, default: 10, extended: 15, wide: 20, custom: numeric(element.props, "spacing", 10) };
+      const gapMap: Record<string, number> = {
+        none: 0,
+        narrow: 5,
+        default: 10,
+        extended: 15,
+        wide: 20,
+        custom: numeric(element.props, "spacing", 10),
+      };
       const gap = gapMap[value(element.props, "gap", "default")] ?? 10;
+      const linkTo = value(element.props, "linkTo", "none");
+      const lightbox = value(element.props, "lightbox", "yes");
+      const captionMode = value(element.props, "caption", "none");
+      const lightboxEnabled = isGalleryLightboxEnabled(lightbox);
+      const galleryImages = orderGalleryImages(
+        items(element.props, "images"),
+        value(element.props, "orderBy", "default"),
+        element.id,
+      );
+
       return (
         <div
           className="npb-gallery"
@@ -1306,10 +2195,10 @@ export const builderWidgets: BuilderWidget[] = [
             gridTemplateColumns: `repeat(${Number(value(element.props, "columns", "3")) || 3}, 1fr)`,
           }}
         >
-          {items(element.props, "images").map((image, index) => {
+          {galleryImages.map((image, index) => {
             const src = value(image, "src");
-            const captionMode = value(element.props, "caption", "none");
-            const captionText = captionMode === "none" ? "" : value(image, captionMode === "title" ? "title" : captionMode === "description" ? "description" : "alt");
+            const captionText = resolveGalleryCaption(image, captionMode);
+            const href = resolveGalleryHref(linkTo, image);
             const img = (
               <img
                 src={src}
@@ -1317,25 +2206,34 @@ export const builderWidgets: BuilderWidget[] = [
                 style={{
                   width: "100%",
                   display: "block",
-                  borderRadius: numeric(element.props, "borderRadius", 0),
+                  borderRadius: numeric(element.props, "borderRadius", 0) || undefined,
                   border: numeric(element.props, "borderWidth", 0)
                     ? `${numeric(element.props, "borderWidth", 0)}px solid ${value(element.props, "borderColor") || "#c2cbd2"}`
                     : undefined,
                 }}
               />
             );
-            const linked = value(element.props, "linkTo") === "file" || value(element.props, "linkTo") === "custom"
-              ? <a href={value(image, "url") || src}>{img}</a>
+            const linked = href || lightboxEnabled
+              ? (
+                  <a
+                    href={href || src}
+                    {...(lightboxEnabled ? { "data-npb-lightbox": "yes" } : {})}
+                  >
+                    {img}
+                  </a>
+                )
               : img;
+
             return (
               <figure key={`${src}-${index}`} style={{ margin: 0 }}>
                 {linked}
                 {captionText ? (
-                  <figcaption style={{
-                    textAlign: value(element.props, "captionAlign", "center") as "center",
-                    color: value(element.props, "captionColor") || undefined,
-                    marginTop: numeric(element.props, "captionSpacing", 8),
-                  }}
+                  <figcaption
+                    style={{
+                      textAlign: value(element.props, "captionAlign", "center") as CSSProperties["textAlign"],
+                      color: value(element.props, "captionColor") || undefined,
+                      marginTop: numeric(element.props, "captionSpacing", 8),
+                    }}
                   >
                     {captionText}
                   </figcaption>
@@ -1374,6 +2272,7 @@ export const builderWidgets: BuilderWidget[] = [
       dotSize: 8,
       dotColor: "",
       activeDotColor: "",
+      borderRadius: 0,
     },
     controls: [
       section("Image Carousel", [
@@ -1431,22 +2330,71 @@ export const builderWidgets: BuilderWidget[] = [
     ],
     render: ({ element }) => {
       const nav = value(element.props, "navigation", "both");
+      const linkTo = value(element.props, "linkTo", "none");
+      const lightbox = value(element.props, "lightbox", "yes");
+      const lightboxEnabled = isGalleryLightboxEnabled(lightbox);
+      const slidesToShow = Math.max(1, Number(value(element.props, "slidesToShow", "1")) || 1);
+      const effect = value(element.props, "effect", "slide");
+      const carouselName = value(element.props, "carouselName");
+      const carouselImages = items(element.props, "images");
+
+      if (carouselImages.length === 0) {
+        return (
+          <div className="npb-carousel npb-carousel-empty" style={{ position: "relative" }}>
+            <div className="npb-placeholder">Add carousel images</div>
+          </div>
+        );
+      }
+
       return (
-        <div className="npb-carousel" style={{ position: "relative" }}>
-          <div style={{ display: "flex", gap: numeric(element.props, "imageSpacing", 20), overflow: "auto", direction: value(element.props, "direction", "ltr") as "ltr" }}>
-            {items(element.props, "images").map((image, index) => (
-              <img
-                key={`${value(image, "src")}-${index}`}
-                src={value(image, "src")}
-                alt={value(image, "alt")}
-                style={{
-                  width: value(element.props, "imageStretch") === "no" ? "auto" : `${100 / (Number(value(element.props, "slidesToShow", "1")) || 1)}%`,
-                  flex: "0 0 auto",
-                  borderRadius: numeric(element.props, "borderRadius", 0),
-                  objectFit: "cover",
-                }}
-              />
-            ))}
+        <div
+          className={`npb-carousel npb-carousel-${effect}`}
+          style={{ position: "relative" }}
+          data-npb-carousel={element.id}
+          data-slides-to-show={slidesToShow}
+          data-slides-to-scroll={value(element.props, "slidesToScroll", "1")}
+          data-autoplay-speed={numeric(element.props, "autoplaySpeed", 5000)}
+          data-speed={numeric(element.props, "speed", 500)}
+          {...(element.props.autoplay ? { "data-autoplay": "yes" } : {})}
+          {...(element.props.pauseOnHover !== false ? { "data-pause-on-hover": "yes" } : {})}
+          {...(element.props.infinite !== false ? { "data-infinite": "yes" } : {})}
+          {...(carouselName ? { "aria-label": carouselName } : {})}
+        >
+          <div style={{ display: "flex", gap: numeric(element.props, "imageSpacing", 20), overflow: "auto", direction: value(element.props, "direction", "ltr") as "ltr" | "rtl" }}>
+            {carouselImages.map((image, index) => {
+              const src = value(image, "src");
+              const href = resolveGalleryHref(linkTo, image);
+              const img = (
+                <img
+                  src={src}
+                  alt={value(image, "alt")}
+                  style={{
+                    width: value(element.props, "imageStretch") === "no" ? "auto" : `${100 / slidesToShow}%`,
+                    flex: "0 0 auto",
+                    borderRadius: numeric(element.props, "borderRadius", 0) || undefined,
+                    objectFit: "cover",
+                  }}
+                />
+              );
+
+              if (href || lightboxEnabled) {
+                return (
+                  <a
+                    key={`${src}-${index}`}
+                    href={href || src}
+                    {...(lightboxEnabled ? { "data-npb-lightbox": "yes" } : {})}
+                  >
+                    {img}
+                  </a>
+                );
+              }
+
+              return (
+                <span key={`${src}-${index}`} style={{ flex: "0 0 auto" }}>
+                  {img}
+                </span>
+              );
+            })}
           </div>
           {nav === "both" || nav === "arrows" ? (
             <div className="npb-carousel-arrows" style={{ color: value(element.props, "arrowColor") || undefined, fontSize: numeric(element.props, "arrowSize", 20) }}>
@@ -1456,7 +2404,7 @@ export const builderWidgets: BuilderWidget[] = [
           ) : null}
           {nav === "both" || nav === "dots" ? (
             <div className="npb-carousel-dots" style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 10 }}>
-              {items(element.props, "images").slice(0, 5).map((_, index) => (
+              {carouselImages.map((_, index) => (
                 <span
                   key={index}
                   style={{
@@ -1530,53 +2478,90 @@ export const builderWidgets: BuilderWidget[] = [
         number("textSize", "Size", 14),
       ], "style"),
     ],
-    render: ({ element }) => (
-      <ul
-        className={`npb-icon-list npb-icon-list-${value(element.props, "layout", "traditional")}`}
-        style={{
-          display: value(element.props, "layout") === "inline" ? "flex" : "grid",
-          gap: numeric(element.props, "spaceBetween", 0),
-          justifyContent: value(element.props, "align", "left") === "center" ? "center" : value(element.props, "align") === "right" ? "flex-end" : "flex-start",
-          listStyle: "none",
-          padding: 0,
-          margin: 0,
-          color: value(element.props, "textColor") || undefined,
-          fontSize: numeric(element.props, "textSize", 14) || undefined,
-        }}
-      >
-        {items(element.props, "items").map((item, index) => {
-          const row = (
-            <>
-              <span style={{
-                color: value(element.props, "iconColor") || undefined,
-                fontSize: numeric(element.props, "iconSize", 14),
-                marginInlineEnd: numeric(element.props, "iconGap", 5),
-              }}
+    render: ({ element }) => {
+      const layout = value(element.props, "layout", "traditional");
+      const applyLinkOn = value(element.props, "applyLinkOn", "full");
+      const iconGap = numeric(element.props, "iconGap", 5);
+      const iconStyle: CSSProperties = {
+        color: value(element.props, "iconColor") || undefined,
+        fontSize: numeric(element.props, "iconSize", 14),
+      };
+      const rowStyle: CSSProperties = {
+        display: "flex",
+        alignItems: "center",
+        gap: iconGap,
+      };
+      const linkStyle: CSSProperties = {
+        color: "inherit",
+        textDecoration: "none",
+      };
+
+      return (
+        <ul
+          className={`npb-icon-list npb-icon-list-${layout}`}
+          style={{
+            display: layout === "inline" ? "flex" : "grid",
+            gap: numeric(element.props, "spaceBetween", 0),
+            justifyContent: value(element.props, "align", "left") === "center"
+              ? "center"
+              : value(element.props, "align") === "right"
+                ? "flex-end"
+                : "flex-start",
+            listStyle: "none",
+            padding: 0,
+            margin: 0,
+            color: value(element.props, "textColor") || undefined,
+            fontSize: numeric(element.props, "textSize", 14) || undefined,
+          }}
+        >
+          {items(element.props, "items").map((item, index) => {
+            const url = value(item, "url");
+            const iconEl = <span style={iconStyle}>{value(item, "icon", "✓")}</span>;
+            const textEl = <span>{value(item, "text")}</span>;
+            let content: JSX.Element;
+
+            if (url && applyLinkOn === "inline") {
+              content = (
+                <span style={rowStyle}>
+                  {iconEl}
+                  <a href={url} style={linkStyle}>{textEl}</a>
+                </span>
+              );
+            } else if (url) {
+              content = (
+                <a href={url} style={{ ...linkStyle, ...rowStyle, flex: 1, width: "100%" }}>
+                  {iconEl}
+                  {textEl}
+                </a>
+              );
+            } else {
+              content = (
+                <span style={rowStyle}>
+                  {iconEl}
+                  {textEl}
+                </span>
+              );
+            }
+
+            return (
+              <li
+                key={`${value(item, "text")}-${index}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  borderBottom: element.props.divider
+                    ? `${numeric(element.props, "dividerWeight", 1)}px ${value(element.props, "dividerStyle", "solid")} ${value(element.props, "dividerColor") || "#c2cbd2"}`
+                    : undefined,
+                  paddingBottom: element.props.divider ? 8 : undefined,
+                }}
               >
-                {value(item, "icon", "✓")}
-              </span>
-              <span>{value(item, "text")}</span>
-            </>
-          );
-          return (
-            <li
-              key={`${value(item, "text")}-${index}`}
-              style={{
-                display: "flex",
-                gap: 8,
-                alignItems: "center",
-                borderBottom: element.props.divider
-                  ? `${numeric(element.props, "dividerWeight", 1)}px ${value(element.props, "dividerStyle", "solid")} ${value(element.props, "dividerColor") || "#c2cbd2"}`
-                  : undefined,
-                paddingBottom: element.props.divider ? 8 : undefined,
-              }}
-            >
-              {value(item, "url") ? <a href={value(item, "url")}>{row}</a> : row}
-            </li>
-          );
-        })}
-      </ul>
-    ),
+                {content}
+              </li>
+            );
+          })}
+        </ul>
+      );
+    },
   },
   {
     type: "counter",
@@ -1640,11 +2625,22 @@ export const builderWidgets: BuilderWidget[] = [
     ],
     render: ({ element }) => {
       const Tag = value(element.props, "titleTag", "div") as keyof JSX.IntrinsicElements;
+      const titlePosition = value(element.props, "titlePosition", "after");
+      const numberAlign = value(element.props, "numberAlign", "center");
+      const isFlexLayout = titlePosition === "start" || titlePosition === "end";
+      const titleGap = propNumber(element.props, "titleGap", 0);
+      const numberGap = propNumber(element.props, "numberGap", 0);
+      const endValue = propNumber(element.props, "end", 100);
+      const formattedNumber = formatCounterNumber(
+        endValue,
+        value(element.props, "separator", "default"),
+      );
+      const titleBefore = titlePosition === "before" || titlePosition === "start";
       const titleNode = (
         <Tag style={{
           color: value(element.props, "titleColor") || undefined,
-          fontSize: numeric(element.props, "titleFontSize", 16) || undefined,
-          marginBlock: numeric(element.props, "titleGap", 0) || undefined,
+          fontSize: propNumber(element.props, "titleFontSize", 16) || undefined,
+          marginBlock: !isFlexLayout && titleGap ? titleGap : undefined,
         }}
         >
           {value(element.props, "title")}
@@ -1653,31 +2649,35 @@ export const builderWidgets: BuilderWidget[] = [
       const numberNode = (
         <strong style={{
           color: value(element.props, "numberColor") || undefined,
-          fontSize: numeric(element.props, "numberFontSize", 48) || undefined,
+          fontSize: propNumber(element.props, "numberFontSize", 48) || undefined,
           display: "inline-block",
-          marginInline: numeric(element.props, "numberGap", 0) || undefined,
+          marginInline: numberGap || undefined,
+          width: numberAlign === "stretch" ? "100%" : undefined,
+          textAlign: numberAlign === "stretch" ? "center" : undefined,
         }}
         >
-          {value(element.props, "prefix")}{numeric(element.props, "end", 100)}{value(element.props, "suffix")}
+          {value(element.props, "prefix")}{formattedNumber}{value(element.props, "suffix")}
         </strong>
       );
-      const position = value(element.props, "titlePosition", "after");
-      const before = position === "before" || position === "start";
       return (
         <div
           className="npb-counter"
+          data-npb-counter-start={propNumber(element.props, "start", 0)}
+          data-npb-counter-end={endValue}
+          data-npb-counter-duration={propNumber(element.props, "duration", 2000)}
           style={{
-            textAlign: value(element.props, "numberAlign", "center") as "left" | "center" | "right",
-            display: position === "start" || position === "end" ? "flex" : "block",
-            alignItems: "center",
-            justifyContent: value(element.props, "numberAlign") === "left" ? "flex-start" : value(element.props, "numberAlign") === "right" ? "flex-end" : "center",
-            gap: numeric(element.props, "titleGap", 0),
-            flexDirection: position === "end" ? "row-reverse" : "row",
+            textAlign: !isFlexLayout ? counterTextAlign(numberAlign) : undefined,
+            display: isFlexLayout ? "flex" : "block",
+            alignItems: numberAlign === "stretch" ? "stretch" : "center",
+            justifyContent: isFlexLayout ? counterFlexJustify(numberAlign) : undefined,
+            gap: isFlexLayout && titleGap ? titleGap : undefined,
+            flexDirection: titlePosition === "end" ? "row-reverse" : "row",
+            width: numberAlign === "stretch" ? "100%" : undefined,
           }}
         >
-          {before ? titleNode : null}
+          {titleBefore ? titleNode : null}
           {numberNode}
-          {!before ? titleNode : null}
+          {!titleBefore ? titleNode : null}
         </div>
       );
     },
@@ -1733,6 +2733,7 @@ export const builderWidgets: BuilderWidget[] = [
         warning: "#f0ad4e",
         danger: "#d9534f",
       };
+      const percent = propNumber(element.props, "value", 50);
       const barColor = value(element.props, "barColor") || typeColors[value(element.props, "progressType", "default")] || "#61ce70";
       return (
         <div className="npb-progress">
@@ -1741,14 +2742,14 @@ export const builderWidgets: BuilderWidget[] = [
               <Tag style={{ color: value(element.props, "titleColor") || undefined }}>{value(element.props, "title")}</Tag>
             ) : <span />}
             {element.props.displayPercentage !== false ? (
-              <span style={{ color: value(element.props, "percentageColor") || undefined }}>{numeric(element.props, "value", 50)}%</span>
+              <span style={{ color: value(element.props, "percentageColor") || undefined }}>{percent}%</span>
             ) : null}
           </div>
           <div
             style={{
               position: "relative",
-              height: numeric(element.props, "barHeight", 10),
-              borderRadius: numeric(element.props, "borderRadius", 0),
+              height: propNumber(element.props, "barHeight", 10),
+              borderRadius: propNumber(element.props, "borderRadius", 0),
               background: value(element.props, "barBackground") || "#eee",
               overflow: "hidden",
             }}
@@ -1757,7 +2758,7 @@ export const builderWidgets: BuilderWidget[] = [
               style={{
                 display: "block",
                 height: "100%",
-                width: `${numeric(element.props, "value", 50)}%`,
+                width: `${percent}%`,
                 background: barColor,
               }}
             />
@@ -1795,22 +2796,53 @@ export const builderWidgets: BuilderWidget[] = [
       ], "style"),
     ],
     render: ({ element }) => {
-      const rating = Math.min(numeric(element.props, "rating", 5), numeric(element.props, "scale", 5));
-      const scale = numeric(element.props, "scale", 5);
+      const scale = Math.max(0, propNumber(element.props, "scale", 5));
+      const rating = Math.min(Math.max(0, propNumber(element.props, "rating", 5)), scale);
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating - fullStars >= 0.5;
+      const emptyStars = Math.max(0, scale - fullStars - (hasHalfStar ? 1 : 0));
+      const starColor = value(element.props, "starColor") || "#f0ad4e";
+      const unmarkedColor = value(element.props, "unmarkedColor") || "#ccd6df";
+      const align = value(element.props, "align", "center");
       return (
         <span
+          className="npb-rating"
           role="img"
           aria-label={value(element.props, "title", "Rating")}
           style={{
             display: "inline-flex",
             gap: 2,
-            fontSize: numeric(element.props, "size", 20),
-            justifyContent: value(element.props, "align") === "right" ? "flex-end" : value(element.props, "align") === "center" ? "center" : "flex-start",
+            fontSize: propNumber(element.props, "size", 20),
+            justifyContent: align === "right" ? "flex-end" : align === "center" ? "center" : "flex-start",
             width: "100%",
           }}
         >
-          <span style={{ color: value(element.props, "starColor") || "#f0ad4e" }}>{"★".repeat(rating)}</span>
-          <span style={{ color: value(element.props, "unmarkedColor") || "#ccd6df" }}>{"★".repeat(Math.max(0, scale - rating))}</span>
+          {fullStars > 0 ? (
+            <span style={{ color: starColor }} aria-hidden="true">{"★".repeat(fullStars)}</span>
+          ) : null}
+          {hasHalfStar ? (
+            <span
+              aria-hidden="true"
+              style={{ position: "relative", display: "inline-block", lineHeight: 1, color: unmarkedColor }}
+            >
+              ★
+              <span
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  width: "50%",
+                  overflow: "hidden",
+                  color: starColor,
+                }}
+              >
+                ★
+              </span>
+            </span>
+          ) : null}
+          {emptyStars > 0 ? (
+            <span style={{ color: unmarkedColor }} aria-hidden="true">{"★".repeat(emptyStars)}</span>
+          ) : null}
         </span>
       );
     },
@@ -1820,7 +2852,7 @@ export const builderWidgets: BuilderWidget[] = [
     label: "Icon",
     category: "General",
     icon: "★",
-    defaultProps: { icon: "★", view: "default", shape: "circle", link: "", align: "center", size: 50, rotate: 0, padding: 0, fitToSize: false },
+    defaultProps: { icon: "★", view: "default", shape: "circle", link: "", align: "center", size: 50, rotate: 0, padding: 0, fitToSize: false, borderWidth: 2, borderRadius: 50 },
     controls: [
       section("Icon", [
         { key: "icon", label: "Icon", type: "icon" },
@@ -1856,6 +2888,10 @@ export const builderWidgets: BuilderWidget[] = [
       const shape = value(element.props, "shape", "circle");
       const primary = value(element.props, "primaryColor") || "#4054b2";
       const secondary = value(element.props, "secondaryColor") || "#fff";
+      const size = numeric(element.props, "size", 50);
+      const padding = numeric(element.props, "padding", 0);
+      const fitToSize = Boolean(element.props.fitToSize);
+      const fitBoxSize = size + padding * 2;
       const node = (
         <span
           className={`npb-icon npb-view-${view} npb-shape-${shape}`}
@@ -1863,13 +2899,14 @@ export const builderWidgets: BuilderWidget[] = [
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: numeric(element.props, "size", 50),
-            padding: numeric(element.props, "padding", 0),
+            fontSize: size,
+            padding,
             color: view === "stacked" ? secondary : primary,
             background: view === "stacked" ? primary : undefined,
             border: view === "framed" ? `${numeric(element.props, "borderWidth", 2)}px solid ${primary}` : undefined,
-            borderRadius: shape === "square" ? numeric(element.props, "borderRadius", 0) : "50%",
+            borderRadius: shape === "square" ? numeric(element.props, "borderRadius", 50) : "50%",
             transform: `rotate(${numeric(element.props, "rotate", 0)}deg)`,
+            ...(fitToSize ? { width: fitBoxSize, height: fitBoxSize } : {}),
           }}
         >
           {value(element.props, "icon", "★")}
@@ -1922,43 +2959,56 @@ export const builderWidgets: BuilderWidget[] = [
         number("size", "Size", 25),
         number("padding", "Padding", 10),
         number("spacing", "Spacing", 5),
-        { key: "color", label: "Primary Color", type: "color" },
+        { key: "primaryColor", label: "Primary Color", type: "color" },
         { key: "secondaryColor", label: "Secondary Color", type: "color" },
       ], "style"),
     ],
-    render: ({ element }) => (
-      <div
-        className={`npb-social npb-social-${value(element.props, "shape", "rounded")}`}
-        style={{
-          display: "grid",
-          gridTemplateColumns: value(element.props, "columns") === "auto"
-            ? "repeat(auto-fit, minmax(40px, max-content))"
-            : `repeat(${Number(value(element.props, "columns", "auto")) || 3}, max-content)`,
-          gap: numeric(element.props, "spacing", 5),
-          justifyContent: value(element.props, "align") === "right" ? "flex-end" : value(element.props, "align") === "left" ? "flex-start" : "center",
-        }}
-      >
-        {items(element.props, "items").map((item, index) => (
-          <a
-            key={`${value(item, "network")}-${index}`}
-            href={value(item, "url", "#")}
-            aria-label={value(item, "network")}
-            style={{
-              display: "grid",
-              placeItems: "center",
-              width: numeric(element.props, "size", 25) + numeric(element.props, "padding", 10) * 2,
-              height: numeric(element.props, "size", 25) + numeric(element.props, "padding", 10) * 2,
-              fontSize: numeric(element.props, "size", 25),
-              color: value(element.props, "color") || "#fff",
-              background: value(element.props, "secondaryColor") || "#4054b2",
-              borderRadius: value(element.props, "shape") === "circle" ? "50%" : value(element.props, "shape") === "square" ? 0 : 6,
-            }}
-          >
-            {value(item, "icon", "●")}
-          </a>
-        ))}
-      </div>
-    ),
+    render: ({ element }) => {
+      const shape = value(element.props, "shape", "rounded");
+      const columns = value(element.props, "columns", "auto");
+      const align = value(element.props, "align", "center");
+      const size = numeric(element.props, "size", 25);
+      const padding = numeric(element.props, "padding", 10);
+      const spacing = numeric(element.props, "spacing", 5);
+      const primaryColor = value(element.props, "primaryColor") || value(element.props, "color") || "#fff";
+      const secondaryColor = value(element.props, "secondaryColor") || "#4054b2";
+      const boxSize = size + padding * 2;
+
+      return (
+        <div
+          className={`npb-social npb-social-${shape}`}
+          style={{
+            display: "grid",
+            gridTemplateColumns: columns === "auto"
+              ? "repeat(auto-fit, minmax(40px, max-content))"
+              : `repeat(${Number(columns) || 3}, max-content)`,
+            gap: spacing,
+            justifyContent: align === "right" ? "flex-end" : align === "left" ? "flex-start" : "center",
+          }}
+        >
+          {items(element.props, "items").map((item, index) => (
+            <a
+              key={`${value(item, "network")}-${index}`}
+              href={value(item, "url", "#")}
+              aria-label={value(item, "network")}
+              style={{
+                display: "grid",
+                placeItems: "center",
+                width: boxSize,
+                height: boxSize,
+                fontSize: size,
+                color: primaryColor,
+                background: secondaryColor,
+                borderRadius: shape === "circle" ? "50%" : shape === "square" ? 0 : 6,
+                textDecoration: "none",
+              }}
+            >
+              {value(item, "icon", "●")}
+            </a>
+          ))}
+        </div>
+      );
+    },
   },
   {
     type: "accordion",
@@ -2031,48 +3081,149 @@ export const builderWidgets: BuilderWidget[] = [
         number("contentFontSize", "Content Size", 14),
       ], "style"),
     ],
-    render: ({ element }) => (
-      <div className="npb-accordion-widget" style={{ display: "grid", gap: numeric(element.props, "spaceBetween", 0) }}>
-        {items(element.props, "items").map((item, index) => {
-          const Tag = value(element.props, "titleTag", "div") as keyof JSX.IntrinsicElements;
-          const state = value(element.props, "defaultState", "expanded_first");
-          const open = state === "expanded_all" || (state === "expanded_first" && index === 0);
-          return (
-            <details
-              key={`${value(item, "title")}-${index}`}
-              open={open}
-              style={{ background: value(element.props, "titleBackground") || undefined }}
-            >
-              <summary style={{
-                display: "flex",
-                flexDirection: value(element.props, "iconPosition") === "start" ? "row-reverse" : "row",
-                justifyContent: "space-between",
-                gap: 8,
-                color: open
-                  ? (value(element.props, "activeTitleColor") || value(element.props, "titleColor") || undefined)
-                  : (value(element.props, "titleColor") || undefined),
-                fontSize: numeric(element.props, "titleFontSize", 16) || undefined,
-              }}
+    render: ({ element }) => {
+      const accordionItems = items(element.props, "items");
+      const defaultState = value(element.props, "defaultState", "expanded_first");
+      const maxExpanded = value(element.props, "maxExpanded", "one");
+      const singleExpanded = maxExpanded === "one";
+      const itemPosition = value(element.props, "itemPosition", "stretch");
+      const iconPosition = value(element.props, "iconPosition", "end");
+      const titleTag = value(element.props, "titleTag", "div") as keyof JSX.IntrinsicElements;
+      const titleColor = value(element.props, "titleColor");
+      const activeTitleColor = value(element.props, "activeTitleColor");
+      const titleBackground = value(element.props, "titleBackground");
+      const expandIcon = value(element.props, "expandIcon", "▼");
+      const collapseIcon = value(element.props, "collapseIcon", "▲");
+      const animationDuration = numeric(element.props, "animationDuration", 400);
+      const spaceBetween = numeric(element.props, "spaceBetween", 0);
+      const distanceFromContent = numeric(element.props, "distanceFromContent", 0);
+      const titleFontSize = numeric(element.props, "titleFontSize", 16);
+      const iconSize = numeric(element.props, "iconSize", 14);
+      const iconColor = value(element.props, "iconColor");
+      const contentColor = value(element.props, "contentColor");
+      const contentBackground = value(element.props, "contentBackground");
+      const contentFontSize = numeric(element.props, "contentFontSize", 14);
+      const faqSchema = Boolean(element.props.faqSchema);
+
+      const isInitiallyOpen = (index: number) => {
+        if (defaultState === "collapsed") {
+          return false;
+        }
+        if (defaultState === "expanded_first") {
+          return index === 0;
+        }
+        if (defaultState === "expanded_all") {
+          return singleExpanded ? index === 0 : true;
+        }
+        return index === 0;
+      };
+
+      const headerJustify =
+        itemPosition === "center"
+          ? "center"
+          : itemPosition === "end"
+            ? "flex-end"
+            : itemPosition === "start"
+              ? "flex-start"
+              : "space-between";
+
+      if (!accordionItems.length) {
+        return <div className="npb-accordion-widget npb-accordion-empty" aria-hidden="true" />;
+      }
+
+      const faqJson =
+        faqSchema &&
+        JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: accordionItems.map((item) => ({
+            "@type": "Question",
+            name: value(item, "title"),
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: value(item, "content"),
+            },
+          })),
+        });
+
+      return (
+        <div
+          className={`npb-accordion-widget${singleExpanded ? " npb-accordion-one" : " npb-accordion-multiple"}`}
+          data-npb-accordion={element.id}
+          style={{
+            display: "grid",
+            gap: spaceBetween,
+            ["--npb-accordion-duration" as string]: `${animationDuration}ms`,
+            ...(titleColor ? { ["--npb-accordion-title-color" as string]: titleColor } : {}),
+            ...(activeTitleColor ? { ["--npb-accordion-active-color" as string]: activeTitleColor } : {}),
+          }}
+        >
+          {accordionItems.map((item, index) => {
+            const inputId = `${element.id}-acc-${index}`;
+            const initiallyOpen = isInitiallyOpen(index);
+            return (
+              <div
+                key={`${value(item, "title")}-${index}`}
+                className="npb-accordion-item"
+                style={{ background: titleBackground || undefined }}
               >
-                <Tag>{value(item, "title")}</Tag>
-                <span style={{ fontSize: numeric(element.props, "iconSize", 14), color: value(element.props, "iconColor") || undefined }}>
-                  {open ? value(element.props, "collapseIcon", "▲") : value(element.props, "expandIcon", "▼")}
-                </span>
-              </summary>
-              <p style={{
-                marginTop: numeric(element.props, "distanceFromContent", 0),
-                color: value(element.props, "contentColor") || undefined,
-                background: value(element.props, "contentBackground") || undefined,
-                fontSize: numeric(element.props, "contentFontSize", 14) || undefined,
-              }}
-              >
-                {value(item, "content")}
-              </p>
-            </details>
-          );
-        })}
-      </div>
-    ),
+                <input
+                  type={singleExpanded ? "radio" : "checkbox"}
+                  name={singleExpanded ? `npb-accordion-${element.id}` : undefined}
+                  id={inputId}
+                  className="npb-accordion-input"
+                  defaultChecked={initiallyOpen}
+                />
+                <label
+                  htmlFor={inputId}
+                  className="npb-accordion-header"
+                  style={{
+                    display: "flex",
+                    flexDirection: iconPosition === "start" ? "row-reverse" : "row",
+                    alignItems: "center",
+                    justifyContent: headerJustify,
+                    gap: 8,
+                    fontSize: titleFontSize || undefined,
+                    cursor: "pointer",
+                  }}
+                >
+                  {(() => {
+                    const Tag = titleTag;
+                    return (
+                      <Tag style={itemPosition === "stretch" ? { flex: 1 } : undefined}>{value(item, "title")}</Tag>
+                    );
+                  })()}
+                  <span
+                    className="npb-accordion-icon"
+                    style={{ fontSize: iconSize, color: iconColor || undefined, flexShrink: 0 }}
+                    aria-hidden="true"
+                  >
+                    <span className="npb-accordion-icon-expand">{expandIcon}</span>
+                    <span className="npb-accordion-icon-collapse">{collapseIcon}</span>
+                  </span>
+                </label>
+                <div className="npb-accordion-panel">
+                  <div
+                    className="npb-accordion-content"
+                    style={{
+                      marginTop: distanceFromContent,
+                      color: contentColor || undefined,
+                      background: contentBackground || undefined,
+                      fontSize: contentFontSize || undefined,
+                    }}
+                  >
+                    {value(item, "content")}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {faqJson ? (
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqJson }} />
+          ) : null}
+        </div>
+      );
+    },
   },
   {
     type: "toggle",
@@ -2097,19 +3248,44 @@ export const builderWidgets: BuilderWidget[] = [
         { key: "titleColor", label: "Title Color", type: "color" },
       ], "style"),
     ],
-    render: ({ element }) => (
-      <div className="npb-toggle" style={{ display: "grid", gap: numeric(element.props, "spaceBetween", 0) }}>
-        {items(element.props, "items").map((item, index) => {
-          const Tag = value(element.props, "titleTag", "div") as keyof JSX.IntrinsicElements;
-          return (
-            <details key={`${value(item, "title")}-${index}`}>
-              <summary style={{ color: value(element.props, "titleColor") || undefined }}><Tag>{value(item, "title")}</Tag></summary>
-              <p>{value(item, "content")}</p>
-            </details>
-          );
-        })}
-      </div>
-    ),
+    render: ({ element }) => {
+      const toggleItems = items(element.props, "items");
+      const titleTag = value(element.props, "titleTag", "div") as keyof JSX.IntrinsicElements;
+      const titleColor = value(element.props, "titleColor");
+      const spaceBetween = propNumber(element.props, "spaceBetween", 0);
+
+      if (!toggleItems.length) {
+        return <div className="npb-toggle npb-toggle-empty" aria-hidden="true" />;
+      }
+
+      return (
+        <div
+          className="npb-toggle"
+          data-npb-toggle={element.id}
+          style={{
+            display: "grid",
+            gap: spaceBetween,
+            ...(titleColor ? { ["--npb-toggle-title-color" as string]: titleColor } : {}),
+          }}
+        >
+          {toggleItems.map((item, index) => {
+            const inputId = `${element.id}-toggle-${index}`;
+            const Tag = titleTag;
+            return (
+              <div key={`${value(item, "title")}-${index}`} className="npb-toggle-item">
+                <input type="checkbox" id={inputId} className="npb-toggle-input" />
+                <label htmlFor={inputId} className="npb-toggle-header">
+                  <Tag>{value(item, "title")}</Tag>
+                </label>
+                <div className="npb-toggle-panel">
+                  <div className="npb-toggle-content">{value(item, "content")}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    },
   },
   {
     type: "tabs",
@@ -2149,40 +3325,85 @@ export const builderWidgets: BuilderWidget[] = [
       ], "style"),
     ],
     render: ({ element }) => {
-      const vertical = value(element.props, "direction") === "vertical";
+      const direction = value(element.props, "direction", "horizontal");
+      const vertical = direction === "vertical";
+      const tabItems = items(element.props, "items");
+      const align = value(element.props, "align", "start");
+      const stretch = align === "stretch";
+      const activeColor = value(element.props, "activeTitleColor") || "#4054b2";
+      const titleColor = value(element.props, "titleColor");
+      const contentColor = value(element.props, "contentColor");
+      const titleSpacing = numeric(element.props, "titleSpacing", 10);
+
+      if (!tabItems.length) {
+        return (
+          <div
+            className={`npb-tabs npb-tabs-empty npb-tabs-${direction}`}
+            aria-hidden="true"
+          />
+        );
+      }
+
+      const navStyle: CSSProperties = {
+        display: "flex",
+        flexDirection: vertical ? "column" : "row",
+        gap: 8,
+        justifyContent: align === "center" ? "center" : align === "end" ? "flex-end" : stretch ? "stretch" : "flex-start",
+        width: !vertical && stretch ? "100%" : undefined,
+        alignItems: vertical && stretch ? "stretch" : undefined,
+      };
+      const labelStyle: CSSProperties = stretch
+        ? { flex: 1, textAlign: "center" }
+        : {};
+
       return (
         <div
-          className={`npb-tabs npb-tabs-${value(element.props, "direction", "horizontal")}`}
-          style={{ display: "flex", flexDirection: vertical ? "row" : "column", gap: numeric(element.props, "titleSpacing", 10) }}
-        >
-          <div style={{
+          className={`npb-tabs npb-tabs-${direction}`}
+          data-npb-tabs={element.id}
+          style={{
             display: "flex",
-            flexDirection: vertical ? "column" : "row",
-            gap: 8,
-            justifyContent: value(element.props, "align") === "center" ? "center" : value(element.props, "align") === "end" ? "flex-end" : "flex-start",
+            flexDirection: vertical ? "row" : "column",
+            gap: titleSpacing,
+            ["--npb-tabs-active-color" as string]: activeColor,
+            ...(titleColor ? { ["--npb-tabs-title-color" as string]: titleColor } : {}),
           }}
-          >
-            {items(element.props, "items").map((item, index) => (
-              <button
+        >
+          {tabItems.map((_, index) => (
+            <input
+              key={`input-${index}`}
+              type="radio"
+              name={`npb-tabs-${element.id}`}
+              id={`${element.id}-tab-${index}`}
+              className="npb-tabs-input"
+              defaultChecked={index === 0}
+            />
+          ))}
+          <div className="npb-tabs-nav" style={navStyle} role="tablist">
+            {tabItems.map((item, index) => (
+              <label
                 key={`${value(item, "title")}-${index}`}
-                type="button"
-                style={{
-                  color: index === 0
-                    ? (value(element.props, "activeTitleColor") || "#4054b2")
-                    : (value(element.props, "titleColor") || undefined),
-                  border: 0,
-                  background: "transparent",
-                  borderBottom: !vertical && index === 0 ? "2px solid #4054b2" : undefined,
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                }}
+                htmlFor={`${element.id}-tab-${index}`}
+                className="npb-tabs-label"
+                style={labelStyle}
+                role="tab"
               >
                 {value(item, "title")}
-              </button>
+              </label>
             ))}
           </div>
-          <div style={{ color: value(element.props, "contentColor") || undefined, flex: 1 }}>
-            {value(items(element.props, "items")[0] ?? {}, "content")}
+          <div
+            className="npb-tabs-panels"
+            style={{ color: contentColor || undefined, flex: 1 }}
+          >
+            {tabItems.map((item, index) => (
+              <div
+                key={`${value(item, "title")}-${index}-panel`}
+                className="npb-tabs-panel"
+                role="tabpanel"
+              >
+                {value(item, "content")}
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -2216,7 +3437,16 @@ export const builderWidgets: BuilderWidget[] = [
     ],
     render: ({ element }) => {
       const src = value(element.props, "src");
-      if (!src) return <div className="npb-placeholder">Add a SoundCloud link</div>;
+      const height = numeric(element.props, "height", 200);
+
+      if (!src) {
+        return (
+          <div className="npb-audio npb-audio-empty" style={{ height }}>
+            <div className="npb-placeholder">Add a SoundCloud link</div>
+          </div>
+        );
+      }
+
       const params = new URLSearchParams({
         url: src,
         visual: String(element.props.visual !== false),
@@ -2230,14 +3460,17 @@ export const builderWidgets: BuilderWidget[] = [
         show_user: String(element.props.username !== false),
         show_artwork: String(element.props.artwork !== false),
       });
+
       return (
-        <iframe
-          title="SoundCloud"
-          loading="lazy"
-          allow="autoplay"
-          style={{ width: "100%", height: numeric(element.props, "height", 200), border: 0 }}
-          src={`https://w.soundcloud.com/player/?${params.toString()}`}
-        />
+        <div className="npb-audio">
+          <iframe
+            title="SoundCloud"
+            loading="lazy"
+            allow="autoplay"
+            style={{ width: "100%", height, border: 0 }}
+            src={`https://w.soundcloud.com/player/?${params.toString()}`}
+          />
+        </div>
       );
     },
   },
@@ -2248,20 +3481,41 @@ export const builderWidgets: BuilderWidget[] = [
     icon: "✉",
     defaultProps: { fields: [{ label: "Name", type: "text", required: true }, { label: "Email", type: "email", required: true }], buttonText: "Send" },
     controls: content([{ key: "fields", label: "Form Fields", type: "repeater" }, text("buttonText", "Button Text", "Send")]),
-    render: ({ element }) => <form className="npb-form">{items(element.props, "fields").map((field, index) => <label key={`${value(field, "label")}-${index}`}>{value(field, "label")}<input type={value(field, "type", "text")} required={Boolean(field.required)} /></label>)}<button type="submit">{value(element.props, "buttonText", "Send")}</button></form>,
+    render: ({ element }) => (
+      <form className="npb-form">
+        {items(element.props, "fields").map((field, index) => (
+          <label key={`${value(field, "label")}-${index}`}>
+            {value(field, "label")}
+            {renderFormFieldControl(field, index)}
+          </label>
+        ))}
+        <button type="submit">{value(element.props, "buttonText") || "Send"}</button>
+      </form>
+    ),
   },
   {
     type: "html",
     label: "HTML",
     category: "General",
     icon: "</>",
-    defaultProps: { html: "<div class=\"example\">HTML Code</div>" },
+    defaultProps: { html: HTML_WIDGET_DEFAULT },
+    rendersAsHost: true,
     controls: [
       section("HTML Code", [
         { key: "html", label: "HTML Code", type: "textarea" },
       ], "content"),
     ],
-    render: ({ element }) => <div className="npb-html" dangerouslySetInnerHTML={{ __html: value(element.props, "html") }} />,
+    render: ({ element, hostProps }) => (
+      <div
+        id={hostProps?.id}
+        data-npb-id={hostProps?.["data-npb-id"]}
+        className={["npb-html", hostProps?.className].filter(Boolean).join(" ") || undefined}
+        style={hostProps?.style}
+        dangerouslySetInnerHTML={{
+          __html: sanitizeWidgetHtml(stringProp(element.props, "html", HTML_WIDGET_DEFAULT)),
+        }}
+      />
+    ),
   },
   {
     type: "menu-anchor",
@@ -2274,7 +3528,10 @@ export const builderWidgets: BuilderWidget[] = [
         text("id", "The ID of Menu Anchor.", "anchor"),
       ], "content"),
     ],
-    render: ({ element }) => <span id={value(element.props, "id", "anchor")} className="npb-anchor">Anchor: #{value(element.props, "id", "anchor")}</span>,
+    render: ({ element }) => {
+      const anchorId = stringProp(element.props, "id", "anchor");
+      return <span id={anchorId} className="npb-anchor" aria-hidden="true" />;
+    },
   },
   {
     type: "read-more",
@@ -2282,13 +3539,24 @@ export const builderWidgets: BuilderWidget[] = [
     category: "General",
     icon: "…",
     defaultProps: { text: "Continue reading", link: "#more" },
+    rendersAsHost: true,
     controls: [
       section("Read More", [
         text("text", "Read More Text", "Continue reading"),
         { key: "link", label: "Link", type: "url" },
       ], "content"),
     ],
-    render: ({ element }) => <a href={value(element.props, "link", "#more")}>{value(element.props, "text", "Continue reading")}</a>,
+    render: ({ element, hostProps }) => (
+      <a
+        id={hostProps?.id}
+        data-npb-id={hostProps?.["data-npb-id"]}
+        className={["npb-read-more", hostProps?.className].filter(Boolean).join(" ") || undefined}
+        style={hostProps?.style}
+        href={stringProp(element.props, "link", "#more")}
+      >
+        {stringProp(element.props, "text", "Continue reading")}
+      </a>
+    ),
   },
   {
     type: "shortcode",
@@ -2297,7 +3565,7 @@ export const builderWidgets: BuilderWidget[] = [
     icon: "[]",
     defaultProps: { code: "[shortcode]" },
     controls: content([text("code", "Enter your shortcode", "[shortcode]")]),
-    render: ({ element }) => <code>{value(element.props, "code", "[shortcode]")}</code>,
+    render: ({ element }) => <code>{stringProp(element.props, "code", "[shortcode]")}</code>,
   },
   {
     type: "wordpress",
@@ -2338,10 +3606,13 @@ export const builderWidgets: BuilderWidget[] = [
       const reversePath = type === "arc" ? "M 560 145 Q 300 -20 40 145" : type === "circle" ? "M 450 90 a 150 72 0 1 0 -300 0 a 150 72 0 1 0 300 0" : "M 620 95 Q 545 25 470 95 T 320 95 T 170 95 T 20 95";
       const path = value(element.props, "direction", "default") === "reversed" ? reversePath : forwardPath;
       const pathId = `npb-text-path-${element.id}`;
+      const label = stringProp(element.props, "text", "Add Your Curvy Text Here");
+      const link = stringProp(element.props, "link");
       const startOffset = value(element.props, "align", "center") === "start" ? "0%" : value(element.props, "align") === "end" ? "100%" : "50%";
       const anchor = value(element.props, "align", "center") === "start" ? "start" : value(element.props, "align") === "end" ? "end" : "middle";
-      const textPath = <textPath href={`#${pathId}`} startOffset={startOffset} textAnchor={anchor}>{value(element.props, "text")}</textPath>;
-      return <svg className="npb-text-path" viewBox="0 0 640 180" role="img" aria-label={value(element.props, "text")}><defs><path id={pathId} d={path} /></defs>{element.props.showPath ? <path d={path} fill="none" stroke="currentColor" opacity=".25" /> : null}<text fontSize="26" fontWeight="600">{value(element.props, "link") ? <a href={value(element.props, "link")}>{textPath}</a> : textPath}</text></svg>;
+      const textPath = <textPath href={`#${pathId}`} startOffset={startOffset} textAnchor={anchor}>{label}</textPath>;
+      const text = <text fontSize="26" fontWeight="600">{link ? <a href={link}>{textPath}</a> : textPath}</text>;
+      return <svg className="npb-text-path" viewBox="0 0 640 180" role="img" aria-label={label}><defs><path id={pathId} d={path} /></defs>{element.props.showPath ? <path d={path} fill="none" stroke="currentColor" opacity=".25" /> : null}{text}</svg>;
     },
   },
   {
@@ -2360,7 +3631,12 @@ export const builderWidgets: BuilderWidget[] = [
     icon: "▧",
     defaultProps: { src: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80", alt: "", link: "" },
     controls: [section("Content", [image("src", "Choose Image"), text("alt", "Alt Text"), { key: "link", label: "Link", type: "url" }], "general"), section("Settings", [], "general")],
-    render: ({ element }) => <img className="npb-image" src={value(element.props, "src")} alt={value(element.props, "alt")} />,
+    render: ({ element }) => {
+      const src = value(element.props, "src");
+      const link = value(element.props, "link");
+      const image = <img className="npb-image" src={src} alt={value(element.props, "alt")} />;
+      return link ? <a href={link}>{image}</a> : image;
+    },
   },
   {
     type: "wp-video",
@@ -2369,7 +3645,23 @@ export const builderWidgets: BuilderWidget[] = [
     icon: "▶",
     defaultProps: { src: "", poster: "", autoplay: false, loop: false },
     controls: [section("Content", [{ key: "src", label: "Video URL", type: "url" }, { key: "poster", label: "Poster", type: "image" }, { key: "autoplay", label: "Autoplay", type: "switch" }, { key: "loop", label: "Loop", type: "switch" }], "general"), section("Settings", [], "general")],
-    render: ({ element }) => value(element.props, "src") ? <video className="npb-native-video" src={value(element.props, "src")} poster={value(element.props, "poster")} controls autoPlay={Boolean(element.props.autoplay)} loop={Boolean(element.props.loop)} /> : <div className="npb-placeholder">Add a video URL</div>,
+    render: ({ element }) => {
+      const src = value(element.props, "src");
+      if (!src) {
+        return <div className="npb-placeholder">Add a video URL</div>;
+      }
+      const poster = value(element.props, "poster") || undefined;
+      return (
+        <video
+          className="npb-native-video"
+          src={src}
+          poster={poster}
+          controls
+          autoPlay={Boolean(element.props.autoplay)}
+          loop={Boolean(element.props.loop)}
+        />
+      );
+    },
   },
   {
     type: "wp-block",

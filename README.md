@@ -16,11 +16,12 @@ docker compose up
 
 # 3. Open in browser
 # Next.js public site:  http://localhost:3001
-# Admin (Phase 1+):     http://localhost:3001/admin
-# Strapi REST API:      http://localhost:1338/api
 # Strapi admin:         http://localhost:1338/admin
+# Strapi REST API:      http://localhost:1338/api
 # Postgres (host):      localhost:5433
 ```
+
+Strapi admin at `http://localhost:1338/admin` is the only admin portal (including the page builder).
 
 ### Optional: React SPA frontend
 
@@ -49,7 +50,7 @@ cd apps/web && pnpm dev
 ```
 nextpress/
 ├── apps/
-│   ├── web/            # Next.js 15 — public site + admin
+│   ├── web/            # Next.js 15 — public site only
 │   └── react/          # Vite + React — optional SPA frontend
 ├── packages/
 │   ├── shared/         # Shared TypeScript types
@@ -57,19 +58,19 @@ nextpress/
 │   ├── cms-core/       # CMS-agnostic ContentProvider contract
 │   ├── cms-strapi/     # Strapi adapter
 │   └── strapi-client/  # Strapi REST SDK
-├── strapi/             # Strapi 5 backend
+├── strapi/             # Strapi 5 backend (+ admin / page-builder plugin)
 └── docker-compose.yml
 ```
 
 ## CMS architecture
 
-The web app calls `getCms()` — never Strapi APIs directly. See [docs/cms-architecture.md](./docs/cms-architecture.md).
+The public web app calls `getCms()` — never Strapi APIs directly. See [docs/cms-architecture.md](./docs/cms-architecture.md).
 
 ## Phase 1 Status
 
 - [x] Native visual page builder with responsive widgets and controls
-- [x] Admin login, pages CRUD, drag-and-drop editor
 - [x] Publish/unpublish, auto-save, preview, public `/[slug]` renderer
+- [x] Admin + page builder hosted in Strapi (sole admin)
 
 ## Phase 0 Status
 

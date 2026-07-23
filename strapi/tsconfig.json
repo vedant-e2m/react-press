@@ -17,5 +17,15 @@
     "rootDir": "."
   },
   "include": ["./", "./**/*.ts", "./**/*.js", "src/**/*.json"],
-  "exclude": ["node_modules/", "build/", "dist/", ".cache/", ".tmp/"]
+  "exclude": [
+    "node_modules/",
+    "build/",
+    "dist/",
+    ".cache/",
+    ".tmp/",
+    "src/admin/",
+    "src/plugins/**/admin/",
+    "src/plugins/**/strapi-admin.*",
+    "**/*.test.ts"
+  ]
 }
